@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Forge V2 - Final Layout</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <div class="container" id="container">
+        <h1>
+            Prompt Forge V2
+        </h1>
+
+        <div class="keyword-primary-output-area section-box">
+            <div class="lucky-button-options">
+                <button id="feelLuckyButton" class="action-button" title="Randomly select keywords"><i class="fas fa-dice"></i> Feeling Lucky</button>
+                <fieldset id="lucky-quantity-options" class="inline-radio-group">
+                    <legend>Quantity:</legend>
+                    <div class="radio-option"><input type="radio" id="lucky-qty-small" name="luckyQuantity" value="10-20" checked><label for="lucky-qty-small">10-20</label></div>
+                    <div class="radio-option"><input type="radio" id="lucky-qty-medium" name="luckyQuantity" value="30-50"><label for="lucky-qty-medium">30-50</label></div>
+                    <div class="radio-option"><input type="radio" id="lucky-qty-large" name="luckyQuantity" value="60-100"><label for="lucky-qty-large">60-100</label></div>
+                </fieldset>
+                <button id="generateKeywordsButton" class="action-button" title="Generate summary from selected keywords below"><i class="fas fa-lightbulb"></i> Generate Keywords</button>
+            </div>
+            <div id="mainMessageBox" class="message-box" style="display: none;"></div>
+            <div class="prompt-output textarea-with-copy" id="keywords-summary-container">
+                 <label for="generatedKeywords" class="dropdown-label">Selected Keywords Summary:</label>
+                 <textarea id="generatedKeywords" class="prompt-textarea" readonly placeholder="Click 'Generate Keywords' or 'I'm Feeling Lucky'..."></textarea>
+                 <button type="button" class="copy-button" data-target="generatedKeywords" title="Copy Keywords Summary">
+                     <i class="fas fa-copy"></i>
+                 </button>
+             </div>
+             <div class="prompt-output textarea-with-copy" id="api-prompt-output-container">
+                 <label for="apiGeneratedPrompt" class="dropdown-label">API Generated Prompt (Optional Refinement):</label>
+                 <textarea id="apiGeneratedPrompt" class="prompt-textarea" readonly placeholder="Click 'Generate API Prompt' below..."></textarea>
+                  <button type="button" class="copy-button" data-target="apiGeneratedPrompt" title="Copy API Generated Prompt">
+                     <i class="fas fa-copy"></i>
+                 </button>
+             </div>
+        </div>
+
+        <div class="config-action-area section-box">
+             <h2 class="section-title">Configuration & Generation Actions</h2>
+
+            <div class="config-subsection collapsible">
+                <button type="button" class="collapse-toggle-button" aria-expanded="true" aria-controls="llm-config-content">
+                    <h3>LLM Configuration</h3>
+                    <i class="fas fa-chevron-down collapse-icon"></i>
+                </button>
+                <div id="llm-config-content" class="collapsible-content">
+                    <div class="api-config">
+                         <div>
+                            <label for="llmEndpoint">Select LLM Endpoint:</label>
+                            <select id="llmEndpoint" class="api-select">
+                                <option value="https://generativelanguage.googleapis.com/v1beta">Gemini API</option>
+                                <option value="http://localhost:1234/v1">LM Studio (localhost:1234, OpenAI Format)</option>
+                                <option value="http://localhost:11434/v1">Ollama (localhost:11434, OpenAI Format)</option>
+                                <option value="custom_llm">Custom LLM Endpoint</option>
+                            </select>
+                        </div>
+                        <div id="customLlmEndpointContainer" style="display: none;">
+                            <label for="customLlmEndpoint">Custom LLM Endpoint URL:</label>
+                            <input type="text" id="customLlmEndpoint" placeholder="Enter custom LLM endpoint URL">
+                        </div>
+                        <div class="api-key-wrapper">
+                            <label for="llmApiKey">LLM API Key (For Custom/Cloud LLMs):</label>
+                            <div class="input-with-button">
+                                <input type="password" id="llmApiKey" placeholder="Enter API Key (if required)">
+                                <button type="button" id="clearApiKeyButton" class="small-utility-button" title="Clear Saved API Key"><i class="fas fa-times"></i> Clear</button>
+                            </div>
+                            <small class="api-key-note">Key is saved locally in your browser's storage for convenience.</small>
+                         </div>
+                         <div>
+                            <label for="llmModelName">LLM Model Name (For Localhost/Custom):</label>
+                            <input type="text" id="llmModelName" placeholder="e.g., llama3, gemini-pro (check your server)">
+                        </div>
+                    </div>
+                     <div class="system-prompt-container textarea-with-copy">
+                        <label for="systemPrompt" class="system-prompt-label">System Prompt / Instructions (Auto-updates based on format below):</label>
+                        <textarea id="systemPrompt" class="system-prompt-textarea"></textarea>
+                        <button type="button" class="copy-button" data-target="systemPrompt" title="Copy System Prompt">
+                             <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                     <div class="prompt-format-selector">
+                         <fieldset>
+                                <legend>Desired Prompt Output Format (Instructs LLM)</legend>
+                                 <div class="format-option"><input type="radio" id="format-auto" name="promptFormat" value="auto"><label for="format-auto">Auto (Generic)</label></div>
+                                <div class="format-option"><input type="radio" id="format-keywords" name="promptFormat" value="keywords"><label for="format-keywords">Keywords/Concise (Good for SD 1.5)</label></div>
+                                <div class="format-option"><input type="radio" id="format-structured" name="promptFormat" value="structured" checked><label for="format-structured">Structured/Detailed (Good for SDXL / Flux)</label></div>
+                                <div class="format-option"><input type="radio" id="format-sentences" name="promptFormat" value="sentences"><label for="format-sentences">Sentences/Paragraph (Good for DALL-E 3)</label></div>
+                             </fieldset>
+                     </div>
+                     <div id="configMessageBox" class="message-box" style="display: none;"></div>
+                     <button type="button" id="generateApiPromptButton" class="action-button subsection-action-button" title="Use LLM to generate a refined prompt"><i class="fas fa-wand-magic-sparkles"></i> Generate API Prompt</button>
+                 </div>
+             </div>
+
+             <div class="config-subsection collapsible">
+                <button type="button" class="collapse-toggle-button" aria-expanded="true" aria-controls="image-gen-config-content">
+                    <h3>Image Generation Configuration</h3>
+                     <i class="fas fa-chevron-down collapse-icon"></i>
+                </button>
+                 <div id="image-gen-config-content" class="collapsible-content">
+                    <div class="image-gen-config">
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                            Select ComfyUI and a workflow, or add a custom endpoint. Ensure ComfyUI server is running if selected.
+                         </p>
+                         <div id="image-endpoints">
+                             <div class="dropdown-item comfyui-option">
+                                 <input type="checkbox" id="img-comfyui" value="local_comfyui">
+                                 <label for="img-comfyui">Local ComfyUI <small>(Requires server)</small></label>
+                                 <div class="comfyui-address-input">
+                                     <label for="comfyuiLanAddress" class="inline-label small-label">Server Address:</label>
+                                     <input type="text" id="comfyuiLanAddress" placeholder="Default: http://127.0.0.1:8188">
+                                 </div>
+                                 <div class="comfy-workflow-select">
+                                     <label for="comfyWorkflowSelect" class="inline-label">Workflow:</label>
+                                     <select id="comfyWorkflowSelect" class="api-select small-select">
+                                         <option value="">-- Select --</option>
+                                     </select>
+                                 </div>
+                            </div>
+                         </div>
+                        <div id="custom-endpoints-list" style="margin-top: 1rem;"></div>
+                        <button type="button" id="add-custom-endpoint-btn" class="add-custom-button"><i class="fas fa-plus"></i> Add Custom Endpoint</button>
+                    </div>
+                    <div class="prompt-send-selector">
+                        <fieldset>
+                            <legend>Select Prompt to Send:</legend>
+                            <div class="send-option"><input type="radio" id="send-keywords" name="promptToSend" value="keywords" checked><label for="send-keywords">Keywords Summary</label></div>
+                            <div class="send-option"><input type="radio" id="send-api-prompt" name="promptToSend" value="api"><label for="send-api-prompt">API Generated Prompt</label></div>
+                        </fieldset>
+                    </div>
+                     <div class="successive-prompt-option">
+                         <input type="checkbox" id="enableSuccessivePrompt">
+                         <label for="enableSuccessivePrompt">Attempt second round with Keywords (LLM Refined - Experimental)</label>
+                    </div>
+                    <div class="continuous-gen-settings">
+                         <h4 class="subsection-title">Continuous Generation</h4>
+                         <div class="toggle-switch-container">
+                             <label for="enableContinuousGen">Enable Continuous Mode:</label>
+                             <label class="switch">
+                                 <input type="checkbox" id="enableContinuousGen">
+                                 <span class="slider round"></span>
+                             </label>
+                         </div>
+                         <div id="continuous-options" style="display: none;">
+                             <div class="form-group">
+                                 <label for="continuousGenCount">Number of Images:</label>
+                                 <input type="number" id="continuousGenCount" value="5" min="1" max="100">
+                             </div>
+                             <fieldset id="continuous-mode-options" class="radio-group-vertical">
+                                 <legend>Mode per Image (Seed is always random):</legend>
+                                 <div class="radio-option"><input type="radio" name="continuousGenMode" value="keep_keywords_new_api" id="mode-keep-keywords" checked><label for="mode-keep-keywords">Keep Keywords, New API Prompt</label></div>
+                                 <div class="radio-option"><input type="radio" name="continuousGenMode" value="new_lucky_api" id="mode-new-lucky"><label for="mode-new-lucky">New 'Feeling Lucky', New API Prompt</label></div>
+                             </fieldset>
+                         </div>
+                     </div>
+                     <button type="button" id="sendPromptButton" class="action-button subsection-action-button"><i class="fas fa-paper-plane"></i> Send Prompt / Start Batch</button>
+                     <button type="button" id="stopBatchButton" class="action-button subsection-action-button danger-button" style="display: none;"><i class="fas fa-stop-circle"></i> Stop Batch</button>
+                </div>
+             </div>
+
+             <div class="config-subsection collapsible">
+                 <button type="button" class="collapse-toggle-button" aria-expanded="false" aria-controls="guidelines-content">
+                     <h3>Prompt Guidelines (Reference)</h3>
+                     <i class="fas fa-chevron-down collapse-icon"></i>
+                 </button>
+                 <div id="guidelines-content" class="collapsible-content" hidden>
+                     <div class="prompt-info-container">
+                         <p style="margin-bottom: 1rem;">The system prompt changes based on the selected 'Desired Prompt Output Format'. Here's a summary of the formats and their typical targets:</p>
+                         <table class="prompt-info-table">
+                             <thead> <tr><th>Format Selection</th><th>Focus</th><th>Good For</th><th>System Prompt Goal</th></tr> </thead>
+                             <tbody>
+                                 <tr><td>Keywords/Concise</td><td>Comma-separated terms, short phrases, emphasis.</td><td>Stable Diffusion 1.5/2.x, models sensitive to keyword order/weight.</td><td>Instructs LLM to output a dense string of keywords, minimizing natural language.</td></tr>
+                                 <tr><td>Structured/Detailed</td><td>Descriptive phrases, logical structure (Subject, Action, Setting, Style).</td><td>SDXL, Flux, models that understand more detailed descriptions and structure.</td><td>Instructs LLM to build a vivid scene description, emphasizing visual detail and composition.</td></tr>
+                                 <tr><td>Sentences/Paragraph</td><td>Natural language, 2-4 descriptive sentences.</td><td>DALL-E 3, models preferring narrative prompts.</td><td>Instructs LLM to write a short, imaginative paragraph describing the scene.</td></tr>
+                                 <tr><td>Auto (Generic)</td><td>Balanced approach, creative, vivid, generally concise.</td><td>General purpose, Flux, SDXL. Good starting point.</td><td>Instructs LLM to be creative, combining elements, focusing on t-shirt suitability, under 350 words.</td></tr>
+                             </tbody>
+                         </table>
+                         <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-secondary);">You can always edit the System Prompt textarea directly for full customization.</p>
+                    </div>
+                 </div>
+             </div>
+        </div>
+
+        <div id="results-container" class="section-box">
+             <h2 class="section-title">Image Generation Results</h2>
+             <div id="resultsMessageBox" class="message-box" style="display: none;"></div>
+             <label class="dropdown-label" style="margin-top: 1.5rem;">Image Generation Status & Results:</label>
+             <div id="image-results-grid">
+                 <div class="placeholder-text" style="color: var(--text-placeholder); text-align: center; grid-column: 1 / -1; padding: 1rem 0;">Configure endpoints, then click 'Send Prompt'...</div>
+             </div>
+             <div class="post-result-controls">
+                 <button type="button" id="startNewPromptButton" class="action-button" title="Clear all selections and results"><i class="fas fa-undo"></i> Start New</button>
+                 <button type="button" id="downloadResultsButton" class="action-button" title="Download prompts and results log"><i class="fas fa-download"></i> Download Log</button>
+             </div>
+        </div>
+
+        <div id="keyword-details-area" class="section-box collapsible">
+             <button type="button" class="collapse-toggle-button" aria-expanded="true" aria-controls="keyword-details-content">
+                 <h2 class="section-title inline-title">Keyword Selection (Details)</h2>
+                 <i class="fas fa-chevron-down collapse-icon"></i>
+            </button>
+             <div id="keyword-details-content" class="collapsible-content">
+                 <div class="grid-container">
+                    <div class="dropdown-container"><label class="dropdown-label">Subject Matter:</label><div id="subjectMatter"></div></div>
+                    <div class="dropdown-container"><label class="dropdown-label">Location & Setting:</label><div id="locationSetting"></div></div>
+                    <div class="dropdown-container"><label class="dropdown-label">Situation & Scenario:</label><div id="situationScenario"></div></div>
+                    <div class="dropdown-container"><label class="dropdown-label">Animal & Creature Types:</label><div id="animalTypes"></div></div>
+                    <div class="dropdown-container"><label class="dropdown-label">Vehicles & Machines:</label><div id="vehicleTypes"></div></div>
+                    <div class="dropdown-container"><label class="dropdown-label">Robots & Androids:</label><div id="robotTypes"></div></div>
+                    <div class="dropdown-container"><label class="dropdown-label">Otherworldly Elements:</label><div id="planetTypes"></div></div>
+                    <div class="dropdown-container"><label class="dropdown-label">Additional Objects & Icons:</label><div id="additionalObjects"></div></div>
+                    <div class="dropdown-container"><label class="dropdown-label">Edge Style:</label><div id="edgeStyle"></div></div>
+                    <div class="dropdown-container"><label class="dropdown-label">Artistic Style:</label><div id="artisticStyle"></div></div>
+                    <div class="dropdown-container"><label class="dropdown-label">Cinematic Lighting:</label><div id="cinematicLighting"></div></div>
+                    <div class="dropdown-container"><label class="dropdown-label">Perspective & Angle:</label><div id="perspectiveAngle"></div></div>
+                    <div class="dropdown-container"><label class="dropdown-label">Pattern & Texture:</label><div id="patternTexture"></div></div>
+                    <div class="dropdown-container"><label class="dropdown-label">Opacity & Finish:</label><div id="opacityFinish"></div></div>
+                    <div class="dropdown-container"><label class="dropdown-label">Materials Used:</label><div id="materialsUsed"></div></div>
+                    <div class="dropdown-container"><label class="dropdown-label">Genre & Vibe:</label><div id="genreVibe"></div></div>
+                    <div class="dropdown-container"><label class="dropdown-label">Time & Culture:</label><div id="timeCulture"></div></div>
+                    <div class="dropdown-container"><label class="dropdown-label">Cinematic Modifiers:</label><div id="cinematicModifiers"></div></div>
+                    <div class="dropdown-container"><label class="dropdown-label">Color & Tone:</label><div id="colorTone"></div></div>
+                    <div class="dropdown-container"><label class="dropdown-label">Special Effects:</label><div id="specialEffects"></div></div>
+                    <div class="dropdown-container"><label class="dropdown-label">Cultural Motifs:</label><div id="culturalMotifs"></div></div>
+                    <div class="dropdown-container"><label class="dropdown-label">Frame & Border:</label><div id="frameBorder"></div></div>
+                    <div class="dropdown-container"><label class="dropdown-label">Style Modulation:</label><div id="styleModulation"></div></div>
+                    <div class="dropdown-container"><label class="dropdown-label">Cinematic Options:</label><div id="cinematicOptions"></div></div>
+                 </div>
+             </div>
+        </div>
+
+    </div>
+
+    <div class="bottom-video-container">
+         <video autoplay muted loop playsinline>
+             <source src="https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/2f36ecd5-e8bc-4459-860a-435ac643b127/transcode=true,width=450/68466816.webm" type="video/webm">
+             Your browser does not support the video tag.
+         </video>
+     </div>
+
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
