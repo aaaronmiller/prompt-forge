@@ -1,0 +1,31 @@
+# Configuration / Secrets
+# Prevent committing the data file if it ever contains sensitive defaults
+# or any other config files you might add later.
+data.js
+config.js
+*.key
+*.env
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Editor directories and files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Log files
+*.log
+results*.txt
+
+# Build output (if you ever add a build process)
+dist/
+build/
+node_modules/
+
+# Optional: Add any other files or directories you don't want in Git
