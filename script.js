@@ -2,35 +2,17 @@
 
 // --- System Prompt Templates ---
 const systemPromptTemplates = {
-    auto: `You are an expert prompt engineer specializing in image generation for t-shirt designs.
-Use the user's selected keywords as strong inspiration to create a concise, vivid, and highly creative prompt suitable for a diffusion model like Flux or Stable Diffusion.
-Focus on generating unique, artistic, and visually striking concepts. Combine elements in unexpected ways.
-The final output should be ONLY the generated image prompt itself, without any conversational text, preamble, or explanation.
-Ensure the prompt implies a style suitable for a t-shirt graphic (e.g., vector art, graphic illustration, stylized realism, abstract).
-Add 2-3 related but unique elements not explicitly selected by the user to enhance creativity.
-Keep the final prompt under 350 words.`,
-    keywords: `You are an expert prompt engineer generating prompts optimized for models like Stable Diffusion 1.5/2.x which prefer concise, keyword-driven input.
-Analyze the user's selected keywords/concepts below.
-Generate a prompt consisting primarily of comma-separated keywords and short, impactful phrases. Use parentheses for emphasis if needed, e.g., (masterpiece:1.2).
-Prioritize the most important visual elements (subject, action, key style).
-Include relevant artistic style keywords (e.g., vector art, illustration, graphic design, synthwave, cinematic lighting, detailed background) appropriate for a t-shirt.
-Add 1-2 related creative elements beyond the user's selection.
-Output ONLY the comma-separated prompt string, without description or preamble. Ensure the output is a single line.
-Keywords: [USER_KEYWORDS_HERE]`,
-    structured: `You are an expert prompt engineer generating highly detailed and structured prompts suitable for models like SDXL or Flux.
-Analyze the user's selected keywords and concepts below.
-Create a vivid and imaginative prompt using a combination of descriptive phrases and specific keywords, focusing on clear subject, action, environment, and artistic style.
-Structure the prompt logically (e.g., subject, action, setting, style, modifiers).
-Emphasize visual details (e.g., "intricate linework", "glowing neon signs reflect on wet surfaces"), composition ("dynamic angle", "rule of thirds"), lighting ("volumetric lighting", "chiaroscuro"), and artistic style ("Art Nouveau illustration", "cyberpunk concept art") suitable for a striking t-shirt graphic.
-Incorporate 2-3 related creative elements to enhance uniqueness.
-The final output should be ONLY the generated image prompt itself, without any conversational text, preamble, or explanation. Keep it under 400 words.
-Keywords: [USER_KEYWORDS_HERE]`,
-    sentences: `You are an expert prompt engineer crafting descriptive, sentence-based prompts suitable for models like DALL-E 3.
-Based on the user's selected keywords below, write a short paragraph (2-4 rich, descriptive sentences) outlining a unique and artistic scene for a t-shirt design.
-Focus on clear subject matter, action, setting, and mood. Integrate artistic style descriptions naturally within the sentences (e.g., "rendered in the style of detailed vector art with clean lines", "a painterly scene reminiscent of impressionism").
-Add 2-3 creative, related details not explicitly mentioned by the user.
-The final output must be ONLY the descriptive paragraph prompt, without any extra text, title, or introduction.
-Keywords: [USER_KEYWORDS_HERE]`
+     'Stable Diffusion 1.x': `ou are an expert prompt engineer for Stable Diffusion 1.x models. Your task is to create concise, keyword-driven prompts optimized for the 75-token limit and the bag-of-words nature of SD1.x. Construct prompts as a single, flowing line of comma-separated keywords and impactful short phrases, always placing the most important subject and action at the start, followed by environment, style, and any additional details. Use parentheses for emphasis, such as (masterpiece:1.2), and include artist or style references where relevant. Avoid repetition, contradictions, and verbose language; keep the prompt under 75 tokens, and only include negative prompts for elements you want to exclude. Omit any section if information is missing. Output only the prompt string, with no explanations, reasoning, or extra text.
+
+<start> portrait of a young woman, freckles, red hair, green eyes, soft lighting, studio background, (masterpiece:1.2), (detailed skin:1.3), by Greg Rutkowski, trending on ArtStation <stop><start> cyberpunk city at night, neon lights, rain, reflections, flying cars, crowded streets, (cinematic:1.2), (high detail:1.3), by Syd Mead <stop><start> fantasy forest, ancient trees, glowing mushrooms, mist, magical atmosphere, (ethereal:1.2), (vivid colors:1.3), illustration, by Ivan Shishkin <stop>
+Output only the prompt string, with no explanations, reasoning, or extra text.`,
+    'SDXL/SD3': `You are an expert prompt engineer for SDXL and SD3 models. Your task is to create highly effective, detailed prompts that maximize the 75-token chunk limit, always frontloading the most important information. Write prompts as a single, coherent line of text using clear, natural language or comma-separated keywords and phrases. Begin with the subject and their action or pose, followed by the environment or setting, then lighting and mood, and finally style, artistic details, and any unique features. Add specific details such as textures, colors, camera angle, artistic style, or artist references as appropriate. Use parentheses for keyword weighting, such as (keyword:1.2), with weights between 1.1 and 1.4 recommended. Avoid repetition, contradictions, and overly long prompts; keep each chunk under 75 tokens, and only include negative prompts for elements you want to exclude. Omit any section if information is missing. Output only the prompt string, with no explanations, reasoning, or extra text.
+
+<start> elegant woman in a flowing red dress, dancing on a rooftop at sunset, city skyline in the background, (cinematic lighting:1.3), (vivid colors:1.2), sharp focus, by Annie Leibovitz, dramatic mood <stop> <start> futuristic samurai, neon-lit alley, rain-soaked pavement, glowing katana, (cyberpunk style:1.3), (high detail:1.2), low-angle shot, intense atmosphere <stop> <start> majestic white wolf, snowy forest, moonlight filtering through trees, (ethereal glow:1.2), (hyper-detailed fur:1.3), digital painting, mystical mood <stop>
+Output only the prompt string, with no explanations, reasoning, or extra text.`,
+    'FLUX': `You are an expert prompt engineer for Flux and Flux-style models. Your task is to transform user input into a highly effective, concise, and detailed prompt using best practices from top SDXL and Flux prompting guides. Construct prompts as a single, flowing line of text, using clear, natural language or comma-separated keywords and phrases. Always prioritize the most important visual elements at the start of the prompt, beginning with the subject and their action or pose, followed by the environment or setting, then lighting and mood, and finally style, artistic details, and any unique features. Add specific details such as textures, colors, camera angle, artistic style, or artist references as appropriate. Use parentheses for keyword weighting, such as (keyword:1.2), with weights between 1.1 and 1.4 recommended for Flux models. Avoid repetition, contradictions, and overly long prompts; aim for 75 tokens or less, and ensure the prompt is vivid, coherent, and free of logical loops. Only include negative prompts for elements you want to exclude, and omit any section if information is missing. Output only the prompt string, with no explanations, reasoning, or extra text.
+
+<start> photo of a rhino dressed in a suit and tie, sitting at a table in a bar with bar stools, award-winning photography, (Elke Vogelsang:1.2), cinematic lighting, sharp focus, (detailed textures:1.3), vibrant colors <stop> <start> a giant monster hybrid of dragon and spider, in a dark dense foggy forest, (atmospheric mist:1.2), dramatic lighting, (hyper-detailed scales:1.3), ominous mood <stop> <start> retro robot, vintage workshop, sunbeams through dusty windows, (steampunk gears:1.2), (rust textures:1.2), isometric vector art, Pantone color palette, warm atmosphere <stop>`
 };
 
 
@@ -58,12 +40,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const customLlmEndpointContainer = document.getElementById('customLlmEndpointContainer');
     const customLlmEndpointInput = document.getElementById('customLlmEndpoint');
     const llmApiKeyInput = document.getElementById('llmApiKey');
+    // ** NEW ** Reference for Clear API Key button
+    const clearApiKeyButton = document.getElementById('clearApiKeyButton');
     const llmModelNameInput = document.getElementById('llmModelName');
     const imageEndpointsContainer = document.getElementById('image-endpoints');
     const addCustomEndpointBtn = document.getElementById('add-custom-endpoint-btn');
     const customEndpointsList = document.getElementById('custom-endpoints-list');
     const comfyWorkflowSelect = document.getElementById('comfyWorkflowSelect');
-    // ** NEW ** Reference for the ComfyUI LAN Address input
     const comfyuiLanAddressInput = document.getElementById('comfyuiLanAddress');
     const configActionArea = document.querySelector('.config-action-area');
     const resultsContainer = document.getElementById('results-container');
@@ -81,14 +64,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const collapseToggleButtons = document.querySelectorAll('.collapse-toggle-button');
 
     // --- Global State ---
-    // (Keep existing global state variables)
     let currentSelectedImageEndpoints = [];
     const comfyPollingStates = {};
     let isContinuousModeActive = false;
     let continuousRunsRemaining = 0;
     let currentContinuousMode = 'keep_keywords_new_api';
     let stopBatchFlag = false;
-
+    const apiKeyStorageKey = 'promptForgeLlmApiKey'; // Key for localStorage
 
     // --- Initialization ---
     console.log("Starting initialization...");
@@ -99,12 +81,67 @@ document.addEventListener('DOMContentLoaded', function() {
         else { populateWorkflowSelect(); console.log("Workflow select populated."); }
         if (typeof systemPromptTemplates !== 'undefined') { updateSystemPrompt(); }
         else { console.error("ERR: systemPromptTemplates missing."); systemPromptTextarea.value = "Error loading system prompt templates."; }
+
+        // ** NEW ** Load API key from storage on startup
+        loadApiKeyFromStorage();
+
         addEventListeners(); // Add listeners AFTER functions are defined below
         initializeCollapsibleSections();
         console.log("Initialization complete.");
     } catch (initError) {
         console.error("Initialization Error:", initError);
         showMessage(mainMessageBox, 'error', `Initialization failed: ${initError.message}`);
+    }
+
+    // --- Function Definitions ---
+
+    // ** NEW ** Functions for API Key Storage
+    function saveApiKeyToStorage() {
+        if (!llmApiKeyInput) return;
+        const key = llmApiKeyInput.value.trim();
+        if (key) {
+            try {
+                localStorage.setItem(apiKeyStorageKey, key);
+                console.log("API Key saved to localStorage.");
+                // Optional: Show temporary confirmation? Might be annoying on every change.
+                // showMessage(configMessageBox, 'success', 'API Key saved locally.');
+            } catch (e) {
+                console.error("Error saving API Key to localStorage:", e);
+                showMessage(configMessageBox, 'error', 'Could not save API Key locally (storage might be full or disabled).');
+            }
+        } else {
+            // If the user clears the input, also remove it from storage
+            clearApiKeyFromStorage();
+        }
+    }
+
+    function loadApiKeyFromStorage() {
+        if (!llmApiKeyInput) return;
+        try {
+            const savedKey = localStorage.getItem(apiKeyStorageKey);
+            if (savedKey) {
+                llmApiKeyInput.value = savedKey;
+                console.log("API Key loaded from localStorage.");
+            } else {
+                console.log("No API Key found in localStorage.");
+            }
+        } catch (e) {
+            console.error("Error loading API Key from localStorage:", e);
+            // Don't necessarily show an error to the user, maybe storage is just unavailable
+        }
+    }
+
+    function clearApiKeyFromStorage() {
+        if (!llmApiKeyInput) return;
+        try {
+            localStorage.removeItem(apiKeyStorageKey);
+            llmApiKeyInput.value = ''; // Clear the input field
+            console.log("API Key cleared from localStorage and input field.");
+            showMessage(configMessageBox, 'success', 'Saved API Key cleared.');
+        } catch (e) {
+            console.error("Error clearing API Key from localStorage:", e);
+            showMessage(configMessageBox, 'error', 'Could not clear saved API Key.');
+        }
     }
 
 
@@ -194,26 +231,37 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-      // --- Event Listeners Setup ---
-      function addEventListeners() {
-        console.log("Adding event listeners...");
-        // (Keep all existing event listener attachments as before)
-        if (llmEndpointSelect) llmEndpointSelect.addEventListener('change', function() { customLlmEndpointContainer.style.display = (this.value === 'custom_llm') ? 'block' : 'none'; }); else console.error("Element not found: llmEndpointSelect");
-        if (feelLuckyButton) feelLuckyButton.addEventListener('click', handleFeelLucky); else console.error("Element not found: feelLuckyButton");
-        if (generateKeywordsButton) generateKeywordsButton.addEventListener('click', handleGenerateKeywords); else console.error("Element not found: generateKeywordsButton");
-        if (generateApiPromptButton) generateApiPromptButton.addEventListener('click', handleGenerateApiPromptClick); else console.error("Element not found: generateApiPromptButton");
-        if (sendPromptButton) sendPromptButton.addEventListener('click', handleSendPromptClick); else console.error("Element not found: sendPromptButton");
-        if (startNewPromptButton) startNewPromptButton.addEventListener('click', resetForm); else console.error("Element not found: startNewPromptButton");
-        if (downloadResultsButton) downloadResultsButton.addEventListener('click', downloadResultsText); else console.error("Element not found: downloadResultsButton");
-        if (addCustomEndpointBtn) addCustomEndpointBtn.addEventListener('click', addCustomImageEndpointInput); else console.error("Element not found: addCustomEndpointBtn");
-        if (customEndpointsList) customEndpointsList.addEventListener('click', handleRemoveCustomEndpoint); else console.error("Element not found: customEndpointsList");
-        if (collapseToggleButtons.length > 0) collapseToggleButtons.forEach(button => { button.addEventListener('click', () => toggleCollapse(button)); }); else console.warn("No collapse toggle buttons found");
-        if (enableContinuousGenCheckbox) enableContinuousGenCheckbox.addEventListener('change', toggleContinuousOptions); else console.error("Element not found: enableContinuousGenCheckbox");
-        if (stopBatchButton) stopBatchButton.addEventListener('click', handleStopBatch); else console.error("Element not found: stopBatchButton");
-        if (promptFormatRadios.length > 0) promptFormatRadios.forEach(radio => { radio.addEventListener('change', updateSystemPrompt); }); else console.warn("No prompt format radios found");
-        if (pageContainer) pageContainer.addEventListener('click', handleCopyClick); else console.error("Element not found: pageContainer");
-        console.log("Event listeners added.");
-    }
+ // --- Event Listeners Setup (MODIFIED) ---
+ function addEventListeners() {
+    console.log("Adding event listeners...");
+    if (llmEndpointSelect) llmEndpointSelect.addEventListener('change', function() { customLlmEndpointContainer.style.display = (this.value === 'custom_llm') ? 'block' : 'none'; }); else console.error("Element not found: llmEndpointSelect");
+    if (feelLuckyButton) feelLuckyButton.addEventListener('click', handleFeelLucky); else console.error("Element not found: feelLuckyButton");
+    if (generateKeywordsButton) generateKeywordsButton.addEventListener('click', handleGenerateKeywords); else console.error("Element not found: generateKeywordsButton");
+    if (generateApiPromptButton) generateApiPromptButton.addEventListener('click', handleGenerateApiPromptClick); else console.error("Element not found: generateApiPromptButton");
+    if (sendPromptButton) sendPromptButton.addEventListener('click', handleSendPromptClick); else console.error("Element not found: sendPromptButton");
+    if (startNewPromptButton) startNewPromptButton.addEventListener('click', resetForm); else console.error("Element not found: startNewPromptButton");
+    if (downloadResultsButton) downloadResultsButton.addEventListener('click', downloadResultsText); else console.error("Element not found: downloadResultsButton");
+    if (addCustomEndpointBtn) addCustomEndpointBtn.addEventListener('click', addCustomImageEndpointInput); else console.error("Element not found: addCustomEndpointBtn");
+    if (customEndpointsList) customEndpointsList.addEventListener('click', handleRemoveCustomEndpoint); else console.error("Element not found: customEndpointsList");
+    if (collapseToggleButtons.length > 0) collapseToggleButtons.forEach(button => { button.addEventListener('click', () => toggleCollapse(button)); }); else console.warn("No collapse toggle buttons found");
+    if (enableContinuousGenCheckbox) enableContinuousGenCheckbox.addEventListener('change', toggleContinuousOptions); else console.error("Element not found: enableContinuousGenCheckbox");
+    if (stopBatchButton) stopBatchButton.addEventListener('click', handleStopBatch); else console.error("Element not found: stopBatchButton");
+    if (promptFormatRadios.length > 0) promptFormatRadios.forEach(radio => { radio.addEventListener('change', updateSystemPrompt); }); else console.warn("No prompt format radios found");
+    if (pageContainer) pageContainer.addEventListener('click', handleCopyClick); else console.error("Element not found: pageContainer");
+
+    // ** NEW Listeners for API Key Input **
+    if (llmApiKeyInput) {
+        // Save when the user finishes editing (leaves the field)
+        llmApiKeyInput.addEventListener('blur', saveApiKeyToStorage);
+    } else { console.error("Element not found: llmApiKeyInput"); }
+
+    if (clearApiKeyButton) {
+        clearApiKeyButton.addEventListener('click', clearApiKeyFromStorage);
+    } else { console.error("Element not found: clearApiKeyButton"); }
+    // ** END NEW Listeners **
+
+    console.log("Event listeners added.");
+}
 
     // --- Main Handler for Send Prompt / Start Batch Button ---
     async function handleSendPromptClick() {
@@ -727,177 +775,90 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 
-    // --- LLM API Call Function ---
-    async function callLLMForPrompt(keywordPromptForLLM, targetMessageBox) {
+     // --- LLM API Call Function (MODIFIED for Gemini Key Handling) ---
+     async function callLLMForPrompt(keywordPromptForLLM, targetMessageBox) {
         const selectedLlmEndpointValue = llmEndpointSelect.value;
         const modelName = llmModelNameInput.value.trim();
         let systemPrompt = systemPromptTextarea.value;
-        let apiKey = llmApiKeyInput.value.trim(); // Ensure trimmed
+        // ALWAYS read the key from the input field
+        let apiKey = llmApiKeyInput.value.trim(); // This value might have come from localStorage
         let requestBody;
         let requestHeaders = { 'Content-Type': 'application/json' };
-        let endpointUrl = selectedLlmEndpointValue; // Base URL from selection
-        let apiUrl; // Final URL for fetch
+        let endpointUrl = selectedLlmEndpointValue;
+        let apiUrl;
 
         console.log(`Calling LLM. Endpoint Type: ${selectedLlmEndpointValue}, Model: ${modelName || 'Default'}`);
 
          try {
-             // Determine API URL and Request Body based on selected endpoint
              if (endpointUrl.includes('generativelanguage.googleapis.com')) {
                  // --- Gemini ---
-                 if (typeof storedApiKeys !== 'undefined' && storedApiKeys.gemini) {
-                     apiKey = storedApiKeys.gemini; // Use stored key if available
-                     console.log("Using stored Gemini API key.");
-                 } else {
-                     console.warn("Stored Gemini API Key not found in data.js. Using input field value.");
+                 // ** MODIFIED: Always use the key from the input field **
+                 if (!apiKey) {
+                     // Prompt the user or throw error if key is missing for Gemini
+                     throw new Error("Gemini API Key is missing. Please enter it in the LLM Configuration section.");
                  }
-                 if (!apiKey) { throw new Error("Gemini API Key is missing (check input field or data.js)."); }
-
-                 const geminiModel = modelName || "gemini-1.5-flash-latest"; // Default Gemini model
-                 apiUrl = `${endpointUrl}/models/${geminiModel}:generateContent?key=${apiKey}`; // Key in URL for Gemini
-
+                 const geminiModel = modelName || "gemini-1.5-flash-latest";
+                 apiUrl = `${endpointUrl}/models/${geminiModel}:generateContent?key=${apiKey}`; // Key in URL
                  requestBody = {
-                     contents: [
-                         { role: "user", parts: [{ text: keywordPromptForLLM }] }
-                     ],
+                     contents: [ { role: "user", parts: [{ text: keywordPromptForLLM }] } ],
                      ...(systemPrompt && { systemInstruction: { role: "system", parts: [{ text: systemPrompt }] } }),
-                     generationConfig: {
-                         temperature: 0.7,
-                         maxOutputTokens: 800
-                         // topP, topK can be added here if needed
-                     }
+                     generationConfig: { temperature: 0.7, maxOutputTokens: 800 }
                  };
-                 // Gemini doesn't typically use Authorization header when key is in URL
+                 // No Authorization header needed when key is in URL
              } else if (endpointUrl.includes('localhost:1234')) {
-                 // --- LM Studio (OpenAI Format) ---
-                 apiUrl = `${endpointUrl}/chat/completions`; // Assuming v1 path is included in dropdown value
-                 if (!modelName) console.warn("LM Studio might require a model name in the input field.");
+                 // --- LM Studio ---
+                 apiUrl = `${endpointUrl}/chat/completions`;
+                 if (!modelName) console.warn("LM Studio might require a model name...");
                  requestBody = {
-                     model: modelName || "loaded-model", // Provide a default or ensure user sets it
-                     messages: [
-                         ...(systemPrompt ? [{ role: "system", content: systemPrompt }] : []),
-                         { role: "user", content: keywordPromptForLLM }
-                     ],
-                     temperature: 0.7,
-                     max_tokens: 400 // Adjust as needed
-                     // stream: false // Ensure streaming is off
+                     model: modelName || "loaded-model",
+                     messages: [ ...(systemPrompt ? [{ role: "system", content: systemPrompt }] : []), { role: "user", content: keywordPromptForLLM } ],
+                     temperature: 0.7, max_tokens: 400
                  };
-                 if (apiKey) {
-                     requestHeaders['Authorization'] = `Bearer ${apiKey}`;
-                     console.log("Sending API Key from input field to LM Studio endpoint.");
-                 }
+                 // Use apiKey from input if provided for LM Studio
+                 if (apiKey) { requestHeaders['Authorization'] = `Bearer ${apiKey}`; console.log("Sending API Key to LM Studio");}
              } else if (endpointUrl.includes('localhost:11434')) {
-                 // --- Ollama (OpenAI Format) ---
-                 // NOTE: Assumes Ollama is serving OpenAI compatible endpoint at /v1/chat/completions
-                 apiUrl = `${endpointUrl}/chat/completions`; // Assuming v1 path from dropdown
-                 if (!modelName) { throw new Error("Missing Ollama Model Name (set in input field)."); }
-                 requestBody = {
-                     model: modelName,
-                     messages: [
-                         ...(systemPrompt ? [{ role: "system", content: systemPrompt }] : []),
-                         { role: "user", content: keywordPromptForLLM }
-                     ],
-                     stream: false, // Important for single response
-                     options: { // Ollama specific options can go here if needed
-                         temperature: 0.7
-                     }
-                 };
-                  if (apiKey) { // Often not needed for local Ollama, but include if user provides one
-                     requestHeaders['Authorization'] = `Bearer ${apiKey}`;
-                     console.log("Sending API Key (if provided) to Ollama endpoint.");
-                 }
-
+                 // --- Ollama ---
+                 apiUrl = `${endpointUrl}/chat/completions`;
+                  if (!modelName) { throw new Error("Missing Ollama Model Name..."); }
+                  requestBody = {
+                      model: modelName,
+                      messages: [ ...(systemPrompt ? [{ role: "system", content: systemPrompt }] : []), { role: "user", content: keywordPromptForLLM } ],
+                      stream: false, options: { temperature: 0.7 }
+                  };
+                  // Use apiKey from input if provided for Ollama
+                  if (apiKey) { requestHeaders['Authorization'] = `Bearer ${apiKey}`; console.log("Sending API Key to Ollama"); }
              } else {
-                 // --- Custom LLM Endpoint ---
+                 // --- Custom ---
                  if (selectedLlmEndpointValue === 'custom_llm') {
                      endpointUrl = customLlmEndpointInput.value.trim();
                      if (!endpointUrl) throw new Error("Custom LLM Endpoint URL is missing.");
                      apiUrl = endpointUrl;
-                 } else {
-                     // Should not happen if dropdown values are correct, but handle defensively
-                     apiUrl = endpointUrl;
-                 }
-
-                 if (!apiUrl) throw new Error("LLM Endpoint URL is invalid.");
-
-                 // Assume OpenAI compatible format for Custom unless specified otherwise
-                 if (!apiUrl.endsWith('/chat/completions') && !apiUrl.endsWith('/v1/chat/completions')) {
-                     apiUrl = apiUrl.replace(/\/$/, '') + '/v1/chat/completions'; // Append standard path
-                     console.warn(`Assuming OpenAI compatible path for custom LLM: ${apiUrl}`);
-                 }
-
-                 if (!modelName) console.warn("Custom LLM endpoint might require a model name.");
-
-                 requestBody = {
-                     model: modelName || "custom-llm-model", // Provide a default
-                     messages: [
-                         ...(systemPrompt ? [{ role: "system", content: systemPrompt }] : []),
-                         { role: "user", content: keywordPromptForLLM }
-                     ],
-                     temperature: 0.7,
-                     max_tokens: 400,
-                     stream: false
-                 };
-                 if (apiKey) {
-                     requestHeaders['Authorization'] = `Bearer ${apiKey}`;
-                 }
+                 } else { apiUrl = endpointUrl; }
+                  if (!apiUrl) throw new Error("LLM Endpoint URL is invalid.");
+                  if (!apiUrl.endsWith('/chat/completions') && !apiUrl.endsWith('/v1/chat/completions')) { apiUrl = apiUrl.replace(/\/$/, '') + '/v1/chat/completions'; console.warn(`Assuming OpenAI path: ${apiUrl}`); }
+                  if (!modelName) console.warn("Custom LLM might require model name.");
+                  requestBody = {
+                      model: modelName || "custom-llm-model",
+                      messages: [ ...(systemPrompt ? [{ role: "system", content: systemPrompt }] : []), { role: "user", content: keywordPromptForLLM } ],
+                      temperature: 0.7, max_tokens: 400, stream: false
+                  };
+                  // Use apiKey from input if provided for Custom
+                  if (apiKey) { requestHeaders['Authorization'] = `Bearer ${apiKey}`; console.log("Sending API Key to Custom LLM"); }
              }
 
-             console.log(">>> Sending LLM Request to:", apiUrl);
-             console.log(">>> Request Headers:", requestHeaders);
-             console.log(">>> Request Body:", JSON.stringify(requestBody));
-
-             const response = await fetch(apiUrl, {
-                 method: 'POST',
-                 headers: requestHeaders,
-                 body: JSON.stringify(requestBody)
-             });
-
-             console.log("<<< LLM Response Status:", response.status, response.statusText);
-
-             if (!response.ok) {
-                 let errorBodyText = await response.text(); // Try to get error details
-                 console.error("<<< LLM Response Error Body:", errorBodyText);
-                 let errorMessage = `HTTP ${response.status} ${response.statusText}`;
-                 try {
-                     // Attempt to parse as JSON for more specific error messages
-                     const errorJson = JSON.parse(errorBodyText);
-                     errorMessage = errorJson.error?.message || errorJson.message || errorJson.error || JSON.stringify(errorJson);
-                 } catch (_) {
-                     // If not JSON, use the raw text or the HTTP status
-                     errorMessage = errorBodyText || errorMessage;
-                 }
-                  // Limit length of displayed error
-                 if (errorMessage.length > 300) errorMessage = errorMessage.substring(0, 300) + "...";
-                 throw new Error(`LLM API Error: ${errorMessage}`);
-             }
-
-             const responseData = await response.json();
-             console.log("<<< LLM Response Data:", responseData);
-
-             let generatedText = "";
-
-             // Extract text based on expected structure for each API type
-             if (apiUrl.includes('generativelanguage.googleapis.com')) { // Gemini
-                 generatedText = responseData.candidates?.[0]?.content?.parts?.[0]?.text;
-             } else { // OpenAI compatible (LM Studio, Ollama, Custom)
-                 generatedText = responseData.choices?.[0]?.message?.content;
-             }
-
-             if (generatedText === undefined || generatedText === null) {
-                 console.warn("LLM response received, but no text found:", responseData);
-                 throw new Error("LLM response format unexpected or empty text content.");
-             }
-
-             return (generatedText || "").trim(); // Return the trimmed text
+             // ... (rest of fetch call, response handling - same as before) ...
+              console.log(">>> Sending LLM Request to:", apiUrl); console.log(">>> Request Headers:", requestHeaders); console.log(">>> Request Body (preview):", JSON.stringify(requestBody).substring(0, 300) + "...");
+              const response = await fetch(apiUrl, { method: 'POST', headers: requestHeaders, body: JSON.stringify(requestBody) }); console.log("<<< LLM Response Status:", response.status, response.statusText);
+              if (!response.ok) { let errorBodyText = await response.text(); console.error("<<< LLM Response Error Body:", errorBodyText); let errorMessage = `HTTP ${response.status} ${response.statusText}`; try { const errorJson = JSON.parse(errorBodyText); errorMessage = errorJson.error?.message || errorJson.message || errorJson.error || JSON.stringify(errorJson); } catch (_) { errorMessage = errorBodyText || errorMessage; } if (errorMessage.length > 300) errorMessage = errorMessage.substring(0, 300) + "..."; throw new Error(`LLM API Error: ${errorMessage}`); }
+              const responseData = await response.json(); console.log("<<< LLM Response Data:", responseData); let generatedText = ""; if (apiUrl.includes('generativelanguage.googleapis.com')) { generatedText = responseData.candidates?.[0]?.content?.parts?.[0]?.text; } else { generatedText = responseData.choices?.[0]?.message?.content; } if (generatedText === undefined || generatedText === null) { console.warn("LLM response received, but no text found:", responseData); throw new Error("LLM response format unexpected or empty text content."); } return (generatedText || "").trim();
 
          } catch (error) {
-             console.error("LLM Call Error:", error);
-             showMessage(targetMessageBox || mainMessageBox, 'error', `LLM Error: ${error.message}`);
-             return null; // Explicitly return null on error
+            console.error("LLM Call Error:", error);
+            showMessage(targetMessageBox || mainMessageBox, 'error', `LLM Error: ${error.message}`);
+            return null; // Explicitly return null on error
          }
     }
-
-
+ 
     // --- Handle Send Prompt to Image Services (Main Logic) ---
     async function handleSendPromptToImageServices(runIdentifier, promptForRun /* seed param removed */) {
         const isBatchRun = typeof runIdentifier === 'string' && runIdentifier.includes('/'); // Basic check
