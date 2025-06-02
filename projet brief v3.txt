@@ -1,0 +1,234 @@
+Redesign Plan: "Artistic T-Shirt Prompt Generator V2 - Inspired by Apple"
+Overall Design Philosophy:
+	•	Apple-Inspired Aesthetic: Clean, minimalist, spacious, with a strong focus on typography and a clear visual hierarchy. We'll aim for an elegant, modern, and intuitive user experience.
+	•	Logical Flow: Restructure the page to guide the user more naturally through the prompt generation process, from inspiration to configuration and results.
+	•	Themeable Palettes: Introduce 4-5 distinct color palettes to allow for visual customization.
+	•	Symmetrical & Adaptable Layouts: Design sections with symmetry in mind, allowing for potential visual "flipping" or re-justification of content where appropriate (achievable with CSS flexbox/grid order or by conditional classes if we add minimal JS for layout switching).
+	•	Subtle jQuery Enhancements: Incorporate tasteful animations (like fade-ins, enhanced button interactions) and text effects to add polish, avoiding anything overly distracting.
+	•	Constraint Adherence: All new styles will go into an embedded <style> block in the index.html. Any new JavaScript for themes or simple animations will also be embedded. We will not modify your existing script.js, data.js, or styles.css files.
+
+"Page 1": Vision, Core Principles & Technical Approach
+	•	Vision: Transform the generator into a visually stunning and highly usable tool that feels premium and intuitive, drawing inspiration from Apple's design language.
+	•	Core Principles:
+	◦	Focus: Keep the user focused on the task at hand at each step.
+	◦	Clarity: Ensure all options and information are presented unambiguously.
+	◦	Elegance: Achieve a sophisticated look through careful use of space, typography, and color.
+	◦	Responsiveness: While not the primary focus of this specific redesign request, the structural changes should be mindful of adaptability to different screen sizes.
+	•	Technical Approach for Styling & Interactivity (within index.html):
+	◦	Embedded CSS: A <style> block in the <head> will contain:
+	▪	Base style overrides for elements if needed (to counteract existing styles.css in a targeted way for the new design).
+	▪	New styles for redesigned sections and components.
+	▪	CSS Custom Properties (variables) for defining the color palettes.
+	◦	Embedded JavaScript/jQuery:
+	▪	jQuery will be included via a CDN link.
+	▪	A small script for switching color palettes by changing a class on the <body> tag.
+	▪	Small snippets for subtle animations (e.g., on-scroll reveals, button effects).
+	•	Banner Image Guidance:
+	◦	Purpose: Create a strong visual introduction.
+	◦	Dimensions: For a full-width banner at the top, an image around 1920px to 2560px wide is good for desktop. The height can vary:
+	▪	Short/Wide: 1920x400px to 1920x600px (good if you want more content visible "above the fold").
+	▪	Standard Hero (16:9): 1920x1080px (can be scaled down proportionally, vh units can control height).
+	▪	Cinematic (21:9): 2560x1080px (more immersive).
+	◦	Content: Choose an image that is visually appealing, represents creativity or the theme of your tool, and can tolerate text overlays. Abstract designs, artistic textures, or wide landscape/conceptual shots often work well. Ensure it can be cropped or scaled via background-size: cover without losing its essence.
+
+"Page 2": New Overall Page Structure & Theming Mechanism
+	1	New Logical Flow:
+	◦	Hero Section: Full-width banner, title, tagline, primary Call to Action (CTA).
+	◦	"Quick Start / Main Inputs" Section: Prominent "Feeling Lucky," access to detailed keyword selection, and the "Selected Keywords Summary" & "API Generated Prompt" textareas. This centralizes the primary ways to begin.
+	◦	"Configuration Hub" Section: This will house the "LLM Configuration" and "Image Generation Configuration" collapsible subsections, styled more cleanly.
+	◦	"Generation Actions Bar": Clear placement for "Generate API Prompt" and "Send Prompt / Start Batch" buttons, possibly anchored relative to the Configuration Hub or as a distinct action step.
+	◦	"Results" Section: The image grid and its controls.
+	◦	"Advanced Tools / Details" Section:
+	▪	The full "Keyword Selection (Details)" grid, perhaps initially collapsed by default or styled to be less overwhelming if accessed from the "Quick Start" area.
+	▪	"Prompt Guidelines (Reference)."
+	◦	Footer/Video Section: Cleaned up.
+	2	Theming Mechanism (Palettes):
+	◦	CSS Custom Properties: We'll define 4-5 color palettes using CSS custom properties. Each palette will define variables like:
+	▪	--theme-bg-primary
+	▪	--theme-bg-secondary (for cards/panels)
+	▪	--theme-text-primary
+	▪	--theme-text-secondary
+	▪	--theme-accent-primary
+	▪	--theme-accent-secondary
+	▪	--theme-border-color
+	▪	--theme-input-bg
+	▪	--theme-button-bg
+	▪	--theme-button-text
+	◦	HTML Structure for Palette Switcher: Simple <div> with buttons or links in a less prominent area (e.g., footer or a small settings icon). HTML  <div id="palette-switcher" style="position: fixed; bottom: 10px; right: 10px; z-index: 1001; background: rgba(0,0,0,0.7); padding: 5px; border-radius: 5px;">
+	◦	    <button data-theme="apple-dark">Dark</button>
+	◦	    <button data-theme="apple-light">Light</button>
+	◦	    <button data-theme="creative-blue">Blue</button>
+	◦	    <button data-theme="vibrant-purple">Purple</button>
+	◦	    </div>
+	◦	   
+	◦	Embedded JavaScript for Theme Switching: JavaScript  // (To be placed in a <script> tag at the end of <body>, requires jQuery if using its syntax)
+	◦	$(document).ready(function() {
+	◦	    $('#palette-switcher button').on('click', function() {
+	◦	        var theme = $(this).data('theme');
+	◦	        $('body').removeClass (function (index, className) {
+	◦	            return (className.match (/(^|\s)theme-\S+/g) || []).join(' ');
+	◦	        }).addClass('theme-' + theme);
+	◦	        console.log('Theme changed to: ' + theme);
+	◦	    });
+	◦	    // Set a default theme on load if none is set
+	◦	    if (!$('body').attr('class') || !$('body').attr('class').includes('theme-')) {
+	◦	         $('body').addClass('theme-apple-dark'); // Default theme
+	◦	    }
+	◦	});
+	◦	   
+	◦	Embedded CSS for Palettes: CSS  /* In the <style> block in <head> */
+	◦	body { /* Default variables (can be one of the themes) */
+	◦	    --theme-bg-primary: #121212; /* Default to your current dark */
+	◦	    --theme-bg-secondary: #1e1e1e;
+	◦	    --theme-text-primary: #e0e0e0;
+	◦	    /* ... other vars ... */
+	◦	    background-color: var(--theme-bg-primary);
+	◦	    color: var(--theme-text-primary);
+	◦	}
+	◦	body.theme-apple-dark { /* Example */
+	◦	    --theme-bg-primary: #000000;
+	◦	    --theme-bg-secondary: #1d1d1f;
+	◦	    --theme-text-primary: #f5f5f7;
+	◦	    --theme-text-secondary: #a1a1a6;
+	◦	    --theme-accent-primary: #007aff; /* Apple Blue */
+	◦	    --theme-border-color: #3a3a3c;
+	◦	    --theme-input-bg: #1d1d1f;
+	◦	}
+	◦	body.theme-apple-light { /* Example */
+	◦	    --theme-bg-primary: #f5f5f7;
+	◦	    --theme-bg-secondary: #ffffff;
+	◦	    --theme-text-primary: #1d1d1f;
+	◦	    --theme-text-secondary: #6e6e73;
+	◦	    --theme-accent-primary: #007aff;
+	◦	    --theme-border-color: #d2d2d7;
+	◦	    --theme-input-bg: #ffffff;
+	◦	}
+	◦	/* Define 2-3 more palettes (e.g., theme-creative-blue, theme-vibrant-purple) */
+	◦	
+	◦	/* Apply theme variables to elements */
+	◦	.container { background-color: var(--theme-bg-secondary); border-color: var(--theme-border-color); }
+	◦	h1, h2, h3, p, label { color: var(--theme-text-primary); }
+	◦	/* ... and so on for all relevant elements ... */
+	◦	   
+
+"Page 3": Hero Section - Detailed Plan
+	•	HTML: As outlined in "Page 2".
+	•	Embedded CSS:
+	◦	.hero-section: min-height: 60vh; (or fixed pixel height), display: flex; align-items: center; justify-content: center; text-align: center; position: relative; overflow: hidden;
+	◦	.hero-image-container: position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; z-index: 1; (Maybe a subtle dark overlay: &::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); z-index: 2; })
+	◦	.hero-content: position: relative; z-index: 3; color: #fff; padding: 2rem;
+	◦	.hero-content h1: Large font size (e.g., 3rem to 4.5rem), bold weight.
+	◦	.hero-content .tagline: Slightly smaller, lighter weight, good spacing below H1.
+	◦	.hero-cta-button: Larger padding, possibly solid background using --theme-accent-primary, white text, subtle hover/active states. No more gradient for this primary CTA.
+	•	jQuery Animation:
+	◦	Text elements (h1, .tagline) fade/slide in on load.
+	◦	Button can have a subtle pulse or scale effect.
+	◦	Button click scrolls smoothly to #core-interaction-zone.
+
+"Page 4": Core Interaction Zone - Detailed Plan
+	•	HTML Structure: HTML  <section id="core-interaction-zone" class="redesigned-section-box">
+	•	    <h2>Create Your Masterpiece</h2>
+	•	    <div class="keyword-input-actions">
+	•	        </div>
+	•	    <div class="prompt-display-area">
+	•	        <div class="prompt-output-column">
+	•	            </div>
+	•	        <div class="prompt-output-column">
+	•	            </div>
+	•	    </div>
+	•	</section>
+	•	   
+	•	Embedded CSS:
+	◦	.redesigned-section-box: Generous padding, clean background (var(--theme-bg-secondary)).
+	◦	.keyword-input-actions: display: flex; justify-content: center; align-items: center; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;
+	◦	Buttons styled cleanly (solid colors or subtle gradients based on theme accent).
+	◦	.prompt-display-area: display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; (on wider screens, stack to 1fr on smaller).
+	◦	.prompt-output-column textarea: Refined borders, padding, background (var(--theme-input-bg)).
+	•	jQuery Animation: Fade in this section on scroll. Subtle hover effects on buttons.
+
+"Page 5": Configuration Panel - Overall Structure & Styling
+	•	HTML: Keep existing overall structure: <div class="config-action-area section-box"> containing multiple <div class="config-subsection collapsible">.
+	•	Embedded CSS for "Apple-like" Collapsibles:
+	◦	.config-action-area.section-box: Give it a distinct, clean background (var(--theme-bg-primary) or slightly different from main content background).
+	◦	.config-subsection.collapsible: Style as clean "cards" or panels. Remove bottom borders if they look too busy; use spacing or subtle background differences instead. background-color: var(--theme-bg-secondary); padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.1); (adjust shadow for dark/light themes).
+	◦	.collapse-toggle-button: Larger click area, cleaner typography for <h3>. Icon (.collapse-icon) could be styled like Apple's chevrons. Remove default button styling. padding: 1rem 0; font-size: 1.2rem; font-weight: 600; border-bottom: 1px solid var(--theme-border-color); (border only if content is hidden, removed when open).
+	◦	.collapsible-content: Clean padding, no extra borders if subsections are card-like.
+	•	Layout Flipping: If a section here had, say, a descriptive image on one side and controls on the other (not currently the case), we could add a class like .layout-flipped to the parent and use flexbox order or flex-direction: row-reverse to flip. For the current content, this is less applicable.
+	•	jQuery Animation: Sections fade in on scroll.
+
+"Page 6 & 7": LLM & Image Generation Configuration - Detailed Styling
+	•	HTML: The existing structure within these sections, including the new ComfyUI parameter inputs, is generally fine.
+	•	Embedded CSS for Form Elements:
+	◦	label: Clear, legible (color: var(--theme-text-secondary); margin-bottom: 0.5rem;).
+	◦	select, input[type="text"], input[type="password"], input[type="number"], textarea:
+	▪	Consistent height, padding (e.g., padding: 0.75rem 1rem;).
+	▪	background-color: var(--theme-input-bg); (this might be darker or lighter than card bg).
+	▪	border: 1px solid var(--theme-border-color);
+	▪	border-radius: 8px; (Apple uses rounded inputs).
+	▪	color: var(--theme-text-primary);
+	▪	Focus state: Subtle glow or border color change (border-color: var(--theme-accent-primary); box-shadow: 0 0 0 3px var(--theme-accent-primary-transparent);).
+	◦	fieldset legend: Clean typography.
+	◦	Radio buttons/Checkboxes: If possible, style to be larger and more modern using appearance overrides or custom SVGs (can be complex with CSS only, but simple color changes via accent-color are easy).
+	◦	Action Buttons within these sections (#generateApiPromptButton, #sendPromptButton): Prominently styled, potentially using --theme-accent-primary as a solid background. Centered or right-aligned at the bottom of their respective configuration "card."
+	•	Conditional UI (comfySpecificParamsContainer): Ensure smooth visual integration when shown by JS. CSS transitions on max-height and opacity can be added for smoother appearance/disappearance if display: none is changed to a visibility/height-based toggle by JS (more complex JS change, so stick to display toggle for now if JS is to remain untouched).
+
+"Page 8": Results Display Section - Detailed Plan
+	•	HTML: No major changes to the existing structure.
+	•	Embedded CSS:
+	◦	#image-results-grid: width: 100%; background-color: transparent; (or a very subtle different shade from its parent section). The repeat(auto-fit, minmax(180px, 1fr)) is good. If it's still "centered and small," ensure its parent section (#results-container) is truly full-width and not flex-centering a non-full-width grid.
+	◦	.image-result-item:
+	▪	background-color: var(--theme-bg-secondary);
+	▪	border-radius: 12px;
+	▪	Subtle box-shadow (e.g., 0 2px 8px rgba(0,0,0,0.1); adaptable for themes).
+	▪	padding: 1rem;
+	▪	img: border-radius: 8px;
+	▪	Text (h4, .status-message): Clear typography.
+	•	jQuery Animation: Staggered fade-in for result items as they are added by script.js. This requires JS to add a class triggering the animation when items are appended. If script.js cannot be touched, then simple hover effects on items.
+
+"Page 9": Advanced Keyword Palette & Prompt Guidelines - Detailed Plan
+	•	Advanced Keyword Palette (#keyword-details-area):
+	◦	Initial State: Make this section collapsed by default (aria-expanded="false" in HTML, content.hidden = true).
+	◦	Toggle Button: Style clearly as "Advanced Keyword Palette" or "Customize Keywords."
+	◦	#keyword-details-content: The grid-template-columns: repeat(3, 1fr); is good.
+	◦	.dropdown-container: Style these as cleaner input groups or small panels.
+	▪	background-color: var(--theme-input-bg); (or a slightly different shade).
+	▪	border: 1px solid var(--theme-border-color);
+	▪	border-radius: 8px;
+	▪	padding: 1rem;
+	◦	.dropdown-label: Clean typography.
+	•	Prompt Guidelines Table:
+	◦	Style table.prompt-info-table with cleaner lines, better spacing, and font treatment.
+	◦	Remove default browser table borders and apply subtle ones using var(--theme-border-color).
+	◦	Header (thead th): Distinct background (var(--theme-bg-secondary) or a subtle gray), bold text.
+	◦	Alternating row colors (tbody tr:nth-child(even)) for readability if desired.
+
+"Page 10": Final Touches - jQuery Animations, Horizontal Scroll, Word Morphs
+	•	jQuery Animations Summary:
+	◦	Hero: Text fade/slide-in.
+	◦	Sections: Fade-in on scroll (can be done by adding/removing a class via JS when elements enter viewport - requires a small scroll-watching snippet).
+	◦	Buttons: Enhanced hover/active states (e.g., slight scale, brightness).
+	◦	Smooth Scroll: For #scrollToMainButton and any other internal page anchors. JavaScript  // Example jQuery for smooth scroll
+	◦	$('a[href*="#"]').not('[href="#"]').not('[href="#0"]').click(function(event) {
+	◦	    if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
+	◦	        var target = $(this.hash);
+	◦	        target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+	◦	        if (target.length) {
+	◦	            event.preventDefault();
+	◦	            $('html, body').animate({ scrollTop: target.offset().top }, 800); // 800ms scroll duration
+	◦	        }
+	◦	    }
+	◦	});
+	◦	   
+	•	Word Morphs:
+	◦	True word morphing is complex. For simplicity and an "Apple-like" feel, I'd recommend against it or opt for very simple text reveal effects (e.g., letters appearing one by one or fading in sequentially) on key headlines if desired. This can be done with jQuery by manipulating text and opacity with delays.
+	◦	If a more complex effect is essential, a dedicated lightweight JS library might be needed, which pushes the "only index.html change" boundary. I'll propose simple reveals first.
+	•	Horizontal Scrolling / Left-Right Scrolling:
+	◦	Avoid if possible for main content flow as it can be disorienting. Vertical scrolling is standard.
+	◦	If "scrolling u down and left right" refers to responsive design where content reflows, that's covered.
+	◦	If it means specific horizontal scrolling sections (like an image carousel or a wide data table), we'd need a clear use case. For this app, it's probably not essential unless you want to showcase example t-shirt designs in a horizontally scrolling gallery. For now, I'll assume this isn't a primary layout feature.
+	•	Final Code Strategy:
+	◦	One large <style> block in the <head> of index.html.
+	◦	One <script> tag for jQuery CDN at the end of <body>.
+	◦	One <script> block for custom jQuery animations and the theme switcher logic, also at the end of <body>.
+
+This plan provides a detailed roadmap. Once you approve or suggest modifications, I can proceed to generate the actual index.html code with the embedded styles and script snippets for the theme switcher and basic animations. The jQuery animations will be simple and aim to enhance, not distract.

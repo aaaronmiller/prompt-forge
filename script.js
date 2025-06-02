@@ -2,23 +2,71 @@
 
 // --- System Prompt Templates ---
 const systemPromptTemplates = {
-     'Stable Diffusion 1.x': `ou are an expert prompt engineer for Stable Diffusion 1.x models. Your task is to create concise, keyword-driven prompts optimized for the 75-token limit and the bag-of-words nature of SD1.x. Construct prompts as a single, flowing line of comma-separated keywords and impactful short phrases, always placing the most important subject and action at the start, followed by environment, style, and any additional details. Use parentheses for emphasis, such as (masterpiece:1.2), and include artist or style references where relevant. Avoid repetition, contradictions, and verbose language; keep the prompt under 75 tokens, and only include negative prompts for elements you want to exclude. Omit any section if information is missing. Output only the prompt string, with no explanations, reasoning, or extra text.
-
-<start> portrait of a young woman, freckles, red hair, green eyes, soft lighting, studio background, (masterpiece:1.2), (detailed skin:1.3), by Greg Rutkowski, trending on ArtStation <stop><start> cyberpunk city at night, neon lights, rain, reflections, flying cars, crowded streets, (cinematic:1.2), (high detail:1.3), by Syd Mead <stop><start> fantasy forest, ancient trees, glowing mushrooms, mist, magical atmosphere, (ethereal:1.2), (vivid colors:1.3), illustration, by Ivan Shishkin <stop>
-Output only the prompt string, with no explanations, reasoning, or extra text.`,
-    'SDXL/SD3': `You are an expert prompt engineer for SDXL and SD3 models. Your task is to create highly effective, detailed prompts that maximize the 75-token chunk limit, always frontloading the most important information. Write prompts as a single, coherent line of text using clear, natural language or comma-separated keywords and phrases. Begin with the subject and their action or pose, followed by the environment or setting, then lighting and mood, and finally style, artistic details, and any unique features. Add specific details such as textures, colors, camera angle, artistic style, or artist references as appropriate. Use parentheses for keyword weighting, such as (keyword:1.2), with weights between 1.1 and 1.4 recommended. Avoid repetition, contradictions, and overly long prompts; keep each chunk under 75 tokens, and only include negative prompts for elements you want to exclude. Omit any section if information is missing. Output only the prompt string, with no explanations, reasoning, or extra text.
-
-<start> elegant woman in a flowing red dress, dancing on a rooftop at sunset, city skyline in the background, (cinematic lighting:1.3), (vivid colors:1.2), sharp focus, by Annie Leibovitz, dramatic mood <stop> <start> futuristic samurai, neon-lit alley, rain-soaked pavement, glowing katana, (cyberpunk style:1.3), (high detail:1.2), low-angle shot, intense atmosphere <stop> <start> majestic white wolf, snowy forest, moonlight filtering through trees, (ethereal glow:1.2), (hyper-detailed fur:1.3), digital painting, mystical mood <stop>
-Output only the prompt string, with no explanations, reasoning, or extra text.`,
-    'FLUX': `You are an expert prompt engineer for Flux and Flux-style models. Your task is to transform user input into a highly effective, concise, and detailed prompt using best practices from top SDXL and Flux prompting guides. Construct prompts as a single, flowing line of text, using clear, natural language or comma-separated keywords and phrases. Always prioritize the most important visual elements at the start of the prompt, beginning with the subject and their action or pose, followed by the environment or setting, then lighting and mood, and finally style, artistic details, and any unique features. Add specific details such as textures, colors, camera angle, artistic style, or artist references as appropriate. Use parentheses for keyword weighting, such as (keyword:1.2), with weights between 1.1 and 1.4 recommended for Flux models. Avoid repetition, contradictions, and overly long prompts; aim for 75 tokens or less, and ensure the prompt is vivid, coherent, and free of logical loops. Only include negative prompts for elements you want to exclude, and omit any section if information is missing. Output only the prompt string, with no explanations, reasoning, or extra text.
-
-<start> photo of a rhino dressed in a suit and tie, sitting at a table in a bar with bar stools, award-winning photography, (Elke Vogelsang:1.2), cinematic lighting, sharp focus, (detailed textures:1.3), vibrant colors <stop> <start> a giant monster hybrid of dragon and spider, in a dark dense foggy forest, (atmospheric mist:1.2), dramatic lighting, (hyper-detailed scales:1.3), ominous mood <stop> <start> retro robot, vintage workshop, sunbeams through dusty windows, (steampunk gears:1.2), (rust textures:1.2), isometric vector art, Pantone color palette, warm atmosphere <stop>`
+    auto: `You are an expert prompt engineer specializing in image generation for t-shirt designs.
+Use the user's selected keywords as strong inspiration to create a concise, vivid, and highly creative prompt suitable for a diffusion model like Flux or Stable Diffusion.
+Focus on generating unique, artistic, and visually striking concepts. Combine elements in unexpected ways.
+The final output should be ONLY the generated image prompt itself, without any conversational text, preamble, or explanation.
+Ensure the prompt implies a style suitable for a t-shirt graphic (e.g., vector art, graphic illustration, stylized realism, abstract).
+Add 2-3 related but unique elements not explicitly selected by the user to enhance creativity.
+Keep the final prompt under 350 words.`,
+    keywords: `You are an expert prompt engineer generating prompts optimized for models like Stable Diffusion 1.5/2.x which prefer concise, keyword-driven input.
+Analyze the user's selected keywords/concepts below.
+Generate a prompt consisting primarily of comma-separated keywords and short, impactful phrases. Use parentheses for emphasis if needed, e.g., (masterpiece:1.2).
+Prioritize the most important visual elements (subject, action, key style).
+Include relevant artistic style keywords (e.g., vector art, illustration, graphic design, synthwave, cinematic lighting, detailed background) appropriate for a t-shirt.
+Add 1-2 related creative elements beyond the user's selection.
+Output ONLY the comma-separated prompt string, without description or preamble. Ensure the output is a single line.
+Keywords: [USER_KEYWORDS_HERE]`, // Placeholder for keywords if needed, but often better to let LLM read from context
+    structured: `You are an expert prompt engineer generating highly detailed and structured prompts suitable for models like SDXL or Flux.
+Analyze the user's selected keywords and concepts below.
+Create a vivid and imaginative prompt using a combination of descriptive phrases and specific keywords, focusing on clear subject, action, environment, and artistic style.
+Structure the prompt logically (e.g., subject, action, setting, style, modifiers).
+Emphasize visual details (e.g., "intricate linework", "glowing neon signs reflect on wet surfaces"), composition ("dynamic angle", "rule of thirds"), lighting ("volumetric lighting", "chiaroscuro"), and artistic style ("Art Nouveau illustration", "cyberpunk concept art") suitable for a striking t-shirt graphic.
+Incorporate 2-3 related creative elements to enhance uniqueness.
+The final output should be ONLY the generated image prompt itself, without any conversational text, preamble, or explanation. Keep it under 400 words.
+Keywords: [USER_KEYWORDS_HERE]`,
+    sentences: `You are an expert prompt engineer crafting descriptive, sentence-based prompts suitable for models like DALL-E 3.
+Based on the user's selected keywords below, write a short paragraph (2-4 rich, descriptive sentences) outlining a unique and artistic scene for a t-shirt design.
+Focus on clear subject matter, action, setting, and mood. Integrate artistic style descriptions naturally within the sentences (e.g., "rendered in the style of detailed vector art with clean lines", "a painterly scene reminiscent of impressionism").
+Add 2-3 creative, related details not explicitly mentioned by the user.
+The final output must be ONLY the descriptive paragraph prompt, without any extra text, title, or introduction.
+Keywords: [USER_KEYWORDS_HERE]`
 };
 
+// In script.js
+const comfyWorkflowSpecifics = {
+    "GGUF_COMFY_WORKFLOW": {
+        type: "gguf_unet",
+        promptNodeId: "6", promptInputName: "text",
+        negativePromptNodeId: "46", negativePromptInputName: "text",
+        seedNodeId: "31", seedInputName: "seed",
+        modelNodeId: "40", modelInputName: "unet_name",
+        sizeNodeId: "27", widthInputName: "width", heightInputName: "height",
+        stepsNodeId: "31", stepsInputName: "steps",
+        defaultWidth: 832, defaultHeight: 1216, defaultSteps: 4, defaultNegativePrompt: "low quality, text, watermark, blurry"
+    },
+    "MFLUX_WORKFLOW": {
+        type: "mflux", // Model changing for MFlux via simple dropdown is not covered here
+        promptNodeId: "2", promptInputName: "prompt",
+        // Negative prompt for MFLUX might be an empty string in the main prompt or a dedicated input if the node supports it
+        seedNodeId: "2", seedInputName: "seed",
+        sizeNodeId: "2", widthInputName: "width", heightInputName: "height",
+        stepsNodeId: "2", stepsInputName: "steps",
+        defaultWidth: 512, defaultHeight: 768, defaultSteps: 4, defaultNegativePrompt: "" // MFlux might not use a separate negative prompt node
+    },
+    "CHECKPOINT_WORKFLOW": {
+        type: "checkpoint",
+        promptNodeId: "6", promptInputName: "text",
+        negativePromptNodeId: "7", negativePromptInputName: "text",
+        seedNodeId: "3", seedInputName: "seed",
+        modelNodeId: "4", modelInputName: "ckpt_name",
+        sizeNodeId: "5", widthInputName: "width", heightInputName: "height",
+        stepsNodeId: "3", stepsInputName: "steps",
+        defaultWidth: 512, defaultHeight: 512, defaultSteps: 20, defaultNegativePrompt: "text, watermark, ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, extra limbs, disfigured, deformed, body out of frame, bad anatomy, watermark, signature, cut off, low contrast, underexposed, overexposed, bad art, beginner, amateur, distorted face"
+    }
+};
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("DOM fully loaded and parsed");
-
     // --- DOM Element References ---
     const pageContainer = document.getElementById('container');
     const feelLuckyButton = document.getElementById('feelLuckyButton');
@@ -40,14 +88,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const customLlmEndpointContainer = document.getElementById('customLlmEndpointContainer');
     const customLlmEndpointInput = document.getElementById('customLlmEndpoint');
     const llmApiKeyInput = document.getElementById('llmApiKey');
-    // ** NEW ** Reference for Clear API Key button
-    const clearApiKeyButton = document.getElementById('clearApiKeyButton');
     const llmModelNameInput = document.getElementById('llmModelName');
     const imageEndpointsContainer = document.getElementById('image-endpoints');
     const addCustomEndpointBtn = document.getElementById('add-custom-endpoint-btn');
     const customEndpointsList = document.getElementById('custom-endpoints-list');
     const comfyWorkflowSelect = document.getElementById('comfyWorkflowSelect');
-    const comfyuiLanAddressInput = document.getElementById('comfyuiLanAddress');
     const configActionArea = document.querySelector('.config-action-area');
     const resultsContainer = document.getElementById('results-container');
     const keywordDetailsArea = document.getElementById('keyword-details-area');
@@ -62,88 +107,198 @@ document.addEventListener('DOMContentLoaded', function() {
     const systemPromptTextarea = document.getElementById('systemPrompt');
     const promptFormatRadios = document.querySelectorAll('input[name="promptFormat"]');
     const collapseToggleButtons = document.querySelectorAll('.collapse-toggle-button');
+    const ggufModelSelectorContainer = document.getElementById('ggufModelSelectorContainer');
+    const ggufModelSelect = document.getElementById('ggufModelSelect');
+    const checkpointModelSelectorContainer = document.getElementById('checkpointModelSelectorContainer');
+    const checkpointModelSelect = document.getElementById('checkpointModelSelect');
+    const comfySpecificParamsContainer = document.getElementById('comfySpecificParamsContainer'); // Parent container
+    const comfyImageWidth = document.getElementById('comfyImageWidth');
+    const comfyImageHeight = document.getElementById('comfyImageHeight');
+    const comfySteps = document.getElementById('comfySteps');
+    const comfyNegativePrompt = document.getElementById('comfyNegativePrompt');
+
 
     // --- Global State ---
     let currentSelectedImageEndpoints = [];
     const comfyPollingStates = {};
     let isContinuousModeActive = false;
     let continuousRunsRemaining = 0;
-    let currentContinuousMode = 'keep_keywords_new_api';
+    let currentContinuousMode = 'keep_keywords_new_api'; // Default simplified mode
     let stopBatchFlag = false;
-    const apiKeyStorageKey = 'promptForgeLlmApiKey'; // Key for localStorage
+
 
     // --- Initialization ---
-    console.log("Starting initialization...");
-    try {
-        if (typeof dropdownData === 'undefined') { console.error("ERR: dropdownData missing."); showMessage(mainMessageBox, 'error', 'Failed to load keyword data.'); }
-        else { populateDropdowns(); console.log("Dropdowns populated."); }
-        if (typeof comfyWorkflows === 'undefined') { console.error("ERR: comfyWorkflows missing."); showMessage(configMessageBox, 'error', 'Failed to load ComfyUI workflows.'); }
-        else { populateWorkflowSelect(); console.log("Workflow select populated."); }
-        if (typeof systemPromptTemplates !== 'undefined') { updateSystemPrompt(); }
-        else { console.error("ERR: systemPromptTemplates missing."); systemPromptTextarea.value = "Error loading system prompt templates."; }
-
-        // ** NEW ** Load API key from storage on startup
-        loadApiKeyFromStorage();
-
-        addEventListeners(); // Add listeners AFTER functions are defined below
-        initializeCollapsibleSections();
-        console.log("Initialization complete.");
-    } catch (initError) {
-        console.error("Initialization Error:", initError);
-        showMessage(mainMessageBox, 'error', `Initialization failed: ${initError.message}`);
+if (typeof dropdownData === 'undefined') {
+        console.error("ERR: dropdownData missing.");
+        showMessage(mainMessageBox, 'error', 'Failed to load keyword data.');
+    } else {
+        populateDropdowns();
     }
 
-    // --- Function Definitions ---
+    if (typeof comfyWorkflows === 'undefined') { // This check is for comfyWorkflows from data.js
+        console.error("ERR: comfyWorkflows missing.");
+        showMessage(configMessageBox, 'error', 'Failed to load ComfyUI workflows.');
+    } else {
+        console.log("INIT: About to call populateWorkflowSelect().");
+        populateWorkflowSelect(); // Populates workflow dropdown & sets a default
+        console.log("INIT: populateWorkflowSelect() finished. Current comfyWorkflowSelect.value:", comfyWorkflowSelect ? comfyWorkflowSelect.value : 'comfyWorkflowSelect is null');
 
-    // ** NEW ** Functions for API Key Storage
-    function saveApiKeyToStorage() {
-        if (!llmApiKeyInput) return;
-        const key = llmApiKeyInput.value.trim();
-        if (key) {
-            try {
-                localStorage.setItem(apiKeyStorageKey, key);
-                console.log("API Key saved to localStorage.");
-                // Optional: Show temporary confirmation? Might be annoying on every change.
-                // showMessage(configMessageBox, 'success', 'API Key saved locally.');
-            } catch (e) {
-                console.error("Error saving API Key to localStorage:", e);
-                showMessage(configMessageBox, 'error', 'Could not save API Key locally (storage might be full or disabled).');
-            }
+        // >>> ADD THIS CRITICAL INITIAL CALL for UI visibility <<<
+        console.log("INIT: Attempting THE CRUCIAL initial call to handleWorkflowSelectionChange().");
+        if (typeof handleWorkflowSelectionChange === "function") {
+            handleWorkflowSelectionChange();
         } else {
-            // If the user clears the input, also remove it from storage
-            clearApiKeyFromStorage();
+            console.error("INIT: handleWorkflowSelectionChange function is not defined yet!");
         }
+        console.log("INIT: Initial call to handleWorkflowSelectionChange() process has been initiated/completed.");
     }
 
-    function loadApiKeyFromStorage() {
-        if (!llmApiKeyInput) return;
-        try {
-            const savedKey = localStorage.getItem(apiKeyStorageKey);
-            if (savedKey) {
-                llmApiKeyInput.value = savedKey;
-                console.log("API Key loaded from localStorage.");
+    // Ensure model file lists are loaded (typically from data.js, making them global)
+    if (typeof ggufModelFiles === 'undefined') {
+        console.warn("WARN: ggufModelFiles is not defined. GGUF model selector may not populate.");
+    }
+    if (typeof checkpointModelFiles === 'undefined') {
+        console.warn("WARN: checkpointModelFiles is not defined. Checkpoint model selector may not populate.");
+    }
+
+    if (typeof systemPromptTemplates !== 'undefined') {
+        updateSystemPrompt(); // Set initial system prompt
+    } else {
+        console.error("ERR: systemPromptTemplates missing.");
+        systemPromptTextarea.value = "Error loading system prompt templates.";
+    }
+    addEventListeners();
+    initializeCollapsibleSections();
+
+function populateModelSelect(selectElement, modelList, defaultModelName) {
+    selectElement.innerHTML = ''; // Clear existing options
+    modelList.forEach(modelName => {
+        const option = document.createElement('option');
+        option.value = modelName;
+        option.textContent = modelName.replace(/\.safetensors|\.gguf/gi, ''); // Clean up name for display
+        selectElement.appendChild(option);
+    });
+    if (defaultModelName) {
+        selectElement.value = defaultModelName;
+    }
+}
+function handleWorkflowSelectionChange() {
+    console.log("--- handleWorkflowSelectionChange called (V_DEBUG_BORDER) ---");
+
+    if (!comfyWorkflowSelect) {
+        console.error("[WorkflowChange] ABORT: comfyWorkflowSelect element not found!");
+        return;
+    }
+    const selectedKey = comfyWorkflowSelect.value;
+    console.log("[WorkflowChange] Selected workflow key from dropdown:", `"${selectedKey}"`);
+
+    if (!comfyWorkflowSpecifics) {
+        console.error("[WorkflowChange] ABORT: comfyWorkflowSpecifics object not found!");
+        return;
+    }
+    const specifics = comfyWorkflowSpecifics[selectedKey];
+    console.log("[WorkflowChange] Specifics found for this key:", specifics);
+
+    if (!ggufModelSelectorContainer || !checkpointModelSelectorContainer || !comfySpecificParamsContainer || !comfyImageParamsContainer || !comfyNegativePrompt || !comfyImageWidth || !comfyImageHeight || !comfySteps) {
+        console.error("[WorkflowChange] ABORT: One or more required parameter container/input DOM elements are missing!");
+        return;
+    }
+
+    // Helper to apply debug styles
+    const applyDebugStyles = (element, displayType = 'flex') => {
+        if (element) {
+            element.style.display = displayType;
+            element.style.border = "2px solid red"; // TEMPORARY DEBUG BORDER
+            element.style.minHeight = "30px";      // TEMPORARY DEBUG MIN-HEIGHT
+            console.log(`[WorkflowChange_DEBUG] Applied display: ${displayType}, border, minHeight to ${element.id}`);
+        }
+    };
+    const hideElement = (element) => {
+        if (element) {
+            element.style.display = 'none';
+            element.style.border = ""; // Clear debug border
+            element.style.minHeight = ""; // Clear debug min-height
+        }
+    };
+
+    // Hide all specific param containers by default before evaluating specifics
+    hideElement(ggufModelSelectorContainer);
+    hideElement(checkpointModelSelectorContainer);
+    hideElement(comfySpecificParamsContainer);
+    const negPromptInputContainer = comfyNegativePrompt.parentElement;
+    if (negPromptInputContainer) hideElement(negPromptInputContainer);
+
+
+    if (specifics) {
+        console.log("[WorkflowChange] Valid 'specifics' object found. Attempting to make comfySpecificParamsContainer visible.");
+        applyDebugStyles(comfySpecificParamsContainer, 'flex');
+
+        if (specifics.type === "gguf_unet") {
+            console.log("[WorkflowChange] Workflow type is 'gguf_unet'. Attempting to show GGUF model selector.");
+            applyDebugStyles(ggufModelSelectorContainer, 'flex');
+            if (typeof ggufModelFiles !== 'undefined' && typeof populateModelSelect === 'function') {
+                let defaultGgufModel = (ggufModelFiles.length > 0 ? ggufModelFiles[0] : null);
+                if (specifics.defaultModel) {
+                    defaultGgufModel = specifics.defaultModel;
+                } else if (specifics.modelInputName && comfyWorkflows && comfyWorkflows[selectedKey]) {
+                    const regex = new RegExp(`"${specifics.modelInputName}":\\s*"([^"]+)"`);
+                    const match = comfyWorkflows[selectedKey].match(regex);
+                    if (match && match[1] && match[1] !== "[MODEL_NAME_PLACEHOLDER]") {
+                        defaultGgufModel = match[1];
+                    }
+                }
+                populateModelSelect(ggufModelSelect, ggufModelFiles, defaultGgufModel);
+                console.log("[WorkflowChange] GGUF Model selector populated. Attempted default:", defaultGgufModel);
             } else {
-                console.log("No API Key found in localStorage.");
+                console.warn("[WorkflowChange] ggufModelFiles array or populateModelSelect function is missing/undefined for GGUF type.");
             }
-        } catch (e) {
-            console.error("Error loading API Key from localStorage:", e);
-            // Don't necessarily show an error to the user, maybe storage is just unavailable
+        } else if (specifics.type === "checkpoint") {
+            console.log("[WorkflowChange] Workflow type is 'checkpoint'. Attempting to show Checkpoint model selector.");
+            applyDebugStyles(checkpointModelSelectorContainer, 'flex');
+            if (typeof checkpointModelFiles !== 'undefined' && typeof populateModelSelect === 'function') {
+                let defaultCheckpointModel = (checkpointModelFiles.length > 0 ? checkpointModelFiles[0] : null);
+                if (specifics.defaultModel) {
+                    defaultCheckpointModel = specifics.defaultModel;
+                } else if (specifics.modelInputName && comfyWorkflows && comfyWorkflows[selectedKey]) {
+                    const regex = new RegExp(`"${specifics.modelInputName}":\\s*"([^"]+)"`);
+                    const match = comfyWorkflows[selectedKey].match(regex);
+                    if (match && match[1] && match[1] !== "[MODEL_NAME_PLACEHOLDER]") {
+                        defaultCheckpointModel = match[1];
+                    }
+                }
+                populateModelSelect(checkpointModelSelect, checkpointModelFiles, defaultCheckpointModel);
+                console.log("[WorkflowChange] Checkpoint Model selector populated. Attempted default:", defaultCheckpointModel);
+            } else {
+                console.warn("[WorkflowChange] checkpointModelFiles array or populateModelSelect function is missing/undefined for Checkpoint type.");
+            }
         }
-    }
 
-    function clearApiKeyFromStorage() {
-        if (!llmApiKeyInput) return;
-        try {
-            localStorage.removeItem(apiKeyStorageKey);
-            llmApiKeyInput.value = ''; // Clear the input field
-            console.log("API Key cleared from localStorage and input field.");
-            showMessage(configMessageBox, 'success', 'Saved API Key cleared.');
-        } catch (e) {
-            console.error("Error clearing API Key from localStorage:", e);
-            showMessage(configMessageBox, 'error', 'Could not clear saved API Key.');
+        console.log("[WorkflowChange] Setting default values for Width, Height, Steps, Negative Prompt.");
+        comfyImageWidth.value = specifics.defaultWidth || 512;
+        comfyImageHeight.value = specifics.defaultHeight || 512;
+        comfySteps.value = specifics.defaultSteps || 20;
+        
+        if (specifics.negativePromptNodeId && specifics.negativePromptInputName) {
+            comfyNegativePrompt.value = specifics.defaultNegativePrompt || "";
+            if (negPromptInputContainer) applyDebugStyles(negPromptInputContainer, 'flex');
+            console.log("[WorkflowChange] Negative prompt field made visible. Default value set to:", `"${comfyNegativePrompt.value}"`);
+        } else {
+            if (negPromptInputContainer) hideElement(negPromptInputContainer);
+            console.log("[WorkflowChange] Negative prompt field hidden for this workflow type.");
         }
-    }
+        console.log(`[WorkflowChange] Final UI values - Width: ${comfyImageWidth.value}, Height: ${comfyImageHeight.value}, Steps: ${comfySteps.value}`);
 
+    } else {
+        console.log("[WorkflowChange] No 'specifics' data found for the selected workflow key OR selected key is empty. All optional ComfyUI parameter fields will remain hidden.");
+        // Ensure everything is hidden if no specifics (already done by hideElement calls above)
+    }
+    console.log("--- handleWorkflowSelectionChange finished (V_DEBUG_BORDER) ---");
+}
+
+// In your main initialization logic within DOMContentLoaded:
+// After populateWorkflowSelect() is called and potentially sets a default workflow:
+// comfyWorkflowSelect.addEventListener('change', handleWorkflowSelectionChange);
+// handleWorkflowSelectionChange(); // Call once to set initial UI state
 
     // --- Function to Populate Keyword Dropdowns ---
     function populateDropdowns() {
@@ -175,16 +330,37 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // --- Function to Populate ComfyUI Workflow Select ---
-    function populateWorkflowSelect() {
-         if (!comfyWorkflowSelect || typeof comfyWorkflows === 'undefined') return;
-         comfyWorkflowSelect.innerHTML = '<option value="">-- Select --</option>'; // Clear existing options first
-         for (const key in comfyWorkflows) {
-             const option = document.createElement('option');
-             option.value = key;
-             option.textContent = key.replace(/_/g, ' ').replace('WORKFLOW', '').trim() || key;
-             comfyWorkflowSelect.appendChild(option);
-         }
+  function populateWorkflowSelect() {
+    if (!comfyWorkflowSelect || typeof comfyWorkflows === 'undefined') return;
+    comfyWorkflowSelect.innerHTML = '<option value="">-- Select --</option>'; // Clear existing options
+
+    let defaultWorkflowKey = null; // Variable to hold your desired default
+
+    for (const key in comfyWorkflows) {
+        const option = document.createElement('option');
+        option.value = key;
+        option.textContent = key.replace(/_/g, ' ').replace('WORKFLOW', '').trim() || key;
+        comfyWorkflowSelect.appendChild(option);
+
+        // Check if this key is your desired default
+        // Assuming your key in comfyWorkflows is exactly "GGUF_COMFY_WORKFLOW"
+        if (key === "GGUF_COMFY_WORKFLOW") { 
+            defaultWorkflowKey = key;
+        }
     }
+
+    // After the loop, if a default was found, set it
+    if (defaultWorkflowKey) {
+        comfyWorkflowSelect.value = defaultWorkflowKey;
+        console.log(`Default workflow set to: ${defaultWorkflowKey}`);
+    } else if (Object.keys(comfyWorkflows).length > 0) {
+        // Optional: Select the first available workflow if the specific default isn't found
+        // const firstKey = Object.keys(comfyWorkflows)[0];
+        // comfyWorkflowSelect.value = firstKey;
+        // console.warn(`Default workflow "GGUF_COMFY_WORKFLOW" not found. Selected first available: ${firstKey}`);
+        console.warn(`Default workflow "GGUF_COMFY_WORKFLOW" not found in comfyWorkflows data. Ensure the key matches.`);
+    }
+}
 
      // --- Collapsible Section Logic ---
     function initializeCollapsibleSections() {
@@ -231,97 +407,96 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
- // --- Event Listeners Setup (MODIFIED) ---
- function addEventListeners() {
-    console.log("Adding event listeners...");
-    if (llmEndpointSelect) llmEndpointSelect.addEventListener('change', function() { customLlmEndpointContainer.style.display = (this.value === 'custom_llm') ? 'block' : 'none'; }); else console.error("Element not found: llmEndpointSelect");
-    if (feelLuckyButton) feelLuckyButton.addEventListener('click', handleFeelLucky); else console.error("Element not found: feelLuckyButton");
-    if (generateKeywordsButton) generateKeywordsButton.addEventListener('click', handleGenerateKeywords); else console.error("Element not found: generateKeywordsButton");
-    if (generateApiPromptButton) generateApiPromptButton.addEventListener('click', handleGenerateApiPromptClick); else console.error("Element not found: generateApiPromptButton");
-    if (sendPromptButton) sendPromptButton.addEventListener('click', handleSendPromptClick); else console.error("Element not found: sendPromptButton");
-    if (startNewPromptButton) startNewPromptButton.addEventListener('click', resetForm); else console.error("Element not found: startNewPromptButton");
-    if (downloadResultsButton) downloadResultsButton.addEventListener('click', downloadResultsText); else console.error("Element not found: downloadResultsButton");
-    if (addCustomEndpointBtn) addCustomEndpointBtn.addEventListener('click', addCustomImageEndpointInput); else console.error("Element not found: addCustomEndpointBtn");
-    if (customEndpointsList) customEndpointsList.addEventListener('click', handleRemoveCustomEndpoint); else console.error("Element not found: customEndpointsList");
-    if (collapseToggleButtons.length > 0) collapseToggleButtons.forEach(button => { button.addEventListener('click', () => toggleCollapse(button)); }); else console.warn("No collapse toggle buttons found");
-    if (enableContinuousGenCheckbox) enableContinuousGenCheckbox.addEventListener('change', toggleContinuousOptions); else console.error("Element not found: enableContinuousGenCheckbox");
-    if (stopBatchButton) stopBatchButton.addEventListener('click', handleStopBatch); else console.error("Element not found: stopBatchButton");
-    if (promptFormatRadios.length > 0) promptFormatRadios.forEach(radio => { radio.addEventListener('change', updateSystemPrompt); }); else console.warn("No prompt format radios found");
-    if (pageContainer) pageContainer.addEventListener('click', handleCopyClick); else console.error("Element not found: pageContainer");
+    // --- Event Listeners Setup ---
+    function addEventListeners() {
+        llmEndpointSelect.addEventListener('change', function() {
+            customLlmEndpointContainer.style.display = (this.value === 'custom_llm') ? 'block' : 'none';
+        });
+        feelLuckyButton.addEventListener('click', handleFeelLucky);
+        generateKeywordsButton.addEventListener('click', handleGenerateKeywords);
+        generateApiPromptButton.addEventListener('click', handleGenerateApiPromptClick); // Added click feedback internally
+        sendPromptButton.addEventListener('click', handleSendPromptClick); // Added click feedback internally
+        startNewPromptButton.addEventListener('click', resetForm);
+        downloadResultsButton.addEventListener('click', downloadResultsText); // Added console log internally
+        addCustomEndpointBtn.addEventListener('click', addCustomImageEndpointInput); // Added console log internally
+        customEndpointsList.addEventListener('click', handleRemoveCustomEndpoint); // Delegated
+        collapseToggleButtons.forEach(button => {
+            button.addEventListener('click', () => toggleCollapse(button));
+        });
+        enableContinuousGenCheckbox.addEventListener('change', toggleContinuousOptions);
+        stopBatchButton.addEventListener('click', handleStopBatch);
+        promptFormatRadios.forEach(radio => {
+            radio.addEventListener('change', updateSystemPrompt);
+        });
+        pageContainer.addEventListener('click', handleCopyClick); // Delegated copy listener
+    }
 
-    // ** NEW Listeners for API Key Input **
-    if (llmApiKeyInput) {
-        // Save when the user finishes editing (leaves the field)
-        llmApiKeyInput.addEventListener('blur', saveApiKeyToStorage);
-    } else { console.error("Element not found: llmApiKeyInput"); }
+   async function handleSendPromptClick() {
+    console.log("Handling 'Send Prompt / Start Batch' click...");
+    sendPromptButton.disabled = true;
+    const originalButtonText = sendPromptButton.innerHTML;
+    const isBatch = enableContinuousGenCheckbox.checked;
+    let initialMessageUiBox = resultsMessageBox; // Default
 
-    if (clearApiKeyButton) {
-        clearApiKeyButton.addEventListener('click', clearApiKeyFromStorage);
-    } else { console.error("Element not found: clearApiKeyButton"); }
-    // ** END NEW Listeners **
+    if (isBatch) {
+        sendPromptButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Starting Batch...';
+        stopBatchButton.style.display = 'inline-flex';
+        stopBatchButton.disabled = false;
+        stopBatchButton.innerHTML = '<i class="fas fa-stop-circle"></i> Stop Batch';
+        initialMessageUiBox = configMessageBox; // Use config box for batch start message
+        showMessage(initialMessageUiBox, 'loading', 'Starting image generation batch...', true);
+    } else {
+        sendPromptButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+        showMessage(resultsMessageBox, 'loading', 'Sending prompt to image service(s)...', true);
+        // No need to hide stopBatchButton here, finally block will handle it if not a batch
+    }
 
-    console.log("Event listeners added.");
-}
-
-    // --- Main Handler for Send Prompt / Start Batch Button ---
-    async function handleSendPromptClick() {
-        console.log("Handling 'Send Prompt / Start Batch' click...");
-        // --- Click Feedback ---
-        sendPromptButton.disabled = true;
-        const originalButtonText = sendPromptButton.innerHTML;
-        const isBatch = enableContinuousGenCheckbox.checked;
+    try {
+        if (isBatch) {
+            isContinuousModeActive = true; // Set active flag BEFORE await
+            stopBatchFlag = false;
+            continuousRunsRemaining = parseInt(continuousGenCountInput.value, 10) || 1;
+            if (continuousRunsRemaining <= 0) continuousRunsRemaining = 1;
+            imageResultsGrid.innerHTML = '';
+            await startContinuousGenerationLoop();
+            // Button/state for batch completion is handled within startContinuousGenerationLoop's exit conditions
+        } else {
+            isContinuousModeActive = false; // Ensure it's false for single runs
+            const runId = Date.now();
+            await handleSendPromptToImageServices(runId.toString(), null);
+            // Messages for single run are handled by handleSendPromptToImageServices
+            // Button restoration for successful single run will be handled by finally
+        }
+    } catch (error) {
+        // This catch handles errors primarily from the setup phase (e.g., parsing continuousGenCountInput)
+        // or if handleSendPromptToImageServices throws an error that isn't caught internally AND it's a single run.
+        console.error("Error starting prompt sending process:", error);
+        const errorMsgBox = isBatch ? configMessageBox : resultsMessageBox; // Use the same box as initial message for consistency
+        showMessage(errorMsgBox, 'error', `Error: ${error.message}`);
 
         if (isBatch) {
-            sendPromptButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Starting Batch...';
-            stopBatchButton.style.display = 'inline-flex';
-            stopBatchButton.disabled = false; // Ensure stop button is enabled initially
-            stopBatchButton.innerHTML = '<i class="fas fa-stop-circle"></i> Stop Batch'; // Reset stop button text
-            showMessage(configMessageBox, 'loading', 'Starting image generation batch...', true); // Show in config box for batch
-        } else {
-             sendPromptButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-             showMessage(resultsMessageBox, 'loading', 'Sending prompt to image service(s)...', true); // Show in results box for single
-             stopBatchButton.style.display = 'none'; // Hide stop button if not batching
+            // If starting the batch itself failed, reset batch state
+            isContinuousModeActive = false; // Critical to ensure finally block restores button
         }
-        // ---------------------
-
-        try {
-           if (isBatch) {
-               // --- Start Batch ---
-               isContinuousModeActive = true;
-               stopBatchFlag = false;
-               continuousRunsRemaining = parseInt(continuousGenCountInput.value, 10) || 1;
-               if (continuousRunsRemaining <= 0) continuousRunsRemaining = 1; // Ensure at least 1 run
-               imageResultsGrid.innerHTML = ''; // Clear previous results for new batch
-               await startContinuousGenerationLoop(); // Start the loop
-               // Final status message handled within the loop completion/stop logic
-
-           } else {
-               // --- Single Run ---
-               const runId = Date.now(); // Simple unique identifier for single run
-               await handleSendPromptToImageServices(runId.toString(), null); // Let it determine prompt and seed internally
-               // Final status message handled within handleSendPromptToImageServices
-
-                // Restore button only after single run completes (or fails)
-                sendPromptButton.disabled = false;
-                sendPromptButton.innerHTML = originalButtonText;
-
-           }
-        } catch (error) {
-            // Catch errors that might occur *before* individual API calls (e.g., getting prompt, starting batch)
-            console.error("Error starting prompt sending process:", error);
-             const msgBox = isBatch ? configMessageBox : resultsMessageBox;
-            showMessage(msgBox, 'error', `Error: ${error.message}`);
-
-             // Restore button state immediately on setup error
-             sendPromptButton.disabled = false;
-             sendPromptButton.innerHTML = originalButtonText;
-             if (isBatch) {
-                 isContinuousModeActive = false; // Ensure batch mode is reset
-                 stopBatchButton.style.display = 'none';
-             }
+        // The finally block will handle button restoration based on isContinuousModeActive
+    } finally {
+        // This block ensures button states are correctly restored if not in an ongoing batch.
+        if (!isContinuousModeActive) {
+            sendPromptButton.disabled = false;
+            // Restore to appropriate text based on whether continuous mode is still enabled in checkbox
+            if (enableContinuousGenCheckbox.checked) {
+                 sendPromptButton.innerHTML = '<i class="fas fa-play-circle"></i> Start Batch';
+            } else {
+                 sendPromptButton.innerHTML = '<i class="fas fa-paper-plane"></i> Send Prompt';
+            }
+            // If it wasn't a batch run, or if batch setup failed and isContinuousModeActive is now false,
+            // ensure stop button is hidden.
+            stopBatchButton.style.display = 'none';
         }
-       // NOTE: Button state for batches is restored within startContinuousGenerationLoop's exit conditions
+        // If isContinuousModeActive is true, it means a batch is running, and its own loop
+        // is responsible for the button states until it finishes or is stopped.
     }
+}
     // --- Specific Event Handler Functions ---
     function handleFeelLucky() {
         console.log("Handling 'Feel Lucky' click...");
@@ -415,49 +590,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    async function handleSendPromptClick() {
-         console.log("Handling 'Send Prompt / Start Batch' click...");
-         // --- Click Feedback ---
-         sendPromptButton.disabled = true;
-         const originalButtonText = sendPromptButton.innerHTML;
-         sendPromptButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-         const isBatch = enableContinuousGenCheckbox.checked;
-         if (isBatch) {
-             stopBatchButton.style.display = 'inline-flex';
-             stopBatchButton.disabled = false; // Ensure stop button is enabled initially
-             stopBatchButton.innerHTML = '<i class="fas fa-stop-circle"></i> Stop Batch'; // Reset stop button text
-         }
-         showMessage(resultsMessageBox, 'loading', isBatch ? 'Starting image generation batch...' : 'Sending prompt to image service(s)...');
-         // ---------------------
-
-         try {
-            if (isBatch) {
-                isContinuousModeActive = true;
-                stopBatchFlag = false;
-                continuousRunsRemaining = parseInt(continuousGenCountInput.value, 10) || 1;
-                imageResultsGrid.innerHTML = ''; // Clear previous results for batch
-                await startContinuousGenerationLoop(); // Start the loop
-                // Final status message handled within the loop completion/stop logic
-            } else {
-                const runId = Date.now(); // Simple unique identifier for single run
-                await handleSendPromptToImageServices(runId.toString(), null); // Let it determine prompt and seed
-                // Final status message handled within handleSendPromptToImageServices
-            }
-         } catch (error) {
-             // Catch errors that might occur before individual API calls (e.g., getting prompt)
-             console.error("Error starting prompt sending process:", error);
-             showMessage(resultsMessageBox, 'error', `Error: ${error.message}`);
-         } finally {
-             // --- Restore Button (only if NOT in active batch mode) ---
-             if (!isContinuousModeActive) {
-                 sendPromptButton.disabled = false;
-                 sendPromptButton.innerHTML = originalButtonText;
-                 stopBatchButton.style.display = 'none'; // Hide stop button if not batching
-             }
-             // ---------------------
-         }
-     }
-
     function handleRemoveCustomEndpoint(event) {
         console.log("Handling remove custom endpoint click...");
         const removeButton = event.target.closest('.remove-endpoint-btn');
@@ -467,20 +599,37 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function addCustomImageEndpointInput() {
-        console.log("--- Add Custom Image Endpoint Input Triggered ---"); // DEBUG LOG
-        const itemId = `custom-endpoint-${Date.now()}`;
-        const div = document.createElement('div');
-        div.className = 'custom-endpoint-item';
-        div.innerHTML = `
-            <input type="checkbox" id="chk-${itemId}" value="custom_image" data-input-id="${itemId}" checked style="margin-right: 0.5rem; transform: scale(1.1); accent-color: var(--accent-primary);">
-            <input type="text" id="${itemId}" class="custom-endpoint-input" placeholder="Enter Custom Image Endpoint URL (e.g., http://...)">
-            <button type="button" class="remove-endpoint-btn" title="Remove Endpoint"><i class="fas fa-times-circle"></i></button>
-        `;
-        customEndpointsList.appendChild(div);
-        div.querySelector(`#${itemId}`).focus();
-    }
+// In script.js
 
+    function addCustomImageEndpointInput() {
+    console.log("--- Add Custom Image Endpoint Input Triggered ---"); // DEBUG LOG
+    const itemId = `custom-endpoint-${Date.now()}`;
+    const div = document.createElement('div');
+    div.className = 'custom-endpoint-item';
+    div.innerHTML = `
+        <input type="checkbox" id="chk-${itemId}" value="custom_image" data-input-id="${itemId}" checked style="margin-right: 0.5rem; transform: scale(1.1); accent-color: var(--accent-primary);">
+        <input type="text" id="${itemId}" class="custom-endpoint-input" placeholder="Enter Custom Image Endpoint URL (e.g., http://...)">
+        <button type="button" class="remove-endpoint-btn" title="Remove Endpoint"><i class="fas fa-times-circle"></i></button>
+    `;
+    customEndpointsList.appendChild(div);
+    div.querySelector(`#${itemId}`).focus(); // Focus the new input field
+
+    // --- NEW LOGIC TO DESELECT LOCAL COMFYUI ---
+    const localComfyUICheckbox = document.getElementById('img-comfyui');
+    if (localComfyUICheckbox && localComfyUICheckbox.checked) {
+        localComfyUICheckbox.checked = false;
+        console.log("Local ComfyUI checkbox automatically deselected because a new custom endpoint was added.");
+        
+        // OPTIONAL: If deselecting ComfyUI needs to trigger other dependent UI changes
+        // (like hiding/showing the workflow dropdown if it was tied to ComfyUI's checked state via a JS event listener),
+        // you might need to manually dispatch a 'change' event.
+        // However, based on your current script, simply unchecking it should be sufficient
+        // as the selection is read when "Send Prompt" is clicked.
+        // Example of dispatching event if needed:
+        // localComfyUICheckbox.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    // --- END NEW LOGIC ---
+    }
     function toggleContinuousOptions() {
         continuousOptionsDiv.style.display = enableContinuousGenCheckbox.checked ? 'block' : 'none';
         sendPromptButton.innerHTML = enableContinuousGenCheckbox.checked
@@ -775,90 +924,177 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 
-     // --- LLM API Call Function (MODIFIED for Gemini Key Handling) ---
-     async function callLLMForPrompt(keywordPromptForLLM, targetMessageBox) {
+    // --- LLM API Call Function ---
+    async function callLLMForPrompt(keywordPromptForLLM, targetMessageBox) {
         const selectedLlmEndpointValue = llmEndpointSelect.value;
         const modelName = llmModelNameInput.value.trim();
         let systemPrompt = systemPromptTextarea.value;
-        // ALWAYS read the key from the input field
-        let apiKey = llmApiKeyInput.value.trim(); // This value might have come from localStorage
+        let apiKey = llmApiKeyInput.value.trim(); // Ensure trimmed
         let requestBody;
         let requestHeaders = { 'Content-Type': 'application/json' };
-        let endpointUrl = selectedLlmEndpointValue;
-        let apiUrl;
+        let endpointUrl = selectedLlmEndpointValue; // Base URL from selection
+        let apiUrl; // Final URL for fetch
 
         console.log(`Calling LLM. Endpoint Type: ${selectedLlmEndpointValue}, Model: ${modelName || 'Default'}`);
 
          try {
+             // Determine API URL and Request Body based on selected endpoint
              if (endpointUrl.includes('generativelanguage.googleapis.com')) {
                  // --- Gemini ---
-                 // ** MODIFIED: Always use the key from the input field **
-                 if (!apiKey) {
-                     // Prompt the user or throw error if key is missing for Gemini
-                     throw new Error("Gemini API Key is missing. Please enter it in the LLM Configuration section.");
+                 if (typeof storedApiKeys !== 'undefined' && storedApiKeys.gemini) {
+                     apiKey = storedApiKeys.gemini; // Use stored key if available
+                     console.log("Using stored Gemini API key.");
+                 } else {
+                     console.warn("Stored Gemini API Key not found in data.js. Using input field value.");
                  }
-                 const geminiModel = modelName || "gemini-1.5-flash-latest";
-                 apiUrl = `${endpointUrl}/models/${geminiModel}:generateContent?key=${apiKey}`; // Key in URL
+                 if (!apiKey) { throw new Error("Gemini API Key is missing (check input field or data.js)."); }
+
+                 const geminiModel = modelName || "gemini-1.5-flash-latest"; // Default Gemini model
+                 apiUrl = `${endpointUrl}/models/${geminiModel}:generateContent?key=${apiKey}`; // Key in URL for Gemini
+
                  requestBody = {
-                     contents: [ { role: "user", parts: [{ text: keywordPromptForLLM }] } ],
+                     contents: [
+                         { role: "user", parts: [{ text: keywordPromptForLLM }] }
+                     ],
                      ...(systemPrompt && { systemInstruction: { role: "system", parts: [{ text: systemPrompt }] } }),
-                     generationConfig: { temperature: 0.7, maxOutputTokens: 800 }
+                     generationConfig: {
+                         temperature: 0.7,
+                         maxOutputTokens: 800
+                         // topP, topK can be added here if needed
+                     }
                  };
-                 // No Authorization header needed when key is in URL
+                 // Gemini doesn't typically use Authorization header when key is in URL
              } else if (endpointUrl.includes('localhost:1234')) {
-                 // --- LM Studio ---
-                 apiUrl = `${endpointUrl}/chat/completions`;
-                 if (!modelName) console.warn("LM Studio might require a model name...");
+                 // --- LM Studio (OpenAI Format) ---
+                 apiUrl = `${endpointUrl}/chat/completions`; // Assuming v1 path is included in dropdown value
+                 if (!modelName) console.warn("LM Studio might require a model name in the input field.");
                  requestBody = {
-                     model: modelName || "loaded-model",
-                     messages: [ ...(systemPrompt ? [{ role: "system", content: systemPrompt }] : []), { role: "user", content: keywordPromptForLLM } ],
-                     temperature: 0.7, max_tokens: 400
+                     model: modelName || "loaded-model", // Provide a default or ensure user sets it
+                     messages: [
+                         ...(systemPrompt ? [{ role: "system", content: systemPrompt }] : []),
+                         { role: "user", content: keywordPromptForLLM }
+                     ],
+                     temperature: 0.7,
+                     max_tokens: 400 // Adjust as needed
+                     // stream: false // Ensure streaming is off
                  };
-                 // Use apiKey from input if provided for LM Studio
-                 if (apiKey) { requestHeaders['Authorization'] = `Bearer ${apiKey}`; console.log("Sending API Key to LM Studio");}
+                 if (apiKey) {
+                     requestHeaders['Authorization'] = `Bearer ${apiKey}`;
+                     console.log("Sending API Key from input field to LM Studio endpoint.");
+                 }
              } else if (endpointUrl.includes('localhost:11434')) {
-                 // --- Ollama ---
-                 apiUrl = `${endpointUrl}/chat/completions`;
-                  if (!modelName) { throw new Error("Missing Ollama Model Name..."); }
-                  requestBody = {
-                      model: modelName,
-                      messages: [ ...(systemPrompt ? [{ role: "system", content: systemPrompt }] : []), { role: "user", content: keywordPromptForLLM } ],
-                      stream: false, options: { temperature: 0.7 }
-                  };
-                  // Use apiKey from input if provided for Ollama
-                  if (apiKey) { requestHeaders['Authorization'] = `Bearer ${apiKey}`; console.log("Sending API Key to Ollama"); }
+                 // --- Ollama (OpenAI Format) ---
+                 // NOTE: Assumes Ollama is serving OpenAI compatible endpoint at /v1/chat/completions
+                 apiUrl = `${endpointUrl}/chat/completions`; // Assuming v1 path from dropdown
+                 if (!modelName) { throw new Error("Missing Ollama Model Name (set in input field)."); }
+                 requestBody = {
+                     model: modelName,
+                     messages: [
+                         ...(systemPrompt ? [{ role: "system", content: systemPrompt }] : []),
+                         { role: "user", content: keywordPromptForLLM }
+                     ],
+                     stream: false, // Important for single response
+                     options: { // Ollama specific options can go here if needed
+                         temperature: 0.7
+                     }
+                 };
+                  if (apiKey) { // Often not needed for local Ollama, but include if user provides one
+                     requestHeaders['Authorization'] = `Bearer ${apiKey}`;
+                     console.log("Sending API Key (if provided) to Ollama endpoint.");
+                 }
+
              } else {
-                 // --- Custom ---
+                 // --- Custom LLM Endpoint ---
                  if (selectedLlmEndpointValue === 'custom_llm') {
                      endpointUrl = customLlmEndpointInput.value.trim();
                      if (!endpointUrl) throw new Error("Custom LLM Endpoint URL is missing.");
                      apiUrl = endpointUrl;
-                 } else { apiUrl = endpointUrl; }
-                  if (!apiUrl) throw new Error("LLM Endpoint URL is invalid.");
-                  if (!apiUrl.endsWith('/chat/completions') && !apiUrl.endsWith('/v1/chat/completions')) { apiUrl = apiUrl.replace(/\/$/, '') + '/v1/chat/completions'; console.warn(`Assuming OpenAI path: ${apiUrl}`); }
-                  if (!modelName) console.warn("Custom LLM might require model name.");
-                  requestBody = {
-                      model: modelName || "custom-llm-model",
-                      messages: [ ...(systemPrompt ? [{ role: "system", content: systemPrompt }] : []), { role: "user", content: keywordPromptForLLM } ],
-                      temperature: 0.7, max_tokens: 400, stream: false
-                  };
-                  // Use apiKey from input if provided for Custom
-                  if (apiKey) { requestHeaders['Authorization'] = `Bearer ${apiKey}`; console.log("Sending API Key to Custom LLM"); }
+                 } else {
+                     // Should not happen if dropdown values are correct, but handle defensively
+                     apiUrl = endpointUrl;
+                 }
+
+                 if (!apiUrl) throw new Error("LLM Endpoint URL is invalid.");
+
+                 // Assume OpenAI compatible format for Custom unless specified otherwise
+                 if (!apiUrl.endsWith('/chat/completions') && !apiUrl.endsWith('/v1/chat/completions')) {
+                     apiUrl = apiUrl.replace(/\/$/, '') + '/v1/chat/completions'; // Append standard path
+                     console.warn(`Assuming OpenAI compatible path for custom LLM: ${apiUrl}`);
+                 }
+
+                 if (!modelName) console.warn("Custom LLM endpoint might require a model name.");
+
+                 requestBody = {
+                     model: modelName || "custom-llm-model", // Provide a default
+                     messages: [
+                         ...(systemPrompt ? [{ role: "system", content: systemPrompt }] : []),
+                         { role: "user", content: keywordPromptForLLM }
+                     ],
+                     temperature: 0.7,
+                     max_tokens: 400,
+                     stream: false
+                 };
+                 if (apiKey) {
+                     requestHeaders['Authorization'] = `Bearer ${apiKey}`;
+                 }
              }
 
-             // ... (rest of fetch call, response handling - same as before) ...
-              console.log(">>> Sending LLM Request to:", apiUrl); console.log(">>> Request Headers:", requestHeaders); console.log(">>> Request Body (preview):", JSON.stringify(requestBody).substring(0, 300) + "...");
-              const response = await fetch(apiUrl, { method: 'POST', headers: requestHeaders, body: JSON.stringify(requestBody) }); console.log("<<< LLM Response Status:", response.status, response.statusText);
-              if (!response.ok) { let errorBodyText = await response.text(); console.error("<<< LLM Response Error Body:", errorBodyText); let errorMessage = `HTTP ${response.status} ${response.statusText}`; try { const errorJson = JSON.parse(errorBodyText); errorMessage = errorJson.error?.message || errorJson.message || errorJson.error || JSON.stringify(errorJson); } catch (_) { errorMessage = errorBodyText || errorMessage; } if (errorMessage.length > 300) errorMessage = errorMessage.substring(0, 300) + "..."; throw new Error(`LLM API Error: ${errorMessage}`); }
-              const responseData = await response.json(); console.log("<<< LLM Response Data:", responseData); let generatedText = ""; if (apiUrl.includes('generativelanguage.googleapis.com')) { generatedText = responseData.candidates?.[0]?.content?.parts?.[0]?.text; } else { generatedText = responseData.choices?.[0]?.message?.content; } if (generatedText === undefined || generatedText === null) { console.warn("LLM response received, but no text found:", responseData); throw new Error("LLM response format unexpected or empty text content."); } return (generatedText || "").trim();
+             console.log(">>> Sending LLM Request to:", apiUrl);
+             console.log(">>> Request Headers:", requestHeaders);
+             console.log(">>> Request Body:", JSON.stringify(requestBody));
+
+             const response = await fetch(apiUrl, {
+                 method: 'POST',
+                 headers: requestHeaders,
+                 body: JSON.stringify(requestBody)
+             });
+
+             console.log("<<< LLM Response Status:", response.status, response.statusText);
+
+             if (!response.ok) {
+                 let errorBodyText = await response.text(); // Try to get error details
+                 console.error("<<< LLM Response Error Body:", errorBodyText);
+                 let errorMessage = `HTTP ${response.status} ${response.statusText}`;
+                 try {
+                     // Attempt to parse as JSON for more specific error messages
+                     const errorJson = JSON.parse(errorBodyText);
+                     errorMessage = errorJson.error?.message || errorJson.message || errorJson.error || JSON.stringify(errorJson);
+                 } catch (_) {
+                     // If not JSON, use the raw text or the HTTP status
+                     errorMessage = errorBodyText || errorMessage;
+                 }
+                  // Limit length of displayed error
+                 if (errorMessage.length > 300) errorMessage = errorMessage.substring(0, 300) + "...";
+                 throw new Error(`LLM API Error: ${errorMessage}`);
+             }
+
+             const responseData = await response.json();
+             console.log("<<< LLM Response Data:", responseData);
+
+             let generatedText = "";
+
+             // Extract text based on expected structure for each API type
+             if (apiUrl.includes('generativelanguage.googleapis.com')) { // Gemini
+                 generatedText = responseData.candidates?.[0]?.content?.parts?.[0]?.text;
+             } else { // OpenAI compatible (LM Studio, Ollama, Custom)
+                 generatedText = responseData.choices?.[0]?.message?.content;
+             }
+
+             if (generatedText === undefined || generatedText === null) {
+                 console.warn("LLM response received, but no text found:", responseData);
+                 throw new Error("LLM response format unexpected or empty text content.");
+             }
+
+             return (generatedText || "").trim(); // Return the trimmed text
 
          } catch (error) {
-            console.error("LLM Call Error:", error);
-            showMessage(targetMessageBox || mainMessageBox, 'error', `LLM Error: ${error.message}`);
-            return null; // Explicitly return null on error
+             console.error("LLM Call Error:", error);
+             showMessage(targetMessageBox || mainMessageBox, 'error', `LLM Error: ${error.message}`);
+             return null; // Explicitly return null on error
          }
     }
- 
+
+
     // --- Handle Send Prompt to Image Services (Main Logic) ---
     async function handleSendPromptToImageServices(runIdentifier, promptForRun /* seed param removed */) {
         const isBatchRun = typeof runIdentifier === 'string' && runIdentifier.includes('/'); // Basic check
@@ -1167,70 +1403,62 @@ document.addEventListener('DOMContentLoaded', function() {
         return Promise.all(pollingPromises);
     }
 
-    // --- Get Selected Image Endpoints (MODIFIED) ---
-    function getSelectedImageEndpoints() {
-        const endpoints = [];
-        const defaultComfyUIAddress = 'http://127.0.0.1:8188';
 
-        // Check ComfyUI checkbox
-        const comfyCheckbox = imageEndpointsContainer.querySelector('#img-comfyui:checked');
-        if (comfyCheckbox) {
-            let comfyAddress = comfyuiLanAddressInput.value.trim(); // Read from the new input field
+    // --- Get Selected Image Endpoints ---
+     function getSelectedImageEndpoints() {
+         const endpoints = [];
 
-            // Validate and use default if empty or invalid
-            if (!comfyAddress || !comfyAddress.match(/^https?:\/\//)) {
-                if (comfyAddress) { // Log if it was invalid, but not if it was just empty
-                    console.warn(`Invalid ComfyUI address entered: "${comfyAddress}". Using default: ${defaultComfyUIAddress}`);
-                    showMessage(configMessageBox, 'warning', `Invalid ComfyUI address format. Using default.`);
-                }
-                comfyAddress = defaultComfyUIAddress;
-            }
-            // Remove trailing slash if present
-            comfyAddress = comfyAddress.replace(/\/$/, '');
+         // Check ComfyUI checkbox
+         const comfyCheckbox = imageEndpointsContainer.querySelector('#img-comfyui:checked');
+         if (comfyCheckbox) {
+             endpoints.push({
+                 id: comfyCheckbox.id,
+                 value: comfyCheckbox.value, // 'local_comfyui'
+                 name: comfyCheckbox.parentElement.querySelector('label[for="img-comfyui"]').textContent.split('<small>')[0].trim(),
+                 url: comfyCheckbox.dataset.endpoint || 'http://127.0.0.1:8188', // Default ComfyUI URL
+                 requiresKey: false // Typically no key for local Comfy
+             });
+         }
 
-            console.log(`Using ComfyUI Address: ${comfyAddress}`); // Log the address being used
+         // Check Custom endpoint checkboxes and get their input values
+         const customCheckboxes = customEndpointsList.querySelectorAll('input[type="checkbox"]:checked');
+         customCheckboxes.forEach(checkbox => {
+             const inputId = checkbox.dataset.inputId;
+             const inputElement = document.getElementById(inputId);
+             const url = inputElement ? inputElement.value.trim() : null;
 
-            endpoints.push({
-                id: comfyCheckbox.id,
-                value: comfyCheckbox.value, // 'local_comfyui'
-                name: comfyCheckbox.parentElement.querySelector('label[for="img-comfyui"]').textContent.split('<small>')[0].trim(),
-                url: comfyAddress, // Use the potentially custom address
-                requiresKey: false
-            });
-        }
+             if (url) {
+                // Basic URL validation (starts with http/https)
+                 if (!url.match(/^https?:\/\//)) {
+                     console.warn(`Invalid URL format for custom endpoint: ${url}. Skipping.`);
+                     showMessage(resultsMessageBox, 'warning', `Skipping invalid custom URL: ${url}`);
+                     return; // Skip this endpoint
+                 }
 
-        // Check Custom endpoint checkboxes and get their input values
-        const customCheckboxes = customEndpointsList.querySelectorAll('input[type="checkbox"]:checked');
-        customCheckboxes.forEach(checkbox => {
-            const inputId = checkbox.dataset.inputId;
-            const inputElement = document.getElementById(inputId);
-            const url = inputElement ? inputElement.value.trim() : null;
+                 let name = 'Custom Endpoint';
+                 try {
+                     const urlObj = new URL(url);
+                     name = `Custom: ${urlObj.hostname}`; // Use hostname for name
+                 } catch (e) {
+                     console.warn(`Could not parse custom URL for name: ${url}`);
+                     name = `Custom: ${url.substring(0, 20)}...`; // Fallback name
+                 }
 
-            if (url) {
-               if (!url.match(/^https?:\/\//)) {
-                    console.warn(`Invalid URL format for custom endpoint: ${url}. Skipping.`);
-                    showMessage(resultsMessageBox, 'warning', `Skipping invalid custom URL: ${url}`);
-                    return;
-                }
-                let name = 'Custom Endpoint';
-                try { const urlObj = new URL(url); name = `Custom: ${urlObj.hostname}`; }
-                catch (e) { console.warn(`Could not parse custom URL for name: ${url}`); name = `Custom: ${url.substring(0, 20)}...`; }
+                 endpoints.push({
+                     id: inputId, // Use the text input's ID for uniqueness
+                     value: 'custom_image',
+                     name: name,
+                     url: url,
+                     requiresKey: false // Assume no key unless API requires it later
+                 });
+             } else {
+                  console.warn(`Custom endpoint checkbox ${checkbox.id} checked, but corresponding input ${inputId} is empty or not found. Skipping.`);
+             }
+         });
 
-                endpoints.push({
-                    id: inputId,
-                    value: 'custom_image',
-                    name: name,
-                    url: url.replace(/\/$/, ''), // Remove trailing slash
-                    requiresKey: false
-                });
-            } else {
-                 console.warn(`Custom endpoint checkbox ${checkbox.id} checked, but corresponding input ${inputId} is empty or not found. Skipping.`);
-            }
-        });
-
-        console.log("Selected Image Endpoints:", endpoints);
-        return endpoints;
-    }
+         console.log("Selected Image Endpoints:", endpoints);
+         return endpoints;
+     }
 
 
     // --- Create/Update Image Result Items ---
@@ -1369,286 +1597,404 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // --- Image Generation API Call Function ---
-    async function callImageGenerationAPI(promptToSend, endpointConfig, runIdentifier /* seed removed */) {
-        console.log(`Run ${runIdentifier}: Sending to ${endpointConfig.name} (${endpointConfig.id})`);
-        let requestBody;
-        let requestHeaders = { 'Content-Type': 'application/json' };
-        let apiUrl = endpointConfig.url;
-        const method = 'POST';
+   async function callImageGenerationAPI(promptToSend, endpointConfig, runIdentifier /* seed removed */) {
+    console.log(`Run ${runIdentifier}: Sending to ${endpointConfig.name} (${endpointConfig.id})`);
+    let requestBody;
+    let requestHeaders = { 'Content-Type': 'application/json' };
+    let apiUrl = endpointConfig.url;
+    const method = 'POST';
 
-        // Initial result state
-        let result = {
-            endpointId: endpointConfig.id,
-            endpointName: endpointConfig.name,
-            message: `Sending request...`,
-            imageUrl: null,
-            imageData: null,
-            error: null,
-            status: 'pending', // pending, polling, success, error
-            promptId: null     // For ComfyUI
-        };
+    let result = {
+        endpointId: endpointConfig.id,
+        endpointName: endpointConfig.name,
+        message: `Sending request...`,
+        imageUrl: null,
+        imageData: null,
+        error: null,
+        status: 'pending',
+        promptId: null
+    };
 
-        // --- Update placeholder immediately ---
-        updateImageResultItem(endpointConfig.id, endpointConfig.name, result, runIdentifier, 'loading', 'Sending request...');
+    updateImageResultItem(endpointConfig.id, endpointConfig.name, result, runIdentifier, 'loading', 'Sending request...');
 
-        try {
-            switch (endpointConfig.value) {
-                case 'local_comfyui': {
-                    // --- ComfyUI Logic ---
-                    const serverAddress = endpointConfig.url || 'http://127.0.0.1:8188'; // Default if not set
-                    apiUrl = `${serverAddress}/prompt`;
-                    const clientId = generateUUID(); // Unique ID for this request
-                    let workflowJsonString;
-                    let workflowToUse;
+    try {
+        switch (endpointConfig.value) {
+            case 'local_comfyui': {
+                const serverAddress = endpointConfig.url || 'http://127.0.0.1:8188';
+                apiUrl = `${serverAddress}/prompt`;
+                const clientId = generateUUID();
+                let workflowJsonString;
+                let workflowToUse;
 
-                    const selectedWorkflowKey = comfyWorkflowSelect.value;
-                    console.log(`[ComfyUI Run ${runIdentifier}] Selected Workflow Key: ${selectedWorkflowKey}`); // DEBUG
-                    if (!selectedWorkflowKey) {
-                        throw new Error("Please select a ComfyUI workflow from the dropdown.");
-                    }
+                const currentSelectedWorkflowKey = comfyWorkflowSelect.value; // Get selected workflow key
+                console.log(`[ComfyUI Run ${runIdentifier}] Selected Workflow Key: ${currentSelectedWorkflowKey}`);
 
-                    if (typeof comfyWorkflows !== 'undefined' && comfyWorkflows[selectedWorkflowKey]) {
-                        workflowJsonString = comfyWorkflows[selectedWorkflowKey];
-                         console.log(`[ComfyUI Run ${runIdentifier}] Raw Workflow String:`, workflowJsonString.substring(0, 200) + "..."); // DEBUG
+                if (!currentSelectedWorkflowKey) {
+                    throw new Error("Please select a ComfyUI workflow from the dropdown.");
+                }
+
+                if (typeof comfyWorkflows !== 'undefined' && comfyWorkflows[currentSelectedWorkflowKey]) {
+                    workflowJsonString = comfyWorkflows[currentSelectedWorkflowKey];
+                    console.log(`[ComfyUI Run ${runIdentifier}] Raw Workflow String (first 200 chars):`, workflowJsonString.substring(0, 200) + "...");
+                } else {
+                    throw new Error(`Selected ComfyUI workflow '${currentSelectedWorkflowKey}' not found in data.js.`);
+                }
+
+                try {
+                    const parsedWorkflow = JSON.parse(workflowJsonString);
+                    workflowToUse = JSON.parse(JSON.stringify(parsedWorkflow)); // Deep copy
+                    console.log(`[ComfyUI Run ${runIdentifier}] Successfully parsed and deep copied workflow.`);
+                } catch (e) {
+                    console.error(`[ComfyUI Run ${runIdentifier}] Error parsing/copying workflow JSON:`, e);
+                    throw new Error("Failed to parse or copy the selected ComfyUI workflow JSON.");
+                }
+
+                // Get specific configuration for the selected workflow
+                // Ensure comfyWorkflowSpecifics is defined globally or in an accessible scope
+                const specificConfig = comfyWorkflowSpecifics[currentSelectedWorkflowKey];
+
+                // Inside callImageGenerationAPI, case 'local_comfyui':
+                // ... (after workflowToUse is parsed and specificConfig is defined) ...
+
+                // Get values from new UI elements
+                const width = parseInt(comfyImageWidth.value, 10);
+                const height = parseInt(comfyImageHeight.value, 10);
+                const steps = parseInt(comfySteps.value, 10);
+                const negativePromptText = comfyNegativePrompt.value; // Get negative prompt text
+
+                let modelToInject;
+                if (specificConfig.type === "gguf_unet") {
+                    modelToInject = ggufModelSelect.value;
+                } else if (specificConfig.type === "checkpoint") {
+                    modelToInject = checkpointModelSelect.value;
+                }
+                // MFlux model is not dynamically selected via these dropdowns in this plan
+
+                // Inject Model Name (if applicable for the workflow type)
+                if (modelToInject && specificConfig.modelNodeId && specificConfig.modelInputName) {
+                    if (workflowToUse[specificConfig.modelNodeId] && workflowToUse[specificConfig.modelNodeId].inputs) {
+                        workflowToUse[specificConfig.modelNodeId].inputs[specificConfig.modelInputName] = modelToInject;
+                        console.log(`[ComfyUI Run <span class="math-inline">\{runIdentifier\}\] Injected model "</span>{modelToInject}" into node "<span class="math-inline">\{specificConfig\.modelNodeId\}", input "</span>{specificConfig.modelInputName}"`);
+                    } else { console.warn(`[ComfyUI Run <span class="math-inline">\{runIdentifier\}\] Model node "</span>{specificConfig.modelNodeId}" or its inputs not found for model injection.`); }
+                }
+
+                // Inject Size
+                if (specificConfig.sizeNodeId && specificConfig.widthInputName && specificConfig.heightInputName) {
+                    if (workflowToUse[specificConfig.sizeNodeId] && workflowToUse[specificConfig.sizeNodeId].inputs) {
+                        workflowToUse[specificConfig.sizeNodeId].inputs[specificConfig.widthInputName] = width;
+                        workflowToUse[specificConfig.sizeNodeId].inputs[specificConfig.heightInputName] = height;
+                        console.log(`[ComfyUI Run ${runIdentifier}] Injected size <span class="math-inline">\{width\}x</span>{height} into node "${specificConfig.sizeNodeId}"`);
+                    } else { console.warn(`[ComfyUI Run <span class="math-inline">\{runIdentifier\}\] Size node "</span>{specificConfig.sizeNodeId}" or its inputs not found for size injection.`); }
+                }
+
+                // Inject Steps
+                if (specificConfig.stepsNodeId && specificConfig.stepsInputName) {
+                    if (workflowToUse[specificConfig.stepsNodeId] && workflowToUse[specificConfig.stepsNodeId].inputs) {
+                        workflowToUse[specificConfig.stepsNodeId].inputs[specificConfig.stepsInputName] = steps;
+                        console.log(`[ComfyUI Run <span class="math-inline">\{runIdentifier\}\] Injected steps "</span>{steps}" into node "<span class="math-inline">\{specificConfig\.stepsNodeId\}", input "</span>{specificConfig.stepsInputName}"`);
+                    } else { console.warn(`[ComfyUI Run <span class="math-inline">\{runIdentifier\}\] Steps node "</span>{specificConfig.stepsNodeId}" or its inputs not found for steps injection.`); }
+                }
+
+                // Inject Negative Prompt (if applicable)
+                if (negativePromptText && specificConfig.negativePromptNodeId && specificConfig.negativePromptInputName) {
+                    if (workflowToUse[specificConfig.negativePromptNodeId] && workflowToUse[specificConfig.negativePromptNodeId].inputs) {
+                        workflowToUse[specificConfig.negativePromptNodeId].inputs[specificConfig.negativePromptInputName] = negativePromptText;
+                        console.log(`[ComfyUI Run <span class="math-inline">\{runIdentifier\}\] Injected negative prompt into node "</span>{specificConfig.negativePromptNodeId}", input "${specificConfig.negativePromptInputName}"`);
                     } else {
-                        throw new Error(`Selected ComfyUI workflow '${selectedWorkflowKey}' not found in data.js.`);
+                        console.warn(`[ComfyUI Run <span class="math-inline">\{runIdentifier\}\] Negative prompt node "</span>{specificConfig.negativePromptNodeId}" or its inputs not found.`);
                     }
+                }
 
-                    // Parse and Deep Copy Workflow JSON
-                    try {
-                        const parsedWorkflow = JSON.parse(workflowJsonString);
-                         console.log(`[ComfyUI Run ${runIdentifier}] Parsed Workflow Object:`, parsedWorkflow); // DEBUG
-                        workflowToUse = JSON.parse(JSON.stringify(parsedWorkflow)); // Deep copy
-                        console.log(`[ComfyUI Run ${runIdentifier}] Deep Copied Workflow Object:`, workflowToUse); // DEBUG
-                    } catch (e) {
-                        console.error(`[ComfyUI Run ${runIdentifier}] Error parsing/copying workflow JSON:`, e);
-                        throw new Error("Failed to parse or copy the selected ComfyUI workflow JSON.");
-                    }
 
-                    // Inject Positive Prompt (assuming node ID '6' based on provided data.js)
-                    const positivePromptNodeId = "6";
-                    let promptNodeFound = false;
-                    if (workflowToUse[positivePromptNodeId] && workflowToUse[positivePromptNodeId].inputs && workflowToUse[positivePromptNodeId].inputs.text !== undefined) {
-                        workflowToUse[positivePromptNodeId].inputs.text = promptToSend;
+                // --- Your existing Prompt Injection logic (using specificConfig) ---
+                // (Starts with: let promptNodeFound = false;)
+                // ... make sure it uses specificConfig.promptNodeId and specificConfig.promptInputName ...
+
+                // --- Your existing Seed Injection logic (using specificConfig) ---
+                // (Starts with: let seedNodeFound = false;)
+                // ... make sure it uses specificConfig.seedNodeId and specificConfig.seedInputName ...
+
+                // ... rest of the ComfyUI sending logic ...
+
+                // --- Inject Positive Prompt (dynamic based on workflow) ---
+                // This section starts with your original comment for easy identification
+                // Inject Positive Prompt (assuming node ID '6' based on provided data.js)
+                let promptNodeFound = false;
+                let attemptedPromptNodeDescription = "default configuration";
+
+                if (specificConfig && specificConfig.promptNodeId && specificConfig.promptInputName) {
+                    const targetNodeId = specificConfig.promptNodeId;
+                    const targetInputName = specificConfig.promptInputName;
+                    attemptedPromptNodeDescription = `node "${targetNodeId}" (input: "${targetInputName}") for workflow "${currentSelectedWorkflowKey}"`;
+
+                    if (workflowToUse[targetNodeId] &&
+                        workflowToUse[targetNodeId].inputs &&
+                        workflowToUse[targetNodeId].inputs[targetInputName] !== undefined) {
+                        workflowToUse[targetNodeId].inputs[targetInputName] = promptToSend;
                         promptNodeFound = true;
-                        console.log(`[ComfyUI Run ${runIdentifier}] Injected prompt into node ${positivePromptNodeId}: "${promptToSend.substring(0, 50)}..."`); // DEBUG
+                        console.log(`[ComfyUI Run ${runIdentifier}] Injected prompt via specificConfig into ${attemptedPromptNodeDescription}: "${promptToSend.substring(0, 50)}..."`);
                     } else {
-                         // Fallback: Look for the first CLIPTextEncode node
-                         console.warn(`[ComfyUI Run ${runIdentifier}] Node ${positivePromptNodeId} not found or missing 'inputs.text'. Searching for fallback CLIPTextEncode.`);
-                        for (const nodeId in workflowToUse) {
-                            if (workflowToUse[nodeId]?.class_type === "CLIPTextEncode" &&
-                                workflowToUse[nodeId]?.inputs?.text !== undefined) {
-                                // Simple heuristic: assume the first one is positive, might need refinement
-                                // A better approach might be to look for connections or specific titles if available
-                                workflowToUse[nodeId].inputs.text = promptToSend;
-                                promptNodeFound = true;
-                                console.log(`[ComfyUI Run ${runIdentifier}] Injected prompt into FALLBACK node ${nodeId}: "${promptToSend.substring(0, 50)}..."`); // DEBUG
-                                break; // Inject into the first one found
+                        console.warn(`[ComfyUI Run ${runIdentifier}] Specific config target ${attemptedPromptNodeDescription} was not found or input was invalid in the workflow structure.`);
+                    }
+                } else if (currentSelectedWorkflowKey && !specificConfig) {
+                    console.warn(`[ComfyUI Run ${runIdentifier}] No specific prompt configuration found in 'comfyWorkflowSpecifics' for workflow "${currentSelectedWorkflowKey}". Proceeding to fallbacks.`);
+                    attemptedPromptNodeDescription = `node "6" (the default fallback target)`;
+                } else {
+                    console.warn(`[ComfyUI Run ${runIdentifier}] No workflow key selected or specificConfig was incomplete for prompt. Proceeding to fallbacks.`);
+                    attemptedPromptNodeDescription = `node "6" (the default fallback target)`;
+                }
+
+                if (!promptNodeFound) {
+                    const primaryFallbackNodeId = "6";
+                    const primaryFallbackInputName = "text";
+                    attemptedPromptNodeDescription = `node "${primaryFallbackNodeId}" (input: "${primaryFallbackInputName}") as primary fallback`;
+                    console.log(`[ComfyUI Run ${runIdentifier}] Prompt not set via specific config. Attempting primary fallback: ${attemptedPromptNodeDescription}.`);
+
+                    if (workflowToUse[primaryFallbackNodeId] &&
+                        workflowToUse[primaryFallbackNodeId].inputs &&
+                        workflowToUse[primaryFallbackNodeId].inputs[primaryFallbackInputName] !== undefined) {
+                        workflowToUse[primaryFallbackNodeId].inputs[primaryFallbackInputName] = promptToSend;
+                        promptNodeFound = true;
+                        console.log(`[ComfyUI Run ${runIdentifier}] Injected prompt via PRIMARY FALLBACK into ${attemptedPromptNodeDescription}: "${promptToSend.substring(0, 50)}..."`);
+                    } else {
+                        console.warn(`[ComfyUI Run ${runIdentifier}] Primary fallback (node "${primaryFallbackNodeId}", input "${primaryFallbackInputName}") not found or input field missing.`);
+                        // Secondary Fallback
+                        if (!promptNodeFound) {
+                             attemptedPromptNodeDescription = "any CLIPTextEncode node with 'text' input as secondary fallback";
+                            console.log(`[ComfyUI Run ${runIdentifier}] Prompt not set via primary fallback. Attempting secondary fallback: ${attemptedPromptNodeDescription}.`);
+                            for (const nodeId in workflowToUse) {
+                                if (workflowToUse[nodeId]?.class_type === "CLIPTextEncode" &&
+                                    workflowToUse[nodeId]?.inputs?.text !== undefined) {
+                                    workflowToUse[nodeId].inputs.text = promptToSend;
+                                    promptNodeFound = true;
+                                    attemptedPromptNodeDescription = `CLIPTextEncode node "${nodeId}" (input: "text") found via secondary fallback`;
+                                    console.log(`[ComfyUI Run ${runIdentifier}] Injected prompt via SECONDARY FALLBACK into ${attemptedPromptNodeDescription}: "${promptToSend.substring(0, 50)}..."`);
+                                    break;
+                                }
                             }
                         }
                     }
-                    if (!promptNodeFound) {
-                        console.error("[ComfyUI Run ${runIdentifier}] Could not find any suitable node (target or fallback) to inject the positive prompt.");
-                        throw new Error(`Could not find a positive prompt node (tried target '${positivePromptNodeId}' and fallback CLIPTextEncode). Check workflow structure.`);
-                    }
+                }
 
+                if (!promptNodeFound) {
+                    console.error(`[ComfyUI Run ${runIdentifier}] FATAL: Could not find any suitable node to inject the positive prompt for workflow "${currentSelectedWorkflowKey}" after all attempts.`);
+                    throw new Error(`Could not find/configure a positive prompt input node for workflow "${currentSelectedWorkflowKey}" (last attempt involved ${attemptedPromptNodeDescription}). Check workflow structure, 'comfyWorkflowSpecifics', or ensure a standard fallback node exists.`);
+                }
+                // --- END OF Positive Prompt Injection ---
 
-                    // Inject Seed (assuming node ID '31' based on provided data.js)
-                    const kSamplerNodeId = "31"; // Standard KSampler node ID
-                    const seedToUse = generateRandomSeed(); // ALWAYS generate a new seed
-                    let ksamplerNodeFound = false;
-                    if (workflowToUse[kSamplerNodeId] && workflowToUse[kSamplerNodeId].inputs && workflowToUse[kSamplerNodeId].inputs.seed !== undefined) {
-                        console.log(`[ComfyUI Run ${runIdentifier}] KSampler node ${kSamplerNodeId} seed BEFORE setting:`, workflowToUse[kSamplerNodeId].inputs.seed); // DEBUG
-                        workflowToUse[kSamplerNodeId].inputs.seed = seedToUse;
-                        ksamplerNodeFound = true;
-                        console.log(`[ComfyUI Run ${runIdentifier}] Set RANDOM seed ${seedToUse} for KSampler node ${kSamplerNodeId}`); // DEBUG
+                // --- Inject Seed (dynamic based on workflow) ---
+                let seedNodeFound = false; // Renamed from ksamplerNodeFound for clarity
+                const seedToUse = generateRandomSeed();
+                let attemptedSeedNodeDescription = "default configuration";
+
+                if (specificConfig && specificConfig.seedNodeId && specificConfig.seedInputName) {
+                    const targetNodeId = specificConfig.seedNodeId;
+                    const targetInputName = specificConfig.seedInputName;
+                    attemptedSeedNodeDescription = `node "${targetNodeId}" (input: "${targetInputName}") for workflow "${currentSelectedWorkflowKey}"`;
+
+                    if (workflowToUse[targetNodeId] &&
+                        workflowToUse[targetNodeId].inputs &&
+                        workflowToUse[targetNodeId].inputs[targetInputName] !== undefined) {
+                        console.log(`[ComfyUI Run ${runIdentifier}] Seed node ${targetNodeId} (input: ${targetInputName}) current seed:`, workflowToUse[targetNodeId].inputs[targetInputName]);
+                        workflowToUse[targetNodeId].inputs[targetInputName] = seedToUse;
+                        seedNodeFound = true;
+                        console.log(`[ComfyUI Run ${runIdentifier}] Set RANDOM seed ${seedToUse} via specificConfig for ${attemptedSeedNodeDescription}`);
                     } else {
-                         // Fallback: Search for nodes commonly used as samplers
-                         console.warn(`[ComfyUI Run ${runIdentifier}] Target KSampler node '${kSamplerNodeId}' not found or missing 'inputs.seed'. Searching for fallback sampler nodes.`);
-                         const samplerTypes = ["KSampler", "KSamplerAdvanced", "SamplerCustom"]; // Add other relevant types if needed
-                         for (const nodeId in workflowToUse) {
-                            if (samplerTypes.includes(workflowToUse[nodeId]?.class_type) &&
-                                workflowToUse[nodeId]?.inputs?.seed !== undefined) {
-                                console.log(`[ComfyUI Run ${runIdentifier}] Fallback Sampler node ${nodeId} seed BEFORE setting:`, workflowToUse[nodeId].inputs.seed); // DEBUG
-                                workflowToUse[nodeId].inputs.seed = seedToUse;
-                                ksamplerNodeFound = true;
-                                console.log(`[ComfyUI Run ${runIdentifier}] Set RANDOM seed ${seedToUse} for FALLBACK Sampler node ${nodeId}`); // DEBUG
-                                break; // Set seed on the first appropriate sampler found
-                             }
-                         }
+                        console.warn(`[ComfyUI Run ${runIdentifier}] Specific config target ${attemptedSeedNodeDescription} for seed was not found or input was invalid in the workflow structure.`);
                     }
-                    if (!ksamplerNodeFound) {
-                         console.warn(`[ComfyUI Run ${runIdentifier}] Could not find any suitable KSampler node (target '${kSamplerNodeId}' or fallback) to set the seed. Generation might use a fixed seed from the workflow.`);
-                         // Decide if this should be an error or just a warning
-                         // throw new Error(`Could not find KSampler node ('${kSamplerNodeId}' or fallback) to set seed.`);
+                } else if (currentSelectedWorkflowKey && !specificConfig) {
+                    console.warn(`[ComfyUI Run ${runIdentifier}] No specific seed configuration found in 'comfyWorkflowSpecifics' for workflow "${currentSelectedWorkflowKey}". Proceeding to seed fallbacks.`);
+                    attemptedSeedNodeDescription = `node "31" (the default KSampler fallback target)`;
+                } else {
+                     console.warn(`[ComfyUI Run ${runIdentifier}] No workflow key selected or specificConfig was incomplete for seed. Proceeding to seed fallbacks.`);
+                     attemptedSeedNodeDescription = `node "31" (the default KSampler fallback target)`;
+                }
+
+                if (!seedNodeFound) {
+                    const primaryFallbackNodeId = "31"; // Default KSampler node ID
+                    const primaryFallbackInputName = "seed";
+                    attemptedSeedNodeDescription = `node "${primaryFallbackNodeId}" (input: "${primaryFallbackInputName}") as primary seed fallback`;
+                    console.log(`[ComfyUI Run ${runIdentifier}] Seed not set via specific config. Attempting primary fallback: ${attemptedSeedNodeDescription}.`);
+
+                    if (workflowToUse[primaryFallbackNodeId] &&
+                        workflowToUse[primaryFallbackNodeId].inputs &&
+                        workflowToUse[primaryFallbackNodeId].inputs[primaryFallbackInputName] !== undefined) {
+                        console.log(`[ComfyUI Run ${runIdentifier}] Primary fallback seed node ${primaryFallbackNodeId} (input: ${primaryFallbackInputName}) current seed:`, workflowToUse[primaryFallbackNodeId].inputs[primaryFallbackInputName]);
+                        workflowToUse[primaryFallbackNodeId].inputs[primaryFallbackInputName] = seedToUse;
+                        seedNodeFound = true;
+                        console.log(`[ComfyUI Run ${runIdentifier}] Set RANDOM seed ${seedToUse} via PRIMARY FALLBACK for ${attemptedSeedNodeDescription}`);
+                    } else {
+                        console.warn(`[ComfyUI Run ${runIdentifier}] Primary seed fallback (node "${primaryFallbackNodeId}") failed. Searching for secondary seed fallback.`);
+                         if (!seedNodeFound) {
+                            attemptedSeedNodeDescription = "any KSampler/Advanced/Custom node with 'seed' input as secondary fallback";
+                            console.log(`[ComfyUI Run ${runIdentifier}] Seed not set via primary fallback. Attempting secondary fallback: ${attemptedSeedNodeDescription}.`);
+                            const samplerTypes = ["KSampler", "KSamplerAdvanced", "SamplerCustom"];
+                            for (const nodeId_seed_fallback in workflowToUse) {
+                                if (samplerTypes.includes(workflowToUse[nodeId_seed_fallback]?.class_type) &&
+                                    workflowToUse[nodeId_seed_fallback]?.inputs?.seed !== undefined) {
+                                    console.log(`[ComfyUI Run ${runIdentifier}] Secondary fallback seed node ${nodeId_seed_fallback} current seed:`, workflowToUse[nodeId_seed_fallback].inputs.seed);
+                                    workflowToUse[nodeId_seed_fallback].inputs.seed = seedToUse;
+                                    seedNodeFound = true;
+                                    attemptedSeedNodeDescription = `Sampler node "${nodeId_seed_fallback}" (input: "seed") found via secondary fallback`;
+                                    console.log(`[ComfyUI Run ${runIdentifier}] Set RANDOM seed ${seedToUse} via SECONDARY FALLBACK for ${attemptedSeedNodeDescription}`);
+                                    break;
+                                }
+                            }
+                        }
                     }
+                }
+
+                if (!seedNodeFound) {
+                    console.warn(`[ComfyUI Run ${runIdentifier}] Could not find any suitable node to set the seed for workflow "${currentSelectedWorkflowKey}" (last attempt involved ${attemptedSeedNodeDescription}). Generation will likely use the seed defined in the workflow template, if any.`);
+                }
+                // --- END OF Seed Injection ---
+
+                requestBody = {
+                    "prompt": workflowToUse,
+                    "client_id": clientId
+                };
+
+                console.log(`[ComfyUI Run ${runIdentifier}] >>> Sending Request to /prompt at ${apiUrl}`);
+                console.log(`[ComfyUI Run ${runIdentifier}] >>> Final Request Body (Structure):`, workflowToUse); // Log structure, stringifying can be too long
 
 
-                    // Prepare Request Body
-                    requestBody = {
-                        "prompt": workflowToUse,
-                        "client_id": clientId
-                    };
-
-                    console.log(`[ComfyUI Run ${runIdentifier}] >>> Sending Request to /prompt at ${apiUrl}`); // DEBUG
-                    console.log(`[ComfyUI Run ${runIdentifier}] >>> Request Body (stringified):`, JSON.stringify(requestBody).substring(0, 500) + "..."); // DEBUG (Log truncated body)
-
-
-                    // --- Make the API Call ---
-                    let queueResponse;
-                    try {
-                        queueResponse = await fetch(apiUrl, {
-                             method: 'POST',
-                             headers: { 'Content-Type': 'application/json' },
-                             body: JSON.stringify(requestBody)
-                         });
-                     } catch (networkError) {
-                          console.error(`[ComfyUI Run ${runIdentifier}] !!! Network Error during /prompt fetch:`, networkError);
-                          throw new Error(`Network Error connecting to ComfyUI at ${serverAddress}. Is it running? (${networkError.message})`);
-                     }
-
-                    console.log(`[ComfyUI Run ${runIdentifier}] <<< /prompt Response Status:`, queueResponse.status, queueResponse.statusText); // DEBUG
-
-                    // --- Handle Response ---
-                    if (!queueResponse.ok) {
-                        let errorBodyText = await queueResponse.text(); // Get error body regardless of JSON parsing
-                        console.error(`[ComfyUI Run ${runIdentifier}] !!! /prompt fetch failed. Response Body:`, errorBodyText); // DEBUG
-                        let errorMessage = `HTTP ${queueResponse.status} ${queueResponse.statusText}`;
-                        try {
-                            const errorJson = JSON.parse(errorBodyText);
-                             errorMessage = errorJson.error || errorJson.message || errorJson.node_errors || JSON.stringify(errorJson);
-                             if (typeof errorMessage !== 'string') errorMessage = JSON.stringify(errorMessage); // Ensure it's a string
-                         } catch (_) {
-                              errorMessage = errorBodyText || errorMessage; // Use text if not JSON
-                         }
-                         if (errorMessage.length > 300) errorMessage = errorMessage.substring(0, 300) + "...";
-                         throw new Error(`ComfyUI Queue Error: ${errorMessage}`);
-                    }
-
-                    // --- Process Success Response ---
-                    const queueData = await queueResponse.json();
-                    console.log(`[ComfyUI Run ${runIdentifier}] <<< /prompt Success Response Data:`, queueData); // DEBUG
-
-                    const promptId = queueData.prompt_id;
-                    if (!promptId) {
-                         console.error(`[ComfyUI Run ${runIdentifier}] !!! ComfyUI response OK, but missing 'prompt_id'. Response:`, queueData);
-                        throw new Error("ComfyUI did not return a prompt_id in the response.");
-                    }
-
-                    console.log(`[ComfyUI Run ${runIdentifier}] Prompt queued successfully. Prompt ID: ${promptId}. Starting history polling.`);
-
-                    // Update status to polling and start polling
-                    result.promptId = promptId;
-                    result.status = 'polling';
-                    result.message = `ComfyUI Queued (ID: ${promptId}). Polling...`;
-                    updateImageResultItem(endpointConfig.id, endpointConfig.name, result, runIdentifier, 'polling', result.message);
-
-                    // Start polling asynchronously (don't await here, let the main loop continue)
-                    pollComfyHistory(promptId, serverAddress, endpointConfig.id, endpointConfig.name, runIdentifier);
-
-                    return result; // Return the result object indicating polling has started
-                } // End ComfyUI Case
-
-                case 'custom_image': {
-                    // --- Custom Image Endpoint Logic ---
-                    if (!apiUrl) throw new Error("Custom Image Endpoint URL is missing.");
-
-                    // Basic request body - adapt as needed for specific custom APIs
-                    const seedToUse = generateRandomSeed();
-                    requestBody = {
-                        prompt: promptToSend,
-                        seed: seedToUse // Include seed if API supports it
-                        // Add other parameters like negative_prompt, steps, cfg, width, height if needed
-                    };
-                    console.log(`Run ${runIdentifier}: Sending to Custom Endpoint ${apiUrl} with seed ${seedToUse}`);
-                    console.log(`Run ${runIdentifier}: Custom Request Body:`, JSON.stringify(requestBody));
-
-                    // Add API key if provided (assuming Bearer token)
-                    const apiKey = llmApiKeyInput.value.trim(); // Use the general API key field for custom image endpoints too? Or add a dedicated one?
-                    if (apiKey) {
-                         requestHeaders['Authorization'] = `Bearer ${apiKey}`;
-                         console.log(`Run ${runIdentifier}: Sending API Key to Custom endpoint.`);
-                    }
-
-                    const response = await fetch(apiUrl, {
-                        method: method,
-                        headers: requestHeaders,
+                let queueResponse;
+                try {
+                    queueResponse = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(requestBody)
                     });
-
-                    console.log(`Run ${runIdentifier}: Custom Endpoint Response Status:`, response.status, response.statusText);
-
-                    if (!response.ok) {
-                        let e = response.statusText;
-                        try { const j = await response.json(); e = j.detail || j.error?.message || j.message || JSON.stringify(j); } catch (_) {}
-                        throw new Error(`Custom API Error (${response.status}): ${e}`);
-                    }
-
-                    // Handle different response types (image/* or JSON with image data/URL)
-                    let contentType = response.headers.get("content-type");
-                    if (contentType && contentType.startsWith("image/")) {
-                        const blob = await response.blob();
-                        result.imageData = await blobToBase64(blob); // Get data URL
-                        result.message = `Custom OK. Image received directly.`;
-                        result.status = 'success';
-                    } else if (contentType && contentType.includes("application/json")) {
-                        responseData = await response.json();
-                         console.log(`Run ${runIdentifier}: Custom Endpoint JSON Response:`, responseData);
-                        // Look for common image data patterns in JSON response
-                        if (responseData.images && Array.isArray(responseData.images) && responseData.images[0]) {
-                            // Assuming base64 string without prefix
-                            result.imageData = `data:image/png;base64,${responseData.images[0]}`;
-                            result.message = `Custom OK. Base64 image found in 'images' array.`;
-                        } else if (responseData.image) { // Single base64 string
-                             result.imageData = `data:image/png;base64,${responseData.image}`;
-                             result.message = `Custom OK. Base64 image found in 'image' field.`;
-                        } else if (responseData.data && Array.isArray(responseData.data) && responseData.data[0]?.url) { // OpenAI style URL
-                             result.imageUrl = responseData.data[0].url;
-                             result.message = `Custom OK. Image URL found in 'data' array.`;
-                        } else if (responseData.url) { // Simple URL
-                             result.imageUrl = responseData.url;
-                              result.message = `Custom OK. Image URL found in 'url' field.`;
-                        } else {
-                             result.message = `Custom OK (${response.status}). JSON received, but no standard image data/URL found.`;
-                             console.warn(`No standard image field found in custom JSON response from ${endpointConfig.name}`);
-                        }
-                        result.status = 'success';
-                    } else {
-                        result.message = `Custom OK (${response.status}). Non-standard success response received (${contentType || 'No Content-Type'}).`;
-                        console.warn(`Non-standard success response from ${endpointConfig.name}: ${contentType}`);
-                        result.status = 'success'; // Mark as success but maybe visually indicate the odd response?
-                    }
-                    // Update the placeholder with the final result
-                    updateImageResultItem(endpointConfig.id, endpointConfig.name, result, runIdentifier);
-                    return result;
-                } // End Custom Image Case
-
-                default: {
-                    console.warn(`Run ${runIdentifier}: Skipped unknown endpoint type: ${endpointConfig.value}`);
-                    result.message = `Skipped (Invalid Endpoint Type): ${endpointConfig.name}`;
-                    result.status = 'skipped'; // Or 'error'?
-                    result.error = 'Invalid endpoint type configured.';
-                    updateImageResultItem(endpointConfig.id, endpointConfig.name, result, runIdentifier, 'error', result.message);
-                    return result;
+                } catch (networkError) {
+                    console.error(`[ComfyUI Run ${runIdentifier}] !!! Network Error during /prompt fetch:`, networkError);
+                    throw new Error(`Network Error connecting to ComfyUI at ${serverAddress}. Is it running? (${networkError.message})`);
                 }
-            } // End Switch
-        } catch (error) {
-             console.error(`Run ${runIdentifier}: Error calling ${endpointConfig.name}:`, error);
-             result.error = error.message || 'Unknown error during API call.';
-             result.status = 'error';
-             updateImageResultItem(endpointConfig.id, endpointConfig.name, result, runIdentifier, 'error', result.error);
-             // Rethrow or handle error as needed by the caller (handleSendPromptToImageServices)
-             // We'll let the Promise.allSettled catch this in the caller
-             error.endpointId = endpointConfig.id; // Ensure error object has IDs for reporting
-             error.endpointName = endpointConfig.name;
-             throw error; // Rethrow the error to be caught by Promise.allSettled
-        }
-    }
 
+                console.log(`[ComfyUI Run ${runIdentifier}] <<< /prompt Response Status:`, queueResponse.status, queueResponse.statusText);
+
+                if (!queueResponse.ok) {
+                    let errorBodyText = await queueResponse.text();
+                    console.error(`[ComfyUI Run ${runIdentifier}] !!! /prompt fetch failed. Response Body:`, errorBodyText);
+                    let errorMessage = `HTTP ${queueResponse.status} ${queueResponse.statusText}`;
+                    try {
+                        const errorJson = JSON.parse(errorBodyText);
+                        errorMessage = errorJson.error || errorJson.message || errorJson.node_errors || JSON.stringify(errorJson);
+                        if (typeof errorMessage !== 'string') errorMessage = JSON.stringify(errorMessage);
+                    } catch (_) {
+                        errorMessage = errorBodyText || errorMessage;
+                    }
+                    if (errorMessage.length > 300) errorMessage = errorMessage.substring(0, 300) + "...";
+                    throw new Error(`ComfyUI Queue Error: ${errorMessage}`);
+                }
+
+                const queueData = await queueResponse.json();
+                console.log(`[ComfyUI Run ${runIdentifier}] <<< /prompt Success Response Data:`, queueData);
+
+                const newPromptId = queueData.prompt_id; // Renamed to avoid conflict if promptId was in outer scope
+                if (!newPromptId) {
+                    console.error(`[ComfyUI Run ${runIdentifier}] !!! ComfyUI response OK, but missing 'prompt_id'. Response:`, queueData);
+                    throw new Error("ComfyUI did not return a prompt_id in the response.");
+                }
+
+                console.log(`[ComfyUI Run ${runIdentifier}] Prompt queued successfully. Prompt ID: ${newPromptId}. Starting history polling.`);
+                result.promptId = newPromptId;
+                result.status = 'polling';
+                result.message = `ComfyUI Queued (ID: ${newPromptId.substring(0,8)}...). Polling...`;
+                updateImageResultItem(endpointConfig.id, endpointConfig.name, result, runIdentifier, 'polling', result.message);
+
+                pollComfyHistory(newPromptId, serverAddress, endpointConfig.id, endpointConfig.name, runIdentifier);
+                return result; // Return result indicating polling has started
+            } // End ComfyUI Case
+
+            case 'custom_image': {
+                if (!apiUrl) throw new Error("Custom Image Endpoint URL is missing.");
+                const customSeedToUse = generateRandomSeed();
+                requestBody = {
+                    prompt: promptToSend,
+                    seed: customSeedToUse
+                };
+                console.log(`Run ${runIdentifier}: Sending to Custom Endpoint ${apiUrl} with seed ${customSeedToUse}`);
+                console.log(`Run ${runIdentifier}: Custom Request Body:`, JSON.stringify(requestBody));
+
+                const apiKeyCustom = llmApiKeyInput.value.trim(); // Using the general LLM API key field
+                if (apiKeyCustom) {
+                    requestHeaders['Authorization'] = `Bearer ${apiKeyCustom}`;
+                    console.log(`Run ${runIdentifier}: Sending API Key to Custom image endpoint.`);
+                }
+
+                const response = await fetch(apiUrl, {
+                    method: method,
+                    headers: requestHeaders,
+                    body: JSON.stringify(requestBody)
+                });
+
+                console.log(`Run ${runIdentifier}: Custom Endpoint Response Status:`, response.status, response.statusText);
+
+                if (!response.ok) {
+                    let e = response.statusText;
+                    try { const j = await response.json(); e = j.detail || j.error?.message || j.message || JSON.stringify(j); } catch (_) {}
+                    throw new Error(`Custom API Error (${response.status}): ${e}`);
+                }
+
+                let contentType = response.headers.get("content-type");
+                let responseDataCustom; // Declare for potential JSON
+                if (contentType && contentType.startsWith("image/")) {
+                    const blob = await response.blob();
+                    result.imageData = await blobToBase64(blob);
+                    result.message = `Custom OK. Image received directly.`;
+                    result.status = 'success';
+                } else if (contentType && contentType.includes("application/json")) {
+                    responseDataCustom = await response.json();
+                    console.log(`Run ${runIdentifier}: Custom Endpoint JSON Response:`, responseDataCustom);
+                    if (responseDataCustom.images && Array.isArray(responseDataCustom.images) && responseDataCustom.images[0]) {
+                        result.imageData = `data:image/png;base64,${responseDataCustom.images[0]}`;
+                        result.message = `Custom OK. Base64 image found in 'images' array.`;
+                    } else if (responseDataCustom.image) {
+                        result.imageData = `data:image/png;base64,${responseDataCustom.image}`;
+                        result.message = `Custom OK. Base64 image found in 'image' field.`;
+                    } else if (responseDataCustom.data && Array.isArray(responseDataCustom.data) && responseDataCustom.data[0]?.url) {
+                        result.imageUrl = responseDataCustom.data[0].url;
+                        result.message = `Custom OK. Image URL found in 'data' array.`;
+                    } else if (responseDataCustom.url) {
+                        result.imageUrl = responseDataCustom.url;
+                        result.message = `Custom OK. Image URL found in 'url' field.`;
+                    } else {
+                        result.message = `Custom OK (${response.status}). JSON received, but no standard image data/URL found.`;
+                        console.warn(`No standard image field found in custom JSON response from ${endpointConfig.name}`);
+                    }
+                    result.status = 'success';
+                } else {
+                    result.message = `Custom OK (${response.status}). Non-standard success response received (${contentType || 'No Content-Type'}).`;
+                    console.warn(`Non-standard success response from ${endpointConfig.name}: ${contentType}`);
+                    result.status = 'success';
+                }
+                updateImageResultItem(endpointConfig.id, endpointConfig.name, result, runIdentifier);
+                return result;
+            } // End Custom Image Case
+
+            default: {
+                console.warn(`Run ${runIdentifier}: Skipped unknown endpoint type: ${endpointConfig.value}`);
+                result.message = `Skipped (Invalid Endpoint Type): ${endpointConfig.name}`;
+                result.status = 'error'; // Treat as an error for consistent handling
+                result.error = 'Invalid endpoint type configured.';
+                updateImageResultItem(endpointConfig.id, endpointConfig.name, result, runIdentifier, 'error', result.message);
+                return result; // Return the result object with error status
+            }
+        } // End Switch
+    } catch (error) {
+        console.error(`Run ${runIdentifier}: Error calling ${endpointConfig.name}:`, error);
+        result.error = error.message || 'Unknown error during API call.';
+        result.status = 'error';
+        updateImageResultItem(endpointConfig.id, endpointConfig.name, result, runIdentifier, 'error', result.error);
+        // Rethrow error so Promise.allSettled in the caller can correctly identify it as a rejected promise
+        error.endpointId = endpointConfig.id; // Augment error with IDs for reporting
+        error.endpointName = endpointConfig.name;
+        throw error;
+    }
+}
 
     // --- ComfyUI History Polling Function ---
-    function pollComfyHistory(promptId, serverAddress, endpointId, endpointName, runIdentifier, maxAttempts = 9999, delay = 2500) { // Increased attempts/delay
+    function pollComfyHistory(promptId, serverAddress, endpointId, endpointName, runIdentifier, maxAttempts = 120, delay = 2500) { // Increased attempts/delay
         // No return promise needed here, it updates the UI directly when done/failed
 
         let attempts = 0;

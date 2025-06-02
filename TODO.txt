@@ -1,0 +1,207 @@
+SCOPE
+
+
+Mlx model list and activate 
+
+Model type (ggus/checkpoint/mlx) doesn't change as you select different template types
+Templates should show what type of model they use 
+
+Add more models for prompt generation (several gemini versions etc)
+Make sure when using lm-studio the model list is dynamically populated (/models endpoint)
+Redesign layout
+Second gnereatoin doesn't give you option to reroll keywords or prompt, and it goes forever , not 2
+Banner at the top (rotating)
+More editing options (cfg/scheduler/sampler/denoise %/flux guidance/batch size)
+Several prebaced size options (4:3, 16:9; big small med etc)
+Sex gen
+Analyze terminal window for stats; generate  info on each model performance; show it when you select that model (how many generations created (total); load time; total gen time; avg time /step) > save in database (sql?)
+Auto json parser; more efficient storage of template data
+Display images that have been created (this session and all-time)
+Animate images (talking etc)
+Add canny/control net/inpainting/upscale (macro w topaz),add text; etc
+Use Loras
+Keep stats on the templates too
+Try and snag some computer stats to display as well
+Inference using diffusion kit/mflux/transformers(?) and other software that isn't comfy (if it has a speed boost)
+Leverage grippe for a template that creates storyboards that can then be batch upscaled and converted to videos; sound and speech added etc
+Test mlx dwq speed vs older versions of the same model
+Convert checkpoints to core  ML
+Get ups working with comfy
+
+
+Issue	Command/Action
+Missing modules	pip install pykalman xformers
+Numpy compatibility	pip install numpy==1.26.4
+scikit-learn compatibility	pip install "scikit-learn<=1.5.1"
+Missing __init__.py	touch /Volumes/NIPPIN/AI/comfy/custom_nodes/ComfyUI/__init__.py and similar
+Python version (StrEnum)	Recreate env with Python 3.11+
+transformers error	pip install "transformers==<required_version>"
+
+Sampler:
+
+Euler, DPM++ 2M Karras, or UniPC are recommended for stability and speed.On Mac, Torch 2.4.1 is recommended for best compatibility with GGUF nodes.
+
+conda activate comfy && \
+export PYTORCH_ENABLE_MPS_FALLBACK=1 && \
+python3 ~/miniforge3/comfy/main.py --listen --enable-cors-header --force-fp16 --use-split-cross-attention && \
+open -na 'Google Chrome' --args --new-window http://127.0.0.1:8188
+
+conda create -n diffusionkit python=3.11 -y
+conda activate diffusionkit
+pip install diffusionkit
+
+diffusionkit-cli --prompt "your prompt here" \
+  --model-version argmaxinc/mlx-FLUX.1-schnell-4bit-quantized \
+  --height 768 \
+  --width 1360 \
+  --seed 1001 \
+  --step 4 \
+  --output ~/Desktop/flux_on_mac.png
+
+
+ular MLX-Quantized and DWQ-Optimized Models
+MLX-Optimized Models (Mac, Apple Silicon)
+MLX is Apple’s open-source framework for running efficient, quantized models on Mac (M1/M2/M3). Several popular models are now available in MLX 4-bit quantized versions:
+
+mlx-FLUX.1-schnell-4bit-quantized
+
+4-bit, highly efficient, runs on Mac with DiffusionKit and mflux.
+
+mlx-SDXL-Turbo (DWQ SHOUld be avail)
+
+Stable Diffusion XL, 4-bit, fast on Apple Silicon.
+
+mlx-LCM-LoRA(find DWQ~)
+
+Latent Consistency Models, 4-bit, for super-fast inference.
+
+mlx-DreamShaper
+
+Artistic SD1.5/SDXL derivative, 4-bit.
+
+mlx-RealisticVision
+
+Photorealistic SD1.5/SDXL derivative, 4-bit.
+
+DWQ-Quantized Models
+DWQ (Dynamic Weight Quantization) is a newer quantization technique for even more efficient model deployment, especially on edge devices and Apple Silicon. Adoption is growing, but the most widely available DWQ models are:
+
+SDXL-Turbo DWQ
+
+4-bit, available in some MLX and ONNX bundles.
+
+Flux-fast DWQ
+
+Some community builds offer DWQ quantization, but MLX 4-bit is more common and widely supported at this time.
+
+
+
+
+
+
+the prompt guidelines section is empty, you should show what the differrnt model settings changes are for the system prompt in that part., and the generate prompt from api button should be right under the api generated prompt so there isn't any scroling. also the add custom endpoint button is broken. you didn't fill in the propt guidelines reference, the send prompt/stat batch button STILL DOES NOT WORK> i can see the endpoint, it is not recieving anything at all , no request period,. the log file button doesn't do anything either.....CMON . DEVELOP A PLAN BASED ON ALL THESE FAILURES. FIX THE trivial things first, then fouidance/cus on the api endpoint rest process,,,make something happen when i click the button at least so i can see if it even registered, right notw its..nothign...so FIRST. PLAN. THEN FIX all but the api, then do the api. JESUS here is your plan: Okay, I understand your frustration completely. It's clear the previous attempts haven't delivered a functional application, especially regarding the API calls and button interactions. Let's follow your plan rigorously: develop a plan focusing on the failures, fix the straightforward issues first, and then debug the core ComfyUI API process with clear feedback. Plan Based on Failures: Acknowledge & Verify: Confirm understanding of the specific failures: empty guidelines, misplaced API button, non-functional Add Custom/Download buttons, and critically, the non-functional Send Prompt button (no request being sent), lack of click feedback. Phase 1: Fix UI & Basic Functionality (Non-API):Prompt Guidelines Table: Ensure the static HTML table (.prompt-info-container within the collapsible Guidelines section) is present and correctly structured in index.html. Add placeholder content if it was truly empty (though it should contain the comparison data). Button Placement: Move the generateApiPromptButton in index.html to be directly below the api-prompt-output-container div. Adjust CSS if needed. Button Functionality (Add Custom Endpoint & Download Log):Review the corresponding event listeners (addCustomEndpointBtn.addEventListener, downloadResultsButton.addEventListener) and handler functions (addCustomImageEndpointInput, downloadResultsText) in script.js. Add console.log statements at the beginning of each handler function to confirm they are being triggered on click. Ensure the element selectors within downloadResultsText correctly target the textareas and config elements in their current locations. Ensure addCustomImageEndpointInput correctly appends the new input/button HTML to #custom-endpoints-list. Click Feedback: Modify handleSendPromptClick and handleGenerateApiPromptClick to immediately (before any async work) disable the clicked button and display a relevant "Processing..." or "Sending..." message in the appropriate message box (#configMessageBox or #resultsMessageBox). This provides instant visual confirmation of the click being registered. Phase 2: Debug & Fix ComfyUI /prompt API Call:Detailed Logging in script.js (callImageGenerationAPI - local_comfyui case):Log the selected workflow (comfyWorkflowSelect.value). Log the workflow string retrieved from comfyWorkflows. Log the object after JSON.parse(). Add a try...catch specifically around this parsing. Log the object after the deep copy (JSON.parse(JSON.stringify(...))). Add a try...catch. Log the prompt being injected. Log the KSampler node's seed value before doing anything to it (confirming it's untouched). Log the final requestBody before JSON.stringify. Log the exact apiUrl being used for the /prompt fetch. Add console.log('>>> Sending request to /prompt...'); right before Workspace. Wrap the /prompt fetch call in a try...catch block. In the catch, log the specific error (console.error('!!! /prompt fetch failed:', error);) and display a user-friendly message in #resultsMessageBox. If the fetch promise resolves (even with HTTP errors), log the response.status and response.statusText. Attempt to log await response.text() to see any error message from the server, even if it's not JSON. Only proceed to parse JSON and get prompt_id if response.ok is true. Log the extracted prompt_id. Code Output: Provide the complete index.html, styles.css, and script.js incorporating all fixes from Phases 1 & 2. data.js remains unchanged. Executing the Plan: Here is the api info tandard Method: REST API Workflow Send Workflow as JSON via POST You send your workflow (in the correct API JSON format) to the /prompt endpoint using a POST request from your frontend JavaScript689. Example endpoint: http://<comfyui-server>:8188/prompt Receive the Response The response will contain a prompt_id (a unique identifier for your request)8. Example response: json { "prompt_id": "10b3da78-cf5f-4ed7-885d-dccf5f3f3c69"} Poll for Completion Use the prompt_id to poll the /history/<prompt_id> endpoint to check if the workflow is finished and to retrieve output metadata (filenames, subfolders, etc.)8. Example: GET http://<comfyui-server>:8188/history/<prompt_id> Retrieve the Image(s) Once the workflow is complete, the /history/<prompt_id> response will include output image info (filename, subfolder, type). You can then fetch the image file(s) using the /view endpoint, passing the filename, subfolder, and type as query parameters8. Example: /view?filename=<filename>&type=<type>&subfolder=<subfolder> Display in HTML/JavaScript In your frontend, you can set the image src to the /view URL to display the result. Example JavaScript (Browser) javascript // 1. Send workflowfetch('http://<comfyui-server>:8188/prompt', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: workflowJson })}).then(res => res.json()).then(data => { const promptId = data.prompt_id; // 2. Poll for completion const poll = setInterval(() => { fetch(`http://<comfyui-server>:8188/history/${promptId}`) .then(res => res.json()) .then(history => { const output = history[promptId]?.outputs; if (output) { clearInterval(poll); // 3. Get image info and display for (const nodeId in output) { if (output[nodeId].images) { const img = output[nodeId].images[0]; const imgUrl = `/view?filename=${img.filename}&type=${img.type}&subfolder=${img.subfolder}`; document.getElementById('result').src = imgUrl; } } } }); }, 2000);}); (Replace <comfyui-server> with your server address.) revise your plan, focus and complete your task. i have faith in you!
+
+
+
+
+the prompt guidelines section is empty, you should show what the differrnt model settings changes are for the system prompt in t
+
+
+
+
+T-Shirt Prompt Generator Restructure
+
+
+
+
+HTML File Enhancement for ComfyUI
+
+
+
+
+HTML Page Completion and Fixes
+
+
+
+More
+Gems
+d
+darkness
+
+Career guide
+T
+The Remix
+More
+
+
+
+
+ Invite a friend
+Lake Forest Park, WA, USA 
+Based on your places (Home) • Update location
+
+
+
+Conversation with Gemini
+
+
+the prompt guidelines section is empty, you should show what the differrnt model settings changes are for the system prompt in that part., and the generate prompt from api button should be right under the api generated prompt so there isn't any scroling. also the add custom endpoint button is broken. you didn't fill in the propt guidelines reference, the send prompt/stat batch button STILL DOES NOT WORK> i can see the endpoint, it is not recieving anything at all , no request period,. the log file button doesn't do anything either.....CMON . DEVELOP A PLAN BASED ON ALL THESE FAILURES. FIX THE trivial things first, then focus on the api endpoint rest process,,,make something happen when i click the button at least so i can see if it even registered, right notw its..nothign...so FIRST. PLAN. THEN FIX all but the api, then do the api. JESUS
+
+here is your plan:
+Okay, I understand your frustration completely. It's clear the previous attempts haven't delivered a functional application, especially regarding the API calls and button interactions. Let's follow your plan rigorously: develop a plan focusing on the failures, fix the straightforward issues first, and then debug the core ComfyUI API process with clear feedback.
+Plan Based on Failures:
+
+Acknowledge & Verify: Confirm understanding of the specific failures: empty guidelines, misplaced API button, non-functional Add Custom/Download buttons, and critically, the non-functional Send Prompt button (no request being sent), lack of click feedback.
+Phase 1: Fix UI & Basic Functionality (Non-API):Prompt Guidelines Table: Ensure the static HTML table (.prompt-info-container within the collapsible Guidelines section) is present and correctly structured in index.html. Add placeholder content if it was truly empty (though it should contain the comparison data).
+Button Placement: Move the generateApiPromptButton in index.html to be directly below the api-prompt-output-container div. Adjust CSS if needed.
+Button Functionality (Add Custom Endpoint & Download Log):Review the corresponding event listeners (addCustomEndpointBtn.addEventListener, downloadResultsButton.addEventListener) and handler functions (addCustomImageEndpointInput, downloadResultsText) in script.js.
+Add console.log statements at the beginning of each handler function to confirm they are being triggered on click.
+Ensure the element selectors within downloadResultsText correctly target the textareas and config elements in their current locations.
+Ensure addCustomImageEndpointInput correctly appends the new input/button HTML to #custom-endpoints-list.
+Click Feedback: Modify handleSendPromptClick and handleGenerateApiPromptClick to immediately (before any async work) disable the clicked button and display a relevant "Processing..." or "Sending..." message in the appropriate message box (#configMessageBox or #resultsMessageBox). This provides instant visual confirmation of the click being registered.
+Phase 2: Debug & Fix ComfyUI /prompt API Call:Detailed Logging in script.js (callImageGenerationAPI - local_comfyui case):Log the selected workflow (comfyWorkflowSelect.value).
+Log the workflow string retrieved from comfyWorkflows.
+Log the object after JSON.parse(). Add a try...catch specifically around this parsing.
+Log the object after the deep copy (JSON.parse(JSON.stringify(...))). Add a try...catch.
+Log the prompt being injected.
+Log the KSampler node's seed value before doing anything to it (confirming it's untouched).
+Log the final requestBody before JSON.stringify.
+Log the exact apiUrl being used for the /prompt fetch.
+Add console.log('>>> Sending request to /prompt...'); right before Workspace.
+Wrap the /prompt fetch call in a try...catch block. In the catch, log the specific error (console.error('!!! /prompt fetch failed:', error);) and display a user-friendly message in #resultsMessageBox.
+If the fetch promise resolves (even with HTTP errors), log the response.status and response.statusText. Attempt to log await response.text() to see any error message from the server, even if it's not JSON.
+Only proceed to parse JSON and get prompt_id if response.ok is true. Log the extracted prompt_id.
+Code Output: Provide the complete index.html, styles.css, and script.js incorporating all fixes from Phases 1 & 2. data.js remains unchanged.
+Executing the Plan:
+
+Here is the api info
+tandard Method: REST API Workflow
+Send Workflow as JSON via POST
+You send your workflow (in the correct API JSON format) to the /prompt endpoint using a POST request from your frontend JavaScript689.
+Example endpoint: http://<comfyui-server>:8188/prompt
+Receive the Response
+The response will contain a prompt_id (a unique identifier for your request)8.
+Example response:
+
+
+json
+{ "prompt_id": "10b3da78-cf5f-4ed7-885d-dccf5f3f3c69"}
+Poll for Completion
+Use the prompt_id to poll the /history/<prompt_id> endpoint to check if the workflow is finished and to retrieve output metadata (filenames, subfolders, etc.)8.
+Example: GET http://<comfyui-server>:8188/history/<prompt_id>
+Retrieve the Image(s)
+Once the workflow is complete, the /history/<prompt_id> response will include output image info (filename, subfolder, type).
+You can then fetch the image file(s) using the /view endpoint, passing the filename, subfolder, and type as query parameters8.
+Example: /view?filename=<filename>&type=<type>&subfolder=<subfolder>
+Display in HTML/JavaScript
+In your frontend, you can set the image src to the /view URL to display the result.
+Example JavaScript (Browser)
+
+javascript
+// 1. Send workflowfetch('http://<comfyui-server>:8188/prompt', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: workflowJson })}).then(res => res.json()).then(data => { const promptId = data.prompt_id; // 2. Poll for completion const poll = setInterval(() => { fetch(`http://<comfyui-server>:8188/history/${promptId}`) .then(res => res.json()) .then(history => { const output = history[promptId]?.outputs; if (output) { clearInterval(poll); // 3. Get image info and display for (const nodeId in output) { if (output[nodeId].images) { const img = output[nodeId].images[0]; const imgUrl = `/view?filename=${img.filename}&type=${img.type}&subfolder=${img.subfolder}`; document.getElementById('result').src = imgUrl; } } } }); }, 2000);});
+(Replace <comfyui-server> with your server address.)
+
+
+revise your plan, focus and complete your task. i have faith in you!
+
+

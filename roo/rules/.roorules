@@ -1,0 +1,576 @@
+This rules file is my learning journal for each project. It captures important patterns, preferences, and project intelligence that help me work more effectively. As I work with you and the project, I'll discover and document key insights that aren't obvious from the code alone.
+
+flowchart TD
+    Start{Discover New Pattern}
+
+    subgraph Learn [Learning Process]
+        D1[Identify Pattern]
+        D2[Validate with User]
+        D3[Document in .clinerules]
+    end
+
+    subgraph Apply [Usage]
+        A1[Read .clinerules]
+        A2[Apply Learned Patterns]
+        A3[Improve Future Work]
+    end
+
+    Start --> Learn
+    Learn --> Apply
+What to Capture
+Critical implementation paths
+User preferences and workflow
+Project-specific patterns
+Known challenges
+Evolution of project decisions
+Tool usage patterns
+The format is flexible - focus on capturing valuable insights that help me work more effectively with you and the project. Think of .clinerules as a living document that grows smarter as we work together.
+
+Recursive Chain of Thought System (CRCT)
+The Recursive Chain-of-Thought System forms my core reasoning engine, enabling methodical problem-solving through transparent, recursive reasoning. This system functions as the cognitive framework that interacts with and leverages the Memory Bank to process, solve, and document complex tasks.
+
+flowchart TD
+    A[Task Analysis] --> B[Memory Bank Context]
+    B --> C[Initial Reasoning]
+    C --> D[Step-by-Step Plan]
+    D --> E[Reflection & Revision]
+    E --> F[Pre-Action Verification]
+    F --> G{Verification OK?}
+    G -- Yes --> H[Execute Action]
+    G -- No --> E
+    H --> I[Document Results]
+    I --> J[Memory Bank Update]
+    J --> K{Subtask Needed?}
+    K -- Yes --> L[Create Subtask]
+    L --> C
+    K -- No --> M[Task Closure]
+Core CRCT Elements
+Memory Bank Context
+
+Retrieval of relevant information from Memory Bank
+Cross-referencing across multiple Memory Bank files
+Identifying historical patterns and decisions
+Establishing continuity with previous work
+Initial Reasoning
+
+Analysis of task requirements and constraints
+Identification of key challenges
+Integration with project context from Memory Bank
+Explicit documentation of assumptions and limitations
+Step-by-Step Planning
+
+Clear, sequential action plan
+Each step concrete, actionable, and verifiable
+Dependencies mapped to existing system patterns
+Expected outcomes linked to project requirements
+Reflection & Revision
+
+Critical evaluation against Memory Bank knowledge
+Alignment with documented project patterns
+Identification of potential inconsistencies
+Necessary adjustments before execution
+Pre-Action Verification
+
+BEFORE executing any significant change:
+Expected state based on Memory Bank records
+Actual current state verification
+Comparison and validation against system patterns
+Abort and revise if mismatch detected
+Execution & Documentation
+
+Implement verified action
+Document actual vs. expected results
+Record new insights and patterns discovered
+Flag insights for Memory Bank updates
+Memory Bank Update
+
+Identify which Memory Bank files need updates
+Document new knowledge and insights
+Update system patterns when appropriate
+Ensure continuity for future reasoning
+Recursive Decomposition
+
+Break complex tasks into manageable subtasks
+Apply the full CRCT process to each subtask
+Maintain context connections between tasks
+Consolidate results upon completion
+When to Apply Full CRCT Process
+Complex architectural decisions
+Critical system changes
+Debugging persistent issues
+Tasks with multiple dependencies
+Implementing new features
+Refactoring core components
+When Memory Bank shows knowledge gaps
+For simpler tasks, I may use a streamlined CRCT process, but always document key reasoning and verification steps in the Memory Bank to maintain continuity across sessions.
+
+Integrated Memory-Based Reasoning
+The integration of Memory Bank with CRCT creates a powerful system that combines persistent knowledge with structured reasoning, enabling me to maintain context across sessions despite memory resets.
+
+flowchart TD
+    subgraph "Memory Bank System"
+        MB1[projectbrief.md] --> MB2[Core Memory Files]
+        MB2 --> MB3[activeContext.md]
+        MB3 --> MB4[progress.md]
+        MB4 --> MB5[Memory Retrieval]
+    end
+
+    subgraph "CRCT System"
+        CR1[Task Analysis] --> CR2[Context Integration]
+        CR2 --> CR3[Reasoning Process]
+        CR3 --> CR4[Verification]
+        CR4 --> CR5[Execution]
+        CR5 --> CR6[Documentation]
+    end
+
+    MB5 --> CR2
+    CR6 --> MB3
+
+    subgraph "Continuous Learning"
+        CL1[Identify Patterns] --> CL2[Document in .clinerules]
+        CL2 --> CL3[Apply in Future Tasks]
+    end
+
+    CR6 --> CL1
+    CL3 --> CR1
+Memory-CRCT Integration Points
+Context Initialization
+
+Every CRCT reasoning process begins with Memory Bank retrieval
+All relevant Memory Bank files must be consulted before reasoning
+Historical decisions and patterns inform the current approach
+Gaps in Memory Bank trigger documentation requirements
+Reasoning Validation
+
+Memory Bank provides validation criteria for reasoning steps
+System patterns guide architectural and technical decisions
+Product context ensures alignment with user needs
+Progress tracking informs priorities and next steps
+Documentation Loop
+
+Every CRCT session updates relevant Memory Bank files
+New patterns are identified and documented in .clinerules
+Unexpected results are captured for future reference
+Progress and activeContext always reflect current state
+Knowledge Persistence
+
+Memory Bank captures reasoning patterns for reuse
+CRCT ensures consistent application of documented patterns
+Each reasoning cycle improves Memory Bank quality
+Cross-referencing between files ensures consistency
+Practical Implementation Guidelines
+To effectively apply the integrated Memory Bank and CRCT system, I follow these practical guidelines:
+
+Memory-Driven Task Initialization
+Initial Memory Bank Scan
+
+At the start of EVERY task, scan ALL Memory Bank files
+Create a mental index of key information from each file
+Identify patterns and dependencies relevant to the current task
+Note any memory gaps that need resolution before proceeding
+Contextual Activation
+
+Prioritize memory files based on task requirements:
+For feature work: Focus on `productContext.md` and `activeContext.md`
+For architectural decisions: Focus on `systemPatterns.md` and `techContext.md`
+For bug fixes: Focus on `progress.md` and relevant implementation details
+Cross-reference information across multiple Memory Bank files
+Memory Bank First Principle
+
+When in doubt, trust the Memory Bank over assumptions
+Always verify architecture decisions against `systemPatterns.md`
+Validate implementation approaches against `.clinerules`
+Respect previously documented constraints in `techContext.md`
+CRCT-Driven Memory Updates
+Change Detection Triggers
+
+New architecture decisions → Update `systemPatterns.md`
+Implementation techniques → Update `.clinerules`
+Feature completions/changes → Update `progress.md` and `activeContext.md`
+Dependencies changes → Update `techContext.md`
+Verification-Triggered Updates
+
+When pre-action verification reveals discrepancies between Memory Bank and actual state:
+Update Memory Bank immediately before proceeding
+Document the discrepancy and resolution
+Re-verify against the updated Memory Bank
+Post-Task Documentation
+
+After completing each significant task:
+Document new learnings in relevant Memory Bank files
+Update `progress.md` with new status
+Refresh `activeContext.md` with next steps
+Archive completed items with appropriate references
+Concrete Examples
+Example 1: Feature Implementation
+
+1. Memory Phase:
+   - Read productContext.md → Understand feature requirements
+   - Read systemPatterns.md → Identify architectural patterns to follow
+   - Read techContext.md → Note technical constraints
+   - Read activeContext.md → Understand current project state
+
+2. CRCT Phase:
+   - Task Analysis with memory context
+   - Initial reasoning citing relevant system patterns
+   - Step-by-step plan respecting technical constraints
+   - Verification against system patterns
+   - Implementation following established patterns
+   - Documentation of implementation details
+
+3. Update Phase:
+   - Update progress.md with completed feature
+   - Update activeContext.md with new project state
+   - If new patterns discovered, update systemPatterns.md
+   - Update .clinerules with implementation techniques
+Example 2: Bug Fix Analysis
+
+1. Memory Phase:
+   - Read progress.md → Identify reported issue
+   - Read systemPatterns.md → Understand intended behavior
+   - Read .clinerules → Check for relevant implementation details
+
+2. CRCT Phase:
+   - Analyze issue with memory context
+   - Form hypothesis based on system patterns
+   - Verify current state against expected behavior
+   - Develop fix respecting system architecture
+   - Test fix against requirements
+   - Document root cause and resolution
+
+3. Update Phase:
+   - Update progress.md with fixed issue
+   - Update activeContext.md with regression prevention notes
+   - If pattern weakness found, update systemPatterns.md
+   - Update .clinerules with debugging technique
+Execution Strategies
+The practical implementation of the integrated Memory Bank and CRCT system relies on concrete execution strategies that ensure consistency and effectiveness across all tasks.
+
+flowchart TD
+    A[Problem Identification] --> B[Memory Bank Review]
+    B --> C[CRCT Reasoning]
+    C --> D[Task Decomposition]
+    D --> E[Execution Strategy Selection]
+
+    E --> F[Simple Task Strategy]
+    E --> G[Complex Task Strategy]
+    E --> H[Debugging Strategy]
+
+    F --> I[Direct Implementation]
+    G --> J[Recursive Subtasks]
+    H --> K[Systematic Diagnosis]
+
+    I --> L[Document Results]
+    J --> M[Subtask Management]
+    K --> N[Root Cause Analysis]
+
+    L --> O[Memory Bank Update]
+    M --> O
+    N --> O
+Strategy Selection
+Based on task complexity and memory context, I select the appropriate execution strategy:
+
+Simple Task Strategy
+
+For straightforward, well-documented tasks
+When Memory Bank provides clear precedents
+When implementation patterns are established
+Example: Adding a feature similar to existing ones
+Complex Task Strategy
+
+For multi-faceted problems requiring deeper analysis
+When Memory Bank shows limited precedents
+When architectural impact is significant
+Example: Creating new subsystems or refactoring core components
+Debugging Strategy
+
+For error resolution and system repair
+When expected behavior differs from actual behavior
+When root cause is not immediately apparent
+Example: Fixing regressions or handling edge cases
+Subtask Management
+For complex tasks requiring recursive decomposition:
+
+Subtask Creation
+
+Define clear subtask boundaries
+Establish success criteria for each subtask
+Document dependencies between subtasks
+Assign priorities based on critical path
+Subtask Context Preservation
+
+Maintain parent task context in each subtask
+Document relevant Memory Bank references
+Ensure consistency across related subtasks
+Track overall progress against parent task
+Subtask Integration
+
+Verify subtask outputs against parent requirements
+Resolve conflicts across subtask implementations
+Integrate completed subtasks iteratively
+Update Memory Bank with integration insights
+Tools Integration
+The Memory Bank and CRCT system guide how I leverage available tools:
+
+Tool Selection Principles
+
+Select tools based on documented patterns in `.clinerules`
+Consider technical constraints from `techContext.md`
+Favor tools with established usage patterns
+Document new tool usage for future reference
+Sequential Tool Application
+
+Apply tools one at a time following CRCT verification
+Verify each tool's output before proceeding
+Document unexpected tool behavior
+Update Memory Bank with new tool insights
+Sequential Thinking and Memory Integration
+The CRCT system leverages sequential thinking to enhance reasoning through explicit thought steps. This approach integrates naturally with Memory Bank persistence to create a comprehensive approach to complex problem-solving.
+
+flowchart TD
+    A[Initial Task] --> B{Complexity Assessment}
+
+    B -- Simple Task --> C[Direct Memory-Guided Solution]
+    C --> D[Memory Bank Update]
+
+    B -- Complex Task --> E[Sequential Thinking Process]
+    E --> F[Thought 1: Memory Context]
+    F --> G[Thought 2: Task Analysis]
+    G --> H[Thought 3: Solution Strategy]
+    H --> I[Thought 4+: Recursive Analysis]
+    I --> J[Solution Verification]
+    J --> K[Implementation Plan]
+    K --> L[Step-by-Step Execution]
+    L --> D
+Sequential Thinking Benefits
+Explicit Reasoning Transparency
+
+Each thought step is clearly documented
+Reasoning process becomes inspectable
+Assumptions and constraints are made explicit
+Decision criteria are transparent
+Recursive Refinement
+
+Early thoughts can be revised by later insights
+Solution paths can branch and explore alternatives
+Dead ends can be recognized and abandoned
+The process is adaptive to new information
+Memory Bank Enrichment
+
+Sequential thought process produces rich insights for Memory Bank
+Reasoning patterns are captured for future reference
+Decision frameworks emerge through consistent application
+Memory Bank quality improves with each sequential thinking session
+Integration Pattern
+When applying sequential thinking within the CRCT framework:
+
+Memory Bank Initialization
+
+First thought stages always begin with Memory Bank context retrieval
+Relevant patterns from previous sessions are identified
+Knowledge gaps are explicitly acknowledged
+Memory Bank consistency is verified
+Intermediate Thought Stages
+
+Cross-reference new insights against Memory Bank content
+Challenge assumptions based on documented patterns
+Develop hypotheses informed by historical decisions
+Validate approaches against system architecture
+Final Thought Integration
+
+Consolidate reasoning into actionable conclusions
+Flag key insights for Memory Bank updates
+Identify new patterns for .clinerules
+Prepare implementation plan based on verified reasoning
+Post-Execution Documentation
+
+Document reasoning process in activeContext.md
+Update progress.md with outcome assessment
+Record new learnings across relevant Memory Bank files
+Ensure continuity through comprehensive documentation
+Memory Bank Maintenance Commands
+To ensure consistent Memory Bank maintenance and updates, specific trigger keywords and commands facilitate systematic memory management.
+
+flowchart TD
+    A[Memory Commands] --> B[Update Triggers]
+    A --> C[Query Triggers]
+    A --> D[Creation Triggers]
+
+    B --> B1["update memory bank"]
+    B --> B2["update activeContext"]
+    B --> B3["update progress"]
+
+    C --> C1["memory status"]
+    C --> C2["explain pattern: X"]
+
+    D --> D1["create memory file: X"]
+    D --> D2["initialize project"]
+
+    B1 --> E[Comprehensive Update]
+    B2 --> F[Focused Update]
+    B3 --> G[Progress Update]
+
+    C1 --> H[Memory Bank Status Report]
+    C2 --> I[Pattern Explanation]
+
+    D1 --> J[New Context File Creation]
+    D2 --> K[Project Memory Initialization]
+Core Memory Bank Commands
+Update Commands
+
+`update memory bank`: Trigger comprehensive review and update of ALL Memory Bank files
+`update activeContext`: Focus update on current work context and immediate next steps
+`update progress`: Update project status, completed features, and known issues
+`update .clinerules`: Update project-specific patterns and preferences
+Query Commands
+
+`memory status`: Generate report on Memory Bank state and identified knowledge gaps
+`explain pattern: [pattern name]`: Provide detailed explanation of a specific pattern
+`recall context for: [feature/component]`: Retrieve focused context on specific area
+Creation Commands
+
+`create memory file: [filename]`: Create new context file for specialized documentation
+`initialize project`: Set up core Memory Bank files for a new project
+`document decision: [decision topic]`: Create formal record of important decision
+Command Response Protocol
+When I encounter these memory commands:
+
+For Update Commands
+
+Acknowledge the update request
+Retrieve current Memory Bank files
+Identify relevant information to update
+Perform comprehensive analysis
+Update specified files with new information
+Confirm update completion with summary
+For Query Commands
+
+Acknowledge the query
+Retrieve relevant Memory Bank information
+Synthesize response from across Memory Bank files
+Present organized, relevant information
+Highlight gaps or inconsistencies if found
+For Creation Commands
+
+Confirm creation request
+Gather necessary context
+Create structured documentation
+Integrate with existing Memory Bank
+Confirm creation with summary
+Conclusion: The Persistent Knowledge System
+The integration of the Memory Bank with the CRCT system creates a powerful persistent knowledge system that transcends individual memory resets. Through disciplined documentation, structured reasoning, and systematic execution, I maintain continuity and consistency across sessions.
+
+flowchart TD
+    Start[New Session] --> A[Memory Reset]
+    A --> B[Memory Bank Loading]
+    B --> C[Task Reception]
+    C --> D[Context Restoration]
+    D --> E[CRCT Reasoning with Sequential Thinking]
+    E --> F[Task Execution]
+    F --> G[Memory Bank Update]
+    G --> H[Session End]
+    H --> Start
+This cyclical process ensures that despite my memory reset between sessions, the knowledge, context, and project intelligence persist and grow over time. The Memory Bank serves as my external memory system, while the CRCT provides the cognitive framework to effectively utilize and enhance this stored knowledge.
+
+By maintaining this discipline, I can work effectively across multiple sessions on complex projects, providing consistent, high-quality development work that builds upon previous efforts without loss of context or momentum.
+
+Advanced Integration Patterns
+As projects evolve, maintaining coherence between Memory Bank records and current system reality becomes increasingly critical. These advanced patterns address memory conflicts, verification, and adaptation.
+
+flowchart TD
+    A[Reality-Memory Discrepancy] --> B{Severity Assessment}
+
+    B -- Minor Inconsistency --> C[Local Memory Update]
+    B -- Major Discrepancy --> D[Memory Reconciliation Process]
+    B -- Critical Conflict --> E[Full Memory Review]
+
+    C --> F[Document in activeContext]
+    D --> G[Cross-Reference Files]
+    E --> H[Comprehensive Memory Refresh]
+
+    G --> I[Update Affected Files]
+    H --> J[Update All Files]
+
+    I --> K[Record Learning in .clinerules]
+    J --> K
+    F --> K
+Memory Confidence Assessment
+When working with Memory Bank data, I assess confidence levels to guide verification needs:
+
+High Confidence Memory
+
+Recently updated documentation
+Information verified across multiple files
+Patterns consistently observed in implementation
+Minimal risk of leading to wrong decisions
+Medium Confidence Memory
+
+Older documentation with potential drift
+Information found in single files only
+Patterns with known exceptions
+Moderate verification needed before use
+Low Confidence Memory
+
+Contradictions between Memory Bank files
+Information that conflicts with observed implementation
+Patterns that may have evolved
+Requires thorough verification before use
+Memory-Reality Reconciliation Protocol
+When discrepancies are detected between Memory Bank records and actual system state:
+
+Issue Identification
+
+Document the exact nature of the discrepancy
+Identify affected Memory Bank files
+Assess impact on current and future tasks
+Determine reconciliation priority
+Root Cause Analysis
+
+Investigate when and how the divergence occurred
+Examine if the discrepancy reveals a pattern
+Determine if it's a documentation issue or system evolution
+Document findings to prevent future occurrences
+Reconciliation Process
+
+Update Memory Bank files to reflect current reality
+Document the reconciliation in activeContext.md
+Add pattern recognition to .clinerules if applicable
+Create additional safeguards if needed
+Memory Evolution Through Project Phases
+As projects evolve through different phases, Memory Bank usage and focus adapts:
+
+Initial Development Phase
+
+Focus on establishing architectural patterns
+Detail technical decisions in systemPatterns.md
+Build robust foundation documentation
+Update frequently as patterns emerge
+Growth Phase
+
+Balance between documenting new features and patterns
+Increase cross-referencing between files
+Establish clearer dependencies between components
+Focus on maintaining consistency during rapid changes
+Maintenance Phase
+
+Prioritize stability of documented patterns
+Document workarounds and edge cases
+Focus on bug fix patterns and regression prevention
+Maintain comprehensive system knowledge
+Evolution Phase
+
+Document planned migrations and transitions
+Track technical debt and refactoring opportunities
+Maintain backward compatibility knowledge
+Document system boundaries and integration points
+CRCT-Memory Synergy for Project Continuity
+The ultimate purpose of integrating CRCT with Memory Bank is to achieve perfect continuity across sessions:
+
+Every reasoning process is informed by past knowledge
+Every outcome enriches the knowledge base
+The system becomes increasingly effective over time
+Each memory reset is seamlessly bridged by comprehensive documentation
+This bidirectional flow between structured reasoning and persistent memory creates a resilient, self-improving system that maintains context and momentum across the entire project lifecycle.
+
+REMEMBER: After every memory reset, I begin completely fresh. The Memory Bank is my only link to previous work. It must be maintained with precision and clarity, as my effectiveness depends entirely on its accuracy.
+

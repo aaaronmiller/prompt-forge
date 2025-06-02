@@ -26,151 +26,65 @@ const dropdownData = {
     cinematicOptions: [ { id: "co1", value: "8mm lens", label: "8mm Lens" }, { id: "co2", value: "16mm lens", label: "16mm Lens" }, { id: "co3", value: "35mm lens", label: "35mm Lens" }, { id: "co4", value: "50mm lens", label: "50mm Lens" }, { id: "co5", value: "85mm lens", label: "85mm Lens" }, { id: "co6", value: "cinematic photography", label: "Cinematic Photography" }, { id: "co7", value: "macro photography", label: "Macro Photography" }, { id: "co8", value: "tilt-shift effect", label: "Tilt-Shift Effect" }, { id: "co9", value: "zoom effect", label: "Zoom Effect" }, { id: "co10", value: "shallow depth of field", label: "Shallow Depth of Field (Bokeh)" }, { id: "co11", value: "strong bokeh", label: "Strong Bokeh" }, { id: "co12", value: "subtle bokeh", label: "Subtle Bokeh" }, { id: "co13", value: "lens flare", label: "Lens Flare" }, { id: "co14", value: "anamorphic lens flare", label: "Anamorphic Lens Flare" }, { id: "co15", value: "soft focus", label: "Soft Focus" } ]
 };
 
+
 // Stored ComfyUI Workflows (as strings)
 const comfyWorkflows = {
-    "Comfy API": `{
-      "6": {
-        "inputs": {
-          "text": "A satirical caricature of a retro-futuristic human couple, a forbidden romance unfolding amidst submerged ruins and floating islands in a dreamlike sequence.  The scene depicts a secret rendezvous at an underground rave within a partially flooded ancient city, illuminated by the neon glow of holographic projections and the hazy smoke of incense.  An armored rhino, adorned with Polynesian tattoos, stands guard nearby, partially submerged in the murky water.  The composition utilizes a tilted frame, emphasizing a dynamic angle that follows the rule of thirds. The color palette leans towards earthy tones, contrasted by vibrant neon accents and light leaks from an unseen source, creating a chiaroscuro effect.  The style is a blend of vintage frame aesthetic, reminiscent of old travel posters, with the detailed linework and bold colors of a satirical caricature, emphasizing the dreamlike, surreal nature of the secret rendezvous.  Intricate details include the reflection of neon signs on the wet surfaces of the ruins and the smoke swirling around the couple. The overall effect evokes a retro-futuristic, slightly chaotic, and dreamlike atmosphere, suitable for a t-shirt graphic. The image is further enhanced by a subtle volumetric lighting effect, highlighting the textures and depth of the submerged environment.",
-          "clip": [
-            "42",
-            0
-          ]
-        },
-        "class_type": "CLIPTextEncode",
-        "_meta": {
-          "title": "CLIP Text Encode (Positive Prompt)"
-        }
-      },
-      "8": {
-        "inputs": {
-          "samples": [
-            "31",
-            0
-          ],
-          "vae": [
-            "41",
-            0
-          ]
-        },
-        "class_type": "VAEDecode",
-        "_meta": {
-          "title": "VAE Decode"
-        }
-      },
-      "27": {
-        "inputs": {
-          "width": 832,
-          "height": 1216,
-          "batch_size": 1
-        },
-        "class_type": "EmptySD3LatentImage",
-        "_meta": {
-          "title": "EmptySD3LatentImage"
-        }
-      },
-      "31": {
-        "inputs": {
-          "seed": 1016353382075181,
-          "steps": 4,
-          "cfg": 1,
-          "sampler_name": "euler",
-          "scheduler": "simple",
-          "denoise": 1,
-          "model": [
-            "40",
-            0
-          ],
-          "positive": [
-            "35",
-            0
-          ],
-          "negative": [
-            "46",
-            0
-          ],
-          "latent_image": [
-            "27",
-            0
-          ]
-        },
-        "class_type": "KSampler",
-        "_meta": {
-          "title": "KSampler"
-        }
-      },
-      "35": {
-        "inputs": {
-          "guidance": 3.5,
-          "conditioning": [
-            "6",
-            0
-          ]
-        },
-        "class_type": "FluxGuidance",
-        "_meta": {
-          "title": "FluxGuidance"
-        }
-      },
-      "40": {
-        "inputs": {
-          "unet_name": "shuttleMixes_305GGUFQ3KS.gguf"
-        },
-        "class_type": "UnetLoaderGGUF",
-        "_meta": {
-          "title": "Unet Loader (GGUF)"
-        }
-      },
-      "41": {
-        "inputs": {
-          "vae_name": "ae.safetensors"
-        },
-        "class_type": "VAELoader",
-        "_meta": {
-          "title": "Load VAE"
-        }
-      },
-      "42": {
-        "inputs": {
-          "clip_name1": "clip_l.safetensors",
-          "clip_name2": "t5-v1_1-xxl-encoder-Q8_0.gguf",
-          "type": "flux"
-        },
-        "class_type": "DualCLIPLoaderGGUF",
-        "_meta": {
-          "title": "DualCLIPLoader (GGUF)"
-        }
-      },
-      "46": {
-        "inputs": {
-          "text": "",
-          "clip": [
-            "42",
-            0
-          ]
-        },
-        "class_type": "CLIPTextEncode",
-        "_meta": {
-          "title": "CLIP Text Encode (Negative Prompt)"
-        }
-      },
-      "50": {
-        "inputs": {
-          "filename_prefix": "prompt-forge",
-          "images": [
-            "8",
-            0
-          ]
-        },
-        "class_type": "SaveImage",
-        "_meta": {
-          "title": "Save Image"
-        }
-      }
-    }`
+  // Existing GGUF_COMFY_WORKFLOW - now with more placeholders
+"GGUF_COMFY_WORKFLOW": `{
+  "6": { "inputs": { "text": "[PROMPT_PLACEHOLDER]", "clip": ["42", 0] }, "class_type": "CLIPTextEncode", "_meta": {"title": "CLIP Text Encode (Positive Prompt)"}},
+  "8": { "inputs": {"samples": ["31", 0], "vae": ["41", 0]}, "class_type": "VAEDecode", "_meta": {"title": "VAE Decode"}},
+  "27": { "inputs": {"width": "[WIDTH_PLACEHOLDER]", "height": "[HEIGHT_PLACEHOLDER]", "batch_size": 1}, "class_type": "EmptySD3LatentImage", "_meta": {"title": "EmptySD3LatentImage"}},
+  "31": { "inputs": { "seed": "[SEED_PLACEHOLDER]", "steps": "[STEPS_PLACEHOLDER]", "cfg": 1, "sampler_name": "euler", "scheduler": "simple", "denoise": 1, "model": ["40", 0], "positive": ["35", 0], "negative": ["46", 0], "latent_image": ["27", 0] }, "class_type": "KSampler", "_meta": {"title": "KSampler"}},
+  "35": { "inputs": {"guidance": 3.5, "conditioning": ["6", 0]}, "class_type": "FluxGuidance", "_meta": {"title": "FluxGuidance"}},
+  "40": { "inputs": {"unet_name": "[MODEL_NAME_PLACEHOLDER]"}, "class_type": "UnetLoaderGGUF", "_meta": {"title": "Unet Loader (GGUF)"}},
+  "41": { "inputs": {"vae_name": "ae.safetensors"}, "class_type": "VAELoader", "_meta": {"title": "Load VAE"}},
+  "42": { "inputs": { "clip_name1": "clip_l.safetensors", "clip_name2": "t5-v1_1-xxl-encoder-Q8_0.gguf", "type": "flux"}, "class_type": "DualCLIPLoaderGGUF", "_meta": {"title": "DualCLIPLoader (GGUF)"}},
+  "46": { "inputs": {"text": "[NEGATIVE_PROMPT_PLACEHOLDER]", "clip": ["42", 0]}, "class_type": "CLIPTextEncode", "_meta": {"title": "CLIP Text Encode (Negative Prompt)"}},
+  "52": { "inputs": {"filename_prefix": "AutogenGGUF", "images": ["8", 0]}, "class_type": "SaveImage", "_meta": {"title": "Save Image"}}
+}`,
+
+// Existing MFLUX_WORKFLOW - with placeholders for size/steps
+"MFLUX_WORKFLOW": `{
+  "2": { "inputs": { "prompt": "[PROMPT_PLACEHOLDER]", "model": "schnell", "quantize": "4", "seed": "[SEED_PLACEHOLDER]", "width": "[WIDTH_PLACEHOLDER]", "height": "[HEIGHT_PLACEHOLDER]", "steps": "[STEPS_PLACEHOLDER]", "guidance": 3.5, "metadata": "false", "Local_model": ["3", 0] }, "class_type": "QuickMfluxNode", "_meta": { "title": "Quick MFlux Generation" }},
+  "3": { "inputs": { "model_name": "flux.1-schnell-mflux-4bit", "free_path": "" }, "class_type": "MfluxModelsLoader", "_meta": { "title": "MFlux Models Loader" }},
+  "4": { "inputs": { "images": ["2", 0] }, "class_type": "PreviewImage", "_meta": { "title": "Preview Image" }}
+}`,
+
+// New CHECKPOINT_WORKFLOW
+"CHECKPOINT_WORKFLOW": `{
+  "3": { "inputs": { "seed": "[SEED_PLACEHOLDER]", "steps": "[STEPS_PLACEHOLDER]", "cfg": 8, "sampler_name": "euler", "scheduler": "normal", "denoise": 1, "model": ["4",0], "positive": ["6",0], "negative": ["7",0], "latent_image": ["5",0] }, "class_type": "KSampler", "_meta": { "title": "KSampler" }},
+  "4": { "inputs": { "ckpt_name": "[MODEL_NAME_PLACEHOLDER]" }, "class_type": "CheckpointLoaderSimple", "_meta": { "title": "Load Checkpoint" }},
+  "5": { "inputs": { "width": "[WIDTH_PLACEHOLDER]", "height": "[HEIGHT_PLACEHOLDER]", "batch_size": 1 }, "class_type": "EmptyLatentImage", "_meta": { "title": "Empty Latent Image" }},
+  "6": { "inputs": { "text": "[PROMPT_PLACEHOLDER]", "clip": ["4",1] }, "class_type": "CLIPTextEncode", "_meta": { "title": "CLIP Text Encode (Prompt)" }},
+  "7": { "inputs": { "text": "[NEGATIVE_PROMPT_PLACEHOLDER]", "clip": ["4",1] }, "class_type": "CLIPTextEncode", "_meta": { "title": "CLIP Text Encode (Negative Prompt)" }},
+  "8": { "inputs": { "samples": ["3",0], "vae": ["4",2] }, "class_type": "VAEDecode", "_meta": { "title": "VAE Decode" }},
+  "9": { "inputs": { "filename_prefix": "AutogenCheckpoint", "images": ["8",0] }, "class_type": "SaveImage", "_meta": { "title": "Save Image" }}
+}`
 };
 
-// Stored API Keys (USE PLACEHOLDERS ONLY - DO NOT COMMIT REAL KEYS)
+// In data.js
+
+const ggufModelFiles = [
+    "flux1-schnell-Q2_K.gguf",
+    "flux1-schnell-Q5_1.gguf",
+    "fluxDEVDEDISTILLED_q2K.gguf",
+    "pixelwave_flux1_schnell_Q4_K_M_01.gguf", // Current default
+    "shuttleMixes_3031JAGQ4KM.gguf",
+    "shuttleMixes_305GGUFQ3KS.gguf"
+];
+
+const checkpointModelFiles = [
+    "bigasp_v20.safetensors",
+    "flux1-dev-fp8.safetensors",
+    "fucktasticRealCheckpointPony_21.safetensors",
+    "perfectionRealisticILXL_v10.safetensors",
+    "realDream_sdxlPony14.safetensors",
+    "shuttle-jaguar.safetensors", // Default from your example
+    "shuttleJaguarNF4_nf4.safetensors",
+    "v1-5-pruned-emaonly-fp16.safetensors"
+];
+
+// Stored API Keys
 const storedApiKeys = {
-  gemini: '' // Or 'YOUR_GEMINI_API_KEY_HERE'
+    gemini: 'AIzaSyB8Ak6aDVOEkSetkxGAbv6KphInPeCMShE'
 };

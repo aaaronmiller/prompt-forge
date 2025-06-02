@@ -1,0 +1,526 @@
+const pornGeneratorData = {
+    // Who’s getting it on? The main players in your filthy fantasy
+    performers: [
+        { id: "pf1", value: "solo_male", label: "Solo Male" },
+        { id: "pf2", value: "solo_female", label: "Solo Female" },
+        { id: "pf3", value: "mf_couple", label: "M/F Couple" },
+        { id: "pf4", value: "mm_couple", label: "M/M Couple" },
+        { id: "pf5", value: "ff_couple", label: "F/F Couple" },
+        { id: "pf6", value: "threesome_mmf", label: "MMF Threesome" },
+        { id: "pf7", value: "threesome_fff", label: "FFF Threesome" },
+        { id: "pf8", value: "orgy", label: "Orgy" },
+        { id: "pf9", value: "trans_performer", label: "Trans Performer" },
+        { id: "pf10", value: "amateur_couple", label: "Amateur Couple" },
+        { id: "pf11", value: "bdsm_dom", label: "BDSM Dom" },
+        { id: "pf12", value: "bdsm_sub", label: "BDSM Sub" },
+        { id: "pf13", value: "cosplay_performer", label: "Cosplay Performer" },
+        { id: "pf14", value: "milf", label: "MILF" },
+        { id: "pf15", value: "twink", label: "Twink" },
+        { id: "pf16", value: "bear", label: "Bear" },
+        { id: "pf17", value: "femdom", label: "Femdom" },
+        { id: "pf18", value: "interracial_pair", label: "Interracial Pair" },
+        { id: "pf19", value: "petite_performer", label: "Petite Performer" },
+        { id: "pf20", value: "curvy_performer", label: "Curvy Performer" }
+    ],
+    // Where’s the action happening? Locations to set the mood
+    sex_locations: [
+        { id: "sl1", value: "bedroom", label: "Bedroom" },
+        { id: "sl2", value: "bathroom_shower", label: "Bathroom Shower" },
+        { id: "sl3", value: "kitchen_counter", label: "Kitchen Counter" },
+        { id: "sl4", value: "public_restroom", label: "Public Restroom" },
+        { id: "sl5", value: "hotel_room", label: "Hotel Room" },
+        { id: "sl6", value: "beach", label: "Beach" },
+        { id: "sl7", value: "forest_clearing", label: "Forest Clearing" },
+        { id: "sl8", value: "movie_theater", label: "Movie Theater" },
+        { id: "sl9", value: "car_backseat", label: "Car Backseat" },
+        { id: "sl10", value: "strip_club", label: "Strip Club" },
+        { id: "sl11", value: "dungeon", label: "BDSM Dungeon" },
+        { id: "sl12", value: "rooftop", label: "Rooftop" },
+        { id: "sl13", value: "alleyway", label: "Alleyway" },
+        { id: "sl14", value: "luxury_yacht", label: "Luxury Yacht" },
+        { id: "sl15", value: "sauna", label: "Sauna" },
+        { id: "sl16", value: "gym_locker_room", label: "Gym Locker Room" },
+        { id: "sl17", value: "office_desk", label: "Office Desk" },
+        { id: "sl18", value: "swingers_club", label: "Swingers Club" },
+        { id: "sl19", value: "hot_tub", label: "Hot Tub" },
+        { id: "sl20", value: "sex_shop", label: "Sex Shop" }
+    ],
+    // What’s the vibe of the scene? The kinky context
+    sex_scenarios: [
+        { id: "ss1", value: "passionate_lovemaking", label: "Passionate Lovemaking" },
+        { id: "ss2", value: "rough_sex", label: "Rough Sex" },
+        { id: "ss3", value: "roleplay_doctor", label: "Doctor/Patient Roleplay" },
+        { id: "ss4", value: "public_exhibitionism", label: "Public Exhibitionism" },
+        { id: "ss5", value: "bdsm_bondage", label: "BDSM Bondage" },
+        { id: "ss6", value: "threesome_fantasy", label: "Threesome Fantasy" },
+        { id: "ss7", value: "orgy_party", label: "Orgy Party" },
+        { id: "ss8", value: "voyeuristic_encounter", label: "Voyeuristic Encounter" },
+        { id: "ss9", value: "cuckold_scenario", label: "Cuckold Scenario" },
+        { id: "ss10", value: "sensual_massage", label: "Sensual Massage" },
+        { id: "ss11", value: "forbidden_affair", label: "Forbidden Affair" },
+        { id: "ss12", value: "stranger_hookup", label: "Stranger Hookup" },
+        { id: "ss13", value: "dom_sub_play", label: "Dom/Sub Play" },
+        { id: "ss14", value: "group_sex", label: "Group Sex" },
+        { id: "ss15", value: "sex_tape_filming", label: "Sex Tape Filming" },
+        { id: "ss16", value: "striptease", label: "Striptease" },
+        { id: "ss17", value: "swinger_swap", label: "Swinger Swap" },
+        { id: "ss18", value: "kinky_fetish", label: "Kinky Fetish" },
+        { id: "ss19", value: "tantric_sex", label: "Tantric Sex" },
+        { id: "ss20", value: "quickie", label: "Quickie" }
+    ],
+    // Fetish-specific props or elements to spice things up
+    fetish_props: [
+        { id: "fp1", value: "leather_cuffs", label: "Leather Cuffs" },
+        { id: "fp2", value: "blindfold", label: "Blindfold" },
+        { id: "fp3", value: "whip", label: "Whip" },
+        { id: "fp4", value: "dildo", label: "Dildo" },
+        { id: "fp5", value: "vibrator", label: "Vibrator" },
+        { id: "fp6", value: "nipple_clamps", label: "Nipple Clamps" },
+        { id: "fp7", value: "rope", label: "Rope" },
+        { id: "fp8", value: "collar", label: "Collar" },
+        { id: "fp9", value: "latex_suit", label: "Latex Suit" },
+        { id: "fp10", value: "ball_gag", label: "Ball Gag" },
+        { id: "fp11", value: "sex_swing", label: "Sex Swing" },
+        { id: "fp12", value: "handcuffs", label: "Handcuffs" },
+        { id: "fp13", value: "butt_plug", label: "Butt Plug" },
+        { id: "fp14", value: "paddles", label: "Paddles" },
+        { id: "fp15", value: "chains", label: "Chains" },
+        { id: "fp16", value: "feathers", label: "Feathers" },
+        { id: "fp17", value: "ice_cubes", label: "Ice Cubes" },
+        { id: "fp18", value: "hot_wax", label: "Hot Wax" },
+        { id: "fp19", value: "stockings", label: "Stockings" },
+        { id: "fp20", value: "high_heels", label: "High Heels" }
+    ],
+    // Outfits to make it extra nasty
+    outfits: [
+        { id: "ot1", value: "lingerie", label: "Lingerie" },
+        { id: "ot2", value: "leather_harness", label: "Leather Harness" },
+        { id: "ot3", value: "schoolgirl_uniform", label: "Schoolgirl Uniform" },
+        { id: "ot4", value: "nurse_outfit", label: "Nurse Outfit" },
+        { id: "ot5", value: "maid_costume", label: "Maid Costume" },
+        { id: "ot6", value: "latex_bodysuit", label: "Latex Bodysuit" },
+        { id: "ot7", value: "fishnet_stockings", label: "Fishnet Stockings" },
+        { id: "ot8", value: "police_uniform", label: "Police Uniform" },
+        { id: "ot9", value: "bikini", label: "Bikini" },
+        { id: "ot10", value: "thong", label: "Thong" },
+        { id: "ot11", value: "corset", label: "Corset" },
+        { id: "ot12", value: "jockstrap", label: "Jockstrap" },
+        { id: "ot13", value: "cheerleader_outfit", label: "Cheerleader Outfit" },
+        { id: "ot14", value: "tuxedo", label: "Tuxedo" },
+        { id: "ot15", value: "sheer_robe", label: "Sheer Robe" },
+        { id: "ot16", value: "goth_lingerie", label: "Goth Lingerie" },
+        { id: "ot17", value: "sports_bra", label: "Sports Bra" },
+        { id: "ot18", value: "cowboy_outfit", label: "Cowboy Outfit" },
+        { id: "ot19", value: "burlesque_costume", label: "Burlesque Costume" },
+        { id: "ot20", value: "naked", label: "Naked" }
+    ],
+    // Body types to keep it varied
+    body_types: [
+        { id: "bt1", value: "athletic", label: "Athletic" },
+        { id: "bt2", value: "curvy", label: "Curvy" },
+        { id: "bt3", value: "petite", label: "Petite" },
+        { id: "bt4", value: "muscular", label: "Muscular" },
+        { id: "bt5", value: "plus_size", label: "Plus-Size" },
+        { id: "bt6", value: "tall", label: "Tall" },
+        { id: "bt7", value: "slim", label: "Slim" },
+        { id: "bt8", value: "busty", label: "Busty" },
+        { id: "bt9", value: "toned", label: "Toned" },
+        { id: "bt10", value: "chubby", label: "Chubby" },
+        { id: "bt11", value: "lean", label: "Lean" },
+        { id: "bt12", value: "voluptuous", label: "Voluptuous" },
+        { id: "bt13", value: "androgynous", label: "Androgynous" },
+        { id: "bt14", value: "hourglass", label: "Hourglass" },
+        { id: "bt15", value: "pear_shaped", label: "Pear-Shaped" },
+        { id: "bt16", value: "stocky", label: "Stocky" },
+        { id: "bt17", value: "slender", label: "Slender" },
+        { id: "bt18", value: "tattooed", label: "Tattooed" },
+        { id: "bt19", value: "pierced", label: "Pierced" },
+        { id: "bt20", value: "natural", label: "Natural" }
+    ],
+    // Fetish-specific environments or backdrops
+    fetish_environments: [
+        { id: "fe1", value: "red_room", label: "Red Room" },
+        { id: "fe2", value: "leather_club", label: "Leather Club" },
+        { id: "fe3", value: "latex_studio", label: "Latex Studio" },
+        { id: "fe4", value: "fetish_dungeon", label: "Fetish Dungeon" },
+        { id: "fe5", value: "mirror_room", label: "Mirror Room" },
+        { id: "fe6", value: "velvet_lounge", label: "Velvet Lounge" },
+        { id: "fe7", value: "cage_area", label: "Cage Area" },
+        { id: "fe8", value: "shibari_room", label: "Shibari Room" },
+        { id: "fe9", value: "blacklight_club", label: "Blacklight Club" },
+        { id: "fe10", value: "voyeur_balcony", label: "Voyeur Balcony" },
+        { id: "fe11", value: "sex_sanctuary", label: "Sex Sanctuary" },
+        { id: "fe12", value: "orgy_arena", label: "Orgy Arena" },
+        { id: "fe13", value: "fetish_stage", label: "Fetish Stage" },
+        { id: "fe14", value: "bondage_loft", label: "Bondage Loft" },
+        { id: "fe15", value: "sensory_deprivation_room", label: "Sensory Deprivation Room" },
+        { id: "fe16", value: "pleasure_garden", label: "Pleasure Garden" },
+        { id: "fe17", value: "kink_playroom", label: "Kink Playroom" },
+        { id: "fe18", value: "erotic_spa", label: "Erotic Spa" },
+        { id: "fe19", value: "swingers_mansion", label: "Swingers Mansion" },
+        { id: "fe20", value: "taboo_temple", label: "Taboo Temple" }
+    ],
+    // Accessories to add that extra filth
+    sex_accessories: [
+        { id: "sa1", value: "choker", label: "Choker" },
+        { id: "sa2", value: "body_oil", label: "Body Oil" },
+        { id: "sa3", value: "piercings", label: "Piercings" },
+        { id: "sa4", value: "tattoos", label: "Tattoos" },
+        { id: "sa5", value: "garter_belt", label: "Garter Belt" },
+        { id: "sa6", value: "nipple_rings", label: "Nipple Rings" },
+        { id: "sa7", value: "cock_ring", label: "Cock Ring" },
+        { id: "sa8", value: "ankle_cuffs", label: "Ankle Cuffs" },
+        { id: "sa9", value: "thigh_highs", label: "Thigh Highs" },
+        { id: "sa10", value: "mask", label: "Mask" },
+        { id: "sa11", value: "gloves", label: "Gloves" },
+        { id: "sa12", value: "body_paint", label: "Body Paint" },
+        { id: "sa13", value: "chastity_belt", label: "Chastity Belt" },
+        { id: "sa14", value: "spiked_collar", label: "Spiked Collar" },
+        { id: "sa15", value: "harness", label: "Harness" },
+        { id: "sa16", value: "fishnet_bodysuit", label: "Fishnet Bodysuit" },
+        { id: "sa17", value: "edible_underwear", label: "Edible Underwear" },
+        { id: "sa18", value: "sex_toy_belt", label: "Sex Toy Belt" },
+        { id: "sa19", value: "crotchless_panties", label: "Crotchless Panties" },
+        { id: "sa20", value: "studded_belt", label: "Studded Belt" }
+    ],
+    // Edge style for the visuals, because even porn needs an aesthetic
+    edge_style: [
+        { id: "es1", value: "ragged", label: "Ragged" },
+        { id: "es2", value: "rough", label: "Rough" },
+        { id: "es3", value: "asymmetrical", label: "Asymmetrical" },
+        { id: "es4", value: "chipped", label: "Chipped" },
+        { id: "es5", value: "frayed", label: "Frayed" },
+        { id: "es6", value: "torn", label: "Torn" },
+        { id: "es7", value: "splintered", label: "Splintered" },
+        { id: "es8", value: "jagged", label: "Jagged" },
+        { id: "es9", value: "scalloped", label: "Scalloped" },
+        { id: "es10", value: "uneven", label: "Uneven" },
+        { id: "es11", value: "distressed", label: "Distressed" },
+        { id: "es12", value: "cracked", label: "Cracked" },
+        { id: "es13", value: "fragmented", label: "Fragmented" },
+        { id: "es14", value: "weathered", label: "Weathered" },
+        { id: "es15", value: "irregular", label: "Irregular" }
+    ],
+    // Artistic style to make it look like porn, not a fucking cartoon
+    artistic_style: [
+        { id: "as1", value: "photorealism", label: "Photorealism" },
+        { id: "as2", value: "hyperrealism", label: "Hyperrealism" },
+        { id: "as3", value: "erotic_painting", label: "Erotic Painting" },
+        { id: "as4", value: "glamour_photography", label: "Glamour Photography" },
+        { id: "as5", value: "vintage_porn", label: "Vintage Porn" },
+        { id: "as6", value: "modern_erotica", label: "Modern Erotica" },
+        { id: "as7", value: "fetish_art", label: "Fetish Art" },
+        { id: "as8", value: "digital_porn", label: "Digital Porn" },
+        { id: "as9", value: "cinematic_erotica", label: "Cinematic Erotica" },
+        { id: "as10", value: "noir_porn", label: "Noir Porn" },
+        { id: "as11", value: "softcore", label: "Softcore" },
+        { id: "as12", value: "hardcore", label: "Hardcore" },
+        { id: "as13", value: "boudoir", label: "Boudoir" },
+        { id: "as14", value: "kink_illustration", label: "Kink Illustration" },
+        { id: "as15", value: "retro_erotica", label: "Retro Erotica" },
+        { id: "as16", value: "surreal_erotica", label: "Surreal Erotica" },
+        { id: "as17", value: "minimalist_porn", label: "Minimalist Porn" },
+        { id: "as18", value: "abstract_erotica", label: "Abstract Erotica" },
+        { id: "as19", value: "high_fashion_porn", label: "High Fashion Porn" },
+        { id: "as20", value: "amateur_porn", label: "Amateur Porn" }
+    ],
+    // Lighting to set the mood for maximum horniness
+    cinematic_lighting: [
+        { id: "cl1", value: "high_contrast", label: "High Contrast" },
+        { id: "cl2", value: "soft_glow", label: "Soft Glow" },
+        { id: "cl3", value: "neon", label: "Neon" },
+        { id: "cl4", value: "backlit", label: "Backlit" },
+        { id: "cl5", value: "spotlight", label: "Spotlight" },
+        { id: "cl6", value: "ambient", label: "Ambient" },
+        { id: "cl7", value: "diffused", label: "Diffused" },
+        { id: "cl8", value: "moody", label: "Moody" },
+        { id: "cl9", value: "shadow_play", label: "Shadow Play" },
+        { id: "cl10", value: "silhouette", label: "Silhouette" },
+        { id: "cl11", value: "rim_lighting", label: "Rim Lighting" },
+        { id: "cl12", value: "chiaroscuro", label: "Chiaroscuro" },
+        { id: "cl13", value: "golden_hour", label: "Golden Hour" },
+        { id: "cl14", value: "low_key", label: "Low-Key" },
+        { id: "cl15", value: "bioluminescent", label: "Bioluminescent" }
+    ],
+    // Angles to capture every nasty detail
+    perspective_angle: [
+        { id: "pa1", value: "birds_eye_view", label: "Bird’s Eye View" },
+        { id: "pa2", value: "worms_eye_view", label: "Worm’s Eye View" },
+        { id: "pa3", value: "isometric", label: "Isometric" },
+        { id: "pa4", value: "fisheye", label: "Fisheye" },
+        { id: "pa5", value: "wide_angle", label: "Wide-Angle" },
+        { id: "pa6", value: "close_up", label: "Close-Up" },
+        { id: "pa7", value: "overhead", label: "Overhead" },
+        { id: "pa8", value: "dutch_angle", label: "Dutch Angle" },
+        { id: "pa9", value: "panoramic", label: "Panoramic" },
+        { id: "pa10", value: "macro", label: "Macro" },
+        { id: "pa11", value: "tilt_shift", label: "Tilt-Shift" },
+        { id: "pa12", value: "first_person", label: "First Person" },
+        { id: "pa13", value: "dynamic_diagonal", label: "Dynamic Diagonal" },
+        { id: "pa14", value: "oblong", label: "Oblong" }
+    ],
+    // Textures to make it feel raw and real
+    skin_textures: [
+        { id: "st1", value: "smooth", label: "Smooth" },
+        { id: "st2", value: "oiled", label: "Oiled" },
+        { id: "st3", value: "sweaty", label: "Sweaty" },
+        { id: "st4", value: "tattooed", label: "Tattooed" },
+        { id: "st5", value: "scarred", label: "Scarred" },
+        { id: "st6", value: "freckled", label: "Freckled" },
+        { id: "st7", value: "glistening", label: "Glistening" },
+        { id: "st8", value: "bronzed", label: "Bronzed" },
+        { id: "st9", value: "pale", label: "Pale" },
+        { id: "st10", value: "flushed", label: "Flushed" },
+        { id: "st11", value: "rough", label: "Rough" },
+        { id: "st12", value: "shimmering", label: "Shimmering" },
+        { id: "st13", value: "velvety", label: "Velvety" },
+        { id: "st14", value: "pierced", label: "Pierced" },
+        { id: "st15", value: "glittered", label: "Glittered" },
+        { id: "st16", value: "moist", label: "Moist" },
+        { id: "st17", value: "silky", label: "Silky" },
+        { id: "st18", value: "grunge", label: "Grunge" },
+        { id: "st19", value: "dewy", label: "Dewy" }
+    ],
+    // Finishes to make the visuals pop
+    visual_finish: [
+        { id: "vf1", value: "transparent", label: "Transparent" },
+        { id: "vf2", value: "semi_transparent", label: "Semi-Transparent" },
+        { id: "vf3", value: "matte", label: "Matte" },
+        { id: "vf4", value: "glossy", label: "Glossy" },
+        { id: "vf5", value: "opaque", label: "Opaque" },
+        { id: "vf6", value: "translucent", label: "Translucent" },
+        { id: "vf7", value: "metallic_shine", label: "Metallic Shine" },
+        { id: "vf8", value: "subtle_fade", label: "Subtle Fade" },
+        { id: "vf9", value: "varnished", label: "Varnished" },
+        { id: "vf10", value: "patina", label: "Patina" },
+        { id: "vf11", value: "iridescent", label: "Iridescent" },
+        { id: "vf12", value: "sheer", label: "Sheer" },
+        { id: "vf13", value: "frosted", label: "Frosted" },
+        { id: "vf14", value: "dusty_finish", label: "Dusty Finish" },
+        { id: "vf15", value: "high_gloss", label: "High Gloss" }
+    ],
+    // Surfaces for the environment or props
+    sex_surfaces: [
+        { id: "ss1", value: "silk_sheets", label: "Silk Sheets" },
+        { id: "ss2", value: "leather", label: "Leather" },
+        { id: "ss3", value: "velvet", label: "Velvet" },
+        { id: "ss4", value: "latex", label: "Latex" },
+        { id: "ss5", value: "satin", label: "Satin" },
+        { id: "ss6", value: "fur", label: "Fur" },
+        { id: "ss7", value: "metal", label: "Metal" },
+        { id: "ss8", value: "glass", label: "Glass" },
+        { id: "ss9", value: "marble", label: "Marble" },
+        { id: "ss10", value: "wood", label: "Wood" },
+        { id: "ss11", value: "rubber", label: "Rubber" },
+        { id: "ss12", value: "carpet", label: "Carpet" },
+        { id: "ss13", value: "concrete", label: "Concrete" },
+        { id: "ss14", value: "tile", label: "Tile" },
+        { id: "ss15", value: "mirrored_surface", label: "Mirrored Surface" },
+        { id: "ss16", value: "plush", label: "Plush" },
+        { id: "ss17", value: "chains", label: "Chains" },
+        { id: "ss18", value: "lace", label: "Lace" },
+        { id: "ss19", value: "vinyl", label: "Vinyl" }
+    ],
+    // The vibe of the porn, because it’s gotta feel right
+    porn_genres: [
+        { id: "pg1", value: "romantic", label: "Romantic" },
+        { id: "pg2", value: "hardcore", label: "Hardcore" },
+        { id: "pg3", value: "bdsm", label: "BDSM" },
+        { id: "pg4", value: "fetish", label: "Fetish" },
+        { id: "pg5", value: "amateur", label: "Amateur" },
+        { id: "pg6", value: "lesbian", label: "Lesbian" },
+        { id: "pg7", value: "gay", label: "Gay" },
+        { id: "pg8", value: "trans", label: "Trans" },
+        { id: "pg9", value: "group_sex", label: "Group Sex" },
+        { id: "pg10", value: "solo", label: "Solo" },
+        { id: "pg11", value: "interracial", label: "Interracial" },
+        { id: "pg12", value: "milf", label: "MILF" },
+        { id: "pg13", value: "teen", label: "Teen (18+)" },
+        { id: "pg14", value: "voyeur", label: "Voyeur" },
+        { id: "pg15", value: "public", label: "Public" },
+        { id: "pg16", value: "cosplay", label: "Cosplay" },
+        { id: "pg17", value: "roleplay", label: "Roleplay" },
+        { id: "pg18", value: "swing", label: "Swing" },
+        { id: "pg19", value: "kink", label: "Kink" },
+        { id: "pg20", value: "erotic", label: "Erotic" }
+    ],
+    // Cultural or thematic influences for extra flavor
+    erotic_themes: [
+        { id: "et1", value: "burlesque", label: "Burlesque" },
+        { id: "et2", value: "gothic", label: "Gothic" },
+        { id: "et3", value: "vintage_pinup", label: "Vintage Pinup" },
+        { id: "et4", value: "cabaret", label: "Cabaret" },
+        { id: "et5", value: "noir", label: "Noir" },
+        { id: "et6", value: "victorian", label: "Victorian" },
+        { id: "et7", value: "retro_80s", label: "Retro 80s" },
+        { id: "et8", value: "tropical", label: "Tropical" },
+        { id: "et9", value: "bohemian", label: "Bohemian" },
+        { id: "et10", value: "cyberpunk", label: "Cyberpunk" },
+        { id: "et11", value: "steampunk", label: "Steampunk" },
+        { id: "et12", value: "hollywood_glam", label: "Hollywood Glam" },
+        { id: "et13", value: "japanese_erotica", label: "Japanese Erotica" },
+        { id: "et14", value: "indian_kama_sutra", label: "Indian Kama Sutra" },
+        { id: "et15", value: "arabian_nights", label: "Arabian Nights" },
+        { id: "et16", value: "caribbean_vibes", label: "Caribbean Vibes" },
+        { id: "et17", value: "medieval_fantasy", label: "Medieval Fantasy" },
+        { id: "et18", value: "futuristic", label: "Futuristic" },
+        { id: "et19", value: "punk", label: "Punk" }
+    ],
+    // Visual effects to make it cinematic as fuck
+    cinematic_effects: [
+        { id: "ce1", value: "epic_scale", label: "Epic Scale" },
+        { id: "ce2", value: "slow_motion", label: "Slow Motion" },
+        { id: "ce3", value: "time_lapse", label: "Time-Lapse" },
+        { id: "ce4", value: "hyperlapse", label: "Hyperlapse" },
+        { id: "ce5", value: "dramatic_close_up", label: "Dramatic Close-Up" },
+        { id: "ce6", value: "wide_shot", label: "Wide Shot" },
+        { id: "ce7", value: "tilted_frame", label: "Tilted Frame" },
+        { id: "ce8", value: "bokeh", label: "Bokeh" },
+        { id: "ce9", value: "vignetting", label: "Vignetting" },
+        { id: "ce10", value: "lens_flare", label: "Lens Flare" },
+        { id: "ce11", value: "color_grading", label: "Color Grading" },
+        { id: "ce12", value: "frame_within_frame", label: "Frame Within a Frame" },
+        { id: "ce13", value: "golden_ratio", label: "Golden Ratio" },
+        { id: "ce14", value: "handheld", label: "Handheld" },
+        { id: "ce15", value: "animated_sketch", label: "Animated Sketch" }
+    ],
+    // Colors to make it pop or keep it moody
+    color_tone: [
+        { id: "ct1", value: "vibrant", label: "Vibrant" },
+        { id: "ct2", value: "monochrome", label: "Monochrome" },
+        { id: "ct3", value: "pastel", label: "Pastel" },
+        { id: "ct4", value: "earthy_tones", label: "Earthy Tones" },
+        { id: "ct5", value: "neon_glow", label: "Neon Glow" },
+        { id: "ct6", value: "muted", label: "Muted" },
+        { id: "ct7", value: "bold_bright", label: "Bold & Bright" },
+        { id: "ct8", value: "duotone", label: "Duotone" },
+        { id: "ct9", value: "saturated", label: "Saturated" },
+        { id: "ct10", value: "primary_colors", label: "Primary Colors" },
+        { id: "ct11", value: "analogous", label: "Analogous" },
+        { id: "ct12", value: "complementary", label: "Complementary" },
+        { id: "ct13", value: "split_complementary", label: "Split Complementary" },
+        { id: "ct14", value: "triadic", label: "Triadic" },
+        { id: "ct15", value: "moody_blues", label: "Moody Blues" }
+    ],
+    // Special effects to make it extra nasty
+    special_effects: [
+        { id: "se1", value: "glitch", label: "Glitch" },
+        { id: "se2", value: "pixelation", label: "Pixelation" },
+        { id: "se3", value: "distortion", label: "Distortion" },
+        { id: "se4", value: "bokeh_effect", label: "Bokeh Effect" },
+        { id: "se5", value: "lens_distortion", label: "Lens Distortion" },
+        { id: "se6", value: "sweat_drops", label: "Sweat Drops" },
+        { id: "se7", value: "body_fluids", label: "Body Fluids" },
+        { id: "se8", value: "sparkles", label: "Sparkles" },
+        { id: "se9", value: "holographic", label: "Holographic" },
+        { id: "se10", value: "aura", label: "Aura" },
+        { id: "se11", value: "shadow_effects", label: "Shadow Effects" },
+        { id: "se12", value: "reflections", label: "Reflections" },
+        { id: "se13", value: "steam", label: "Steam" },
+        { id: "se14", value: "light_leaks", label: "Light Leaks" },
+        { id: "se15", value: "double_exposure", label: "Double Exposure" }
+    ],
+    // Cultural motifs to add some global kink
+    erotic_motifs: [
+        { id: "em1", value: "kama_sutra", label: "Kama Sutra" },
+        { id: "em2", value: "shibari_patterns", label: "Shibari Patterns" },
+        { id: "em3", value: "tantric_symbols", label: "Tantric Symbols" },
+        { id: "em4", value: "burlesque_flair", label: "Burlesque Flair" },
+        { id: "em5", value: "geisha_aesthetic", label: "Geisha Aesthetic" },
+        { id: "em6", value: "arabian_nights", label: "Arabian Nights" },
+        { id: "em7", value: "gothic_bondage", label: "Gothic Bondage" },
+        { id: "em8", value: "tribal_erotica", label: "Tribal Erotica" },
+        { id: "em9", value: "victorian_lace", label: "Victorian Lace" },
+        { id: "em10", value: "cabaret_vibes", label: "Cabaret Vibes" },
+        { id: "em11", value: "polynesian_tattoos", label: "Polynesian Tattoos" },
+        { id: "em12", value: "latin_sensuality", label: "Latin Sensuality" },
+        { id: "em13", value: "russian_ballet", label: "Russian Ballet" },
+        { id: "em14", value: "indian_mehndi", label: "Indian Mehndi" },
+        { id: "em15", value: "african_sensuality", label: "African Sensuality" }
+    ],
+    // Frames to make it look like a proper porn production
+    frame_border: [
+        { id: "fb1", value: "grunge_frame", label: "Grunge Frame" },
+        { id: "fb2", value: "ornate", label: "Ornate" },
+        { id: "fb3", value: "minimalist_line", label: "Minimalist Line" },
+        { id: "fb4", value: "baroque", label: "Baroque" },
+        { id: "fb5", value: "vintage_frame", label: "Vintage Frame" },
+        { id: "fb6", value: "industrial", label: "Industrial" },
+        { id: "fb7", value: "rough_sketch_edges", label: "Rough Sketch Edges" },
+        { id: "fb8", value: "collage_border", label: "Collage Border" },
+        { id: "fb9", value: "broken_frame", label: "Broken Frame" },
+        { id: "fb10", value: "circular", label: "Circular" },
+        { id: "fb11", value: "irregular_polygonal", label: "Irregular Polygonal" },
+        { id: "fb12", value: "fragmented", label: "Fragmented" },
+        { id: "fb13", value: "hand_drawn", label: "Hand-Drawn" },
+        { id: "fb14", value: "scrawled", label: "Scrawled" },
+        { id: "fb15", value: "mixed_media_border", label: "Mixed Media Border" }
+    ],
+    // Mood to set the tone for the scene
+    sex_mood: [
+        { id: "sm1", value: "passionate", label: "Passionate" },
+        { id: "sm2", value: "aggressive", label: "Aggressive" },
+        { id: "sm3", value: "sensual", label: "Sensual" },
+        { id: "sm4", value: "kinky", label: "Kinky" },
+        { id: "sm5", value: "romantic", label: "Romantic" },
+        { id: "sm6", value: "playful", label: "Playful" },
+        { id: "sm7", value: "dark", label: "Dark" },
+        { id: "sm8", value: "seductive", label: "Seductive" },
+        { id: "sm9", value: "naughty", label: "Naughty" },
+        { id: "sm10", value: "intimate", label: "Intimate" },
+        { id: "sm11", value: "wild", label: "Wild" },
+        { id: "sm12", value: "submissive", label: "Submissive" },
+        { id: "sm13", value: "dominant", label: "Dominant" },
+        { id: "sm14", value: "erotic", label: "Erotic" },
+        { id: "sm15", value: "taboo", label: "Taboo" }
+    ],
+    // Camera options for that professional porn look
+    cinematic_options: [
+        { id: "co1", value: "8mm_lens", label: "8mm Lens" },
+        { id: "co2", value: "16mm_lens", label: "16mm Lens" },
+        { id: "co3", value: "35mm_lens", label: "35mm Lens" },
+        { id: "co4", value: "50mm_lens", label: "50mm Lens" },
+        { id: "co5", value: "85mm_lens", label: "85mm Lens" },
+        { id: "co6", value: "cinematic_photography", label: "Cinematic Photography" },
+        { id: "co7", value: "macro_photography", label: "Macro Photography" },
+        { id: "co8", value: "tilt_shift_effect", label: "Tilt-Shift Effect" },
+        { id: "co9", value: "zoom_effect", label: "Zoom Effect" },
+        { id: "co10", value: "shallow_depth_of_field", label: "Shallow Depth of Field (Bokeh)" },
+        { id: "co11", value: "strong_bokeh", label: "Strong Bokeh" },
+        { id: "co12", value: "subtle_bokeh", label: "Subtle Bokeh" },
+        { id: "co13", value: "lens_flare", label: "Lens Flare" },
+        { id: "co14", value: "anamorphic_lens_flare", label: "Anamorphic Lens Flare" },
+        { id: "co15", value: "soft_focus", label: "Soft Focus" }
+    ]
+};
+
+
+
+
+
+
+
+<label class="dropdown-label">Performers:</label>
+<label class="dropdown-label">Sex Locations:</label>
+<label class="dropdown-label">Sex Scenarios:</label>
+<label class="dropdown-label">Fetish Props:</label>
+<label class="dropdown-label">Outfits:</label>
+<label class="dropdown-label">Body Types:</label>
+<label class="dropdown-label">Fetish Environments:</label>
+<label class="dropdown-label">Sex Accessories:</label>
+<label class="dropdown-label">Edge Style:</label>
+<label class="dropdown-label">Artistic Style:</label>
+<label class="dropdown-label">Cinematic Lighting:</label>
+<label class="dropdown-label">Perspective & Angle:</label>
+<label class="dropdown-label">Skin Textures:</label>
+<label class="dropdown-label">Visual Finish:</label>
+<label class="dropdown-label">Sex Surfaces:</label>
+<label class="dropdown-label">Porn Genres:</label>
+<label class="dropdown-label">Erotic Themes:</label>
+<label class="dropdown-label">Cinematic Effects:</label>
+<label class="dropdown-label">Color & Tone:</label>
+<label class="dropdown-label">Special Effects:</label>
+<label class="dropdown-label">Erotic Motifs:</label>
+<label class="dropdown-label">Frame & Border:</label>
+<label class="dropdown-label">Sex Mood:</label>
+<label class="dropdown-label">Cinematic Options:</label>
