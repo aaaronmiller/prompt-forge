@@ -88,3 +88,19 @@ const checkpointModelFiles = [
 const storedApiKeys = {
     gemini: 'AIzaSyB8Ak6aDVOEkSetkxGAbv6KphInPeCMShE'
 };
+
+// Convert dropdownData to keywordCategories for the slider
+const keywordCategories = {};
+Object.entries(dropdownData).forEach(([categoryKey, items]) => {
+    // Convert camelCase to readable category names
+    const categoryName = categoryKey
+        .replace(/([A-Z])/g, ' $1')
+        .replace(/^./, str => str.toUpperCase())
+        .trim();
+    
+    // Extract just the values (keywords) from the dropdown items
+    keywordCategories[categoryName] = items.map(item => item.value);
+});
+
+// Make it globally available
+window.keywordCategories = keywordCategories;

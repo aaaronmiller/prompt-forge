@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Data Test</title>
+</head>
+<body>
+    <h1>Data Loading Test</h1>
+    <div id="output"></div>
+    
+    <script src="data.js"></script>
+    <script>
+        const output = document.getElementById('output');
+        
+        function log(message) {
+            output.innerHTML += '<p>' + message + '</p>';
+            console.log(message);
+        }
+        
+        log('Testing data loading...');
+        log('dropdownData type: ' + typeof dropdownData);
+        log('dropdownData exists: ' + (dropdownData ? 'YES' : 'NO'));
+        
+        if (dropdownData) {
+            log('dropdownData keys: ' + Object.keys(dropdownData).join(', '));
+            log('First category items count: ' + dropdownData[Object.keys(dropdownData)[0]].length);
+        }
+        
+        log('keywordCategories type: ' + typeof keywordCategories);
+        log('keywordCategories exists: ' + (keywordCategories ? 'YES' : 'NO'));
+        
+        if (keywordCategories) {
+            log('keywordCategories keys: ' + Object.keys(keywordCategories).join(', '));
+        }
+        
+        log('window.keywordCategories type: ' + typeof window.keywordCategories);
+        log('window.keywordCategories exists: ' + (window.keywordCategories ? 'YES' : 'NO'));
+    </script>
+</body>
+</html>

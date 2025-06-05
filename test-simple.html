@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Simple</title>
+</head>
+<body>
+    <h1>Test Page</h1>
+    <button id="feelLuckyButton">Generate Keywords</button>
+    
+    <script>
+        alert('Simple script loading!');
+        
+        function handleFeelLucky() {
+            alert('Feeling Lucky clicked!');
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            alert('DOM loaded!');
+            const button = document.getElementById('feelLuckyButton');
+            if (button) {
+                button.addEventListener('click', handleFeelLucky);
+                alert('Button found and event listener added!');
+            } else {
+                alert('Button not found!');
+            }
+        });
+    </script>
+</body>
+</html>
