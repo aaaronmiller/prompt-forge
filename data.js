@@ -104,3 +104,5 @@ Object.entries(dropdownData).forEach(([categoryKey, items]) => {
 
 // Make it globally available
 window.keywordCategories = keywordCategories;
+// Make dropdownData globally available
+if (typeof dropdownData !== 'undefined') { window.dropdownData = dropdownData; }

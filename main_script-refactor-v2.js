@@ -210,25 +210,64 @@ function initializeApplication() {
 /**
  * Initializes the theme system with enhanced features.
  */
+
 function initializeThemeSystem() {
     // Initialize theme randomizer state
     window.themeRandomizer = {
         isLocked: localStorage.getItem('prompt-forge-theme-locked') === 'true',
-        themes: ['default', 'purple', 'green', 'orange', 'red'],
-        styles: ['curved', 'square', 'minimal']
+        themes: ['default', 'purple', 'green', 'orange', 'red'], // Color themes
+        styles: ['curved'] // Only 'curved' style
     };
 
-    // Randomize theme on page load if not locked
+    // Force 'curved' style
+    document.body.setAttribute('data-style', 'curved');
+    localStorage.setItem('prompt-forge-style', 'curved');
+    // console.log("Default style set to 'curved'.");
+
+    const savedThemeColor = localStorage.getItem('prompt-forge-theme') || 'default';
+
     if (!window.themeRandomizer.isLocked) {
-        randomizeTheme();
+        // If not locked, randomize theme color but keep style 'curved'
+        const randomThemeColor = window.themeRandomizer.themes[
+            Math.floor(Math.random() * window.themeRandomizer.themes.length)
+        ];
+        setTheme(randomThemeColor); // setTheme only handles color theme attribute
+        updateThemeUI(randomThemeColor, 'curved');
     } else {
-        // Load saved theme
-        const savedTheme = localStorage.getItem('prompt-forge-theme') || 'default';
-        const savedStyle = localStorage.getItem('prompt-forge-style') || 'curved';
-        setTheme(savedTheme);
-        setStyle(savedStyle);
-        updateThemeUI(savedTheme, savedStyle);
+        setTheme(savedThemeColor);
+        updateThemeUI(savedThemeColor, 'curved');
     }
+
+    // Theme randomizer button (randomizeThemeButton) - now only randomizes color
+    const randomizeBtn = document.getElementById('randomizeThemeButton');
+    if (randomizeBtn) {
+        randomizeBtn.addEventListener('click', randomizeTheme);
+    }
+
+    // Lock button for theme color
+    const lockBtn = document.getElementById('lockThemeButton');
+    if (lockBtn) {
+        lockBtn.addEventListener('click', toggleThemeLock);
+        if (window.themeRandomizer.isLocked) {
+            lockBtn.classList.add('locked');
+            if (lockBtn.querySelector('i')) lockBtn.querySelector('i').className = 'fas fa-lock';
+            lockBtn.title = 'Unlock Theme (Currently Locked)';
+        }
+    }
+
+    // Theme (color) switching buttons
+    document.querySelectorAll('.theme-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const themeColor = btn.dataset.theme;
+            setTheme(themeColor);
+            updateThemeUI(themeColor, 'curved'); // Style is fixed
+        });
+    });
+    // Style selection buttons are removed from HTML, so no listeners needed.
+
+    document.body.style.transition = 'background-color 0.3s ease, color 0.3s ease';
+    console.log("Theme system initialized: 'curved' style default, color theme features active.");
+}
 
     // Theme randomizer button
     const randomizeBtn = document.getElementById('randomizeThemeButton');
@@ -258,12 +297,6 @@ function initializeThemeSystem() {
     });
 
     // Style switching
-    document.querySelectorAll('.style-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const style = btn.dataset.style;
-            setStyle(style);
-            updateStyleUI(style);
-        });
     });
 
     // Add theme transition effects
@@ -273,41 +306,30 @@ function initializeThemeSystem() {
 /**
  * Randomizes theme and style.
  */
-function randomizeTheme() {
+
+function randomizeTheme() { // This function is called by the "Random Look" button
     if (window.themeRandomizer && window.themeRandomizer.isLocked) return;
 
-    const randomTheme = window.themeRandomizer.themes[
+    // Only randomize theme color
+    const randomThemeColor = window.themeRandomizer.themes[
         Math.floor(Math.random() * window.themeRandomizer.themes.length)
     ];
-    const randomStyle = window.themeRandomizer.styles[
-        Math.floor(Math.random() * window.themeRandomizer.styles.length)
-    ];
+    const fixedStyleName = 'Curved'; // For display message
 
-    // Apply theme and style
-    setTheme(randomTheme);
-    setStyle(randomStyle);
-    updateThemeUI(randomTheme, randomStyle);
+    setTheme(randomThemeColor);
+    // setStyle('curved') is implicitly handled or not needed if always curved
+    updateThemeUI(randomThemeColor, 'curved'); // Update UI for theme and fixed style
 
-    // Show feedback
-    const themeNames = {
-        default: 'Ocean Blue',
-        purple: 'Cosmic Purple',
-        green: 'Forest Green',
-        orange: 'Sunset Orange',
-        red: 'Crimson Red'
-    };
+    const themeColorNames = { default: 'Ocean Blue', purple: 'Cosmic Purple', green: 'Forest Green', orange: 'Sunset Orange', red: 'Crimson Red' };
 
-    const styleNames = {
-        curved: 'Curved',
-        square: 'Square',
-        minimal: 'Minimal'
-    };
-
-    setTimeout(() => {
-        showMessage('mainMessageBox',
-            `Theme: ${themeNames[randomTheme]} + ${styleNames[randomStyle]}`,
-            'info', 2000);
-    }, 500);
+    if (typeof showMessage === 'function') {
+        setTimeout(() => {
+            showMessage('mainMessageBox',
+                `Theme: ${themeColorNames[randomThemeColor]} + ${fixedStyleName} Style`,
+                'info', 2000);
+        }, 500);
+    }
+    console.log(`Randomized theme to ${randomThemeColor}, style remains curved.`);
 }
 
 /**
@@ -344,20 +366,12 @@ function updateThemeUI(theme, style) {
     });
 
     if (style) {
-        document.querySelectorAll('.style-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.style === style);
-        });
     }
 }
 
 /**
  * Updates style UI elements.
  */
-function updateStyleUI(style) {
-    document.querySelectorAll('.style-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.style === style);
-    });
-}
 
 /**
  * Sets the theme and saves it to localStorage.
@@ -373,12 +387,21 @@ function setTheme(theme) {
 /**
  * Sets the style and saves it to localStorage.
  */
-function setStyle(style) {
-    document.body.setAttribute('data-style', style);
-    localStorage.setItem('prompt-forge-style', style);
+}
+
+function setStyle(style) { // Parameter 'style' is now ignored, always 'curved'
+    const forcedStyle = 'curved';
+    document.body.setAttribute('data-style', forcedStyle);
+    localStorage.setItem('prompt-forge-style', forcedStyle);
     if (window.appState) {
-        window.appState.selectedStyle = style;
+        window.appState.selectedStyle = forcedStyle; // Update appState if used
     }
+    // console.log(`Style enforced: ${forcedStyle}`);
+}
+
+    // console.log();
+}\n    \/* console.log(`Style set\/forced to: ${forcedStyle}`); *\/ \n}
+    // console.log(`Style set/forced to: ${forcedStyle}`);
 }
 
 /**
@@ -630,16 +653,43 @@ function getSelectedKeywords() {
 /**
  * Restores work in progress from localStorage.
  */
+
 function restoreWorkInProgress() {
     try {
         const saved = JSON.parse(localStorage.getItem('prompt-forge-work') || '{}');
 
         if (saved.timestamp && (Date.now() - saved.timestamp) < 24 * 60 * 60 * 1000) { // 24 hours
-            // Restore text areas
+            // If old 'generatedKeywords' exists in saved work, move it to sessionStorage
+            // so that section-1-v2's display area can be populated by navigation logic.
             if (saved.generatedKeywords) {
-                const keywordsTextarea = document.getElementById('generatedKeywords');
-                if (keywordsTextarea) keywordsTextarea.value = saved.generatedKeywords;
+                 sessionStorage.setItem('keywordsForSection1v2', saved.generatedKeywords);
+                 console.log("Restored 'generatedKeywords' from localStorage work-in-progress to sessionStorage ('keywordsForSection1v2').");
             }
+
+            // Restore other text areas directly
+            const apiTextarea = document.getElementById('apiGeneratedPrompt');
+            if (apiTextarea && saved.apiGeneratedPrompt) {
+                apiTextarea.value = saved.apiGeneratedPrompt;
+            }
+
+            const systemTextarea = document.getElementById('systemPrompt');
+            if (systemTextarea && saved.systemPrompt) {
+                systemTextarea.value = saved.systemPrompt;
+            }
+
+            // Restoring individual keyword selections into Swiper UI from here is complex
+            // and might conflict with current state or user actions.
+            // Users can re-select or use "Feeling Lucky".
+            // If `saved.selectedKeywords` (the old array of objects) needs to be processed
+            // to re-populate `window.selectedSwiperKeywords` and update Swiper UI,
+            // that would be a more involved addition here. For now, keeping it simple.
+
+            console.log('Work in progress restored (apiGeneratedPrompt, systemPrompt, and keywords to sessionStorage).');
+        }
+    } catch (error) {
+        console.warn('Error restoring work in progress:', error);
+    }
+}
 
             if (saved.apiGeneratedPrompt) {
                 const apiTextarea = document.getElementById('apiGeneratedPrompt');
@@ -781,15 +831,130 @@ window.addEventListener('unhandledrejection', (event) => {
  */
 
 function initializeSectionNavigation() {
-    console.log('Initializing section navigation (v2.1)...');
+    console.log('Initializing section navigation (v2.2)...');
     const navDots = document.querySelectorAll('.nav-dots .nav-dot');
     const appContainer = document.querySelector('.app-container');
     let sections = [];
     if (appContainer) {
         sections = Array.from(appContainer.children).filter(
-            s => s.tagName === 'SECTION' && s.id && s.id.match(/^section-\d+-v2$/) // Corrected here
+            s => s.tagName === 'SECTION' && s.id && s.id.match(/^section-\d+-v2$/)
         );
     } else {
+        console.error("App container not found for section navigation!");
+        return;
+    }
+
+    console.log(`Found ${navDots.length} nav dots and ${sections.length} v2 sections for navigation.`);
+    let currentSectionIndex = 0;
+
+    function updateActiveSection(newIndex, scroll = true) {
+        if (newIndex < 0 || newIndex >= sections.length) {
+            console.warn(`Attempted to navigate to invalid section index: ${newIndex}`);
+            return;
+        }
+
+        if (newIndex === currentSectionIndex && sections[newIndex]?.classList.contains('active')) {
+            if (scroll && sections[newIndex]) {
+                sections[newIndex].scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            return;
+        }
+
+        if (currentSectionIndex >=0 && sections[currentSectionIndex]) {
+            sections[currentSectionIndex].classList.remove('active');
+        }
+        if (currentSectionIndex >=0 && navDots.length > currentSectionIndex && navDots[currentSectionIndex]) {
+             navDots[currentSectionIndex].classList.remove('active');
+        }
+
+
+        currentSectionIndex = newIndex;
+
+        if (sections[currentSectionIndex]) {
+            sections[currentSectionIndex].classList.add('active');
+            if (scroll) {
+                 sections[currentSectionIndex].scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            if (sections[currentSectionIndex].id === 'section-1-v2') {
+                const keywordsDisplay = document.getElementById('selectedKeywordsDisplayArea');
+                if (keywordsDisplay) {
+                    const storedKeywords = sessionStorage.getItem('keywordsForSection1v2');
+                    if (storedKeywords) {
+                        keywordsDisplay.value = storedKeywords;
+                        console.log('Populated selectedKeywordsDisplayArea from sessionStorage for section-1-v2.');
+                    }
+                }
+            }
+        }
+        if (navDots.length > currentSectionIndex && navDots[currentSectionIndex]) {
+            navDots[currentSectionIndex].classList.add('active');
+        }
+
+        try {
+            window.location.hash = sections[currentSectionIndex] ? sections[currentSectionIndex].id : `section-${currentSectionIndex}`;
+        } catch (e) {
+            console.warn("Could not set window.location.hash.");
+        }
+        console.log(`Navigated to section: ${currentSectionIndex} (${sections[currentSectionIndex]?.id})`);
+    }
+
+    window.navigateToSection = function(sectionIndex, doScroll = true) {
+        if (sectionIndex >= 0 && sectionIndex < sections.length) {
+            updateActiveSection(sectionIndex, doScroll);
+        } else {
+            console.warn(`Invalid section index for navigateToSection: ${sectionIndex}, total sections: ${sections.length}`);
+        }
+    };
+
+    navDots.forEach((dot) => {
+        const sectionV2Index = parseInt(dot.getAttribute('data-section-v2'), 10);
+        if (!isNaN(sectionV2Index) && sectionV2Index < sections.length) {
+            dot.addEventListener('click', () => window.navigateToSection(sectionV2Index));
+        } else {
+            const fallbackIndex = parseInt(dot.getAttribute('data-section'), 10);
+            if (!isNaN(fallbackIndex) && fallbackIndex < sections.length){
+                 dot.addEventListener('click', () => window.navigateToSection(fallbackIndex));
+                 console.warn(`Nav dot using fallback 'data-section':`, dot);
+            } else {
+                console.warn("Nav dot found without valid 'data-section-v2' or 'data-section' or index out of bounds:", dot);
+            }
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey || e.metaKey) {
+            if (document.activeElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) {
+                return;
+            }
+            if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (currentSectionIndex > 0) window.navigateToSection(currentSectionIndex - 1);
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (currentSectionIndex < sections.length - 1) window.navigateToSection(currentSectionIndex + 1);
+            }
+        }
+    });
+
+    const hash = window.location.hash ? window.location.hash.substring(1) : '';
+    const initialSectionIdx = sections.findIndex(s => s.id === hash);
+
+    if (initialSectionIdx !== -1) {
+        updateActiveSection(initialSectionIdx, false);
+    } else if (sections.length > 0) {
+        updateActiveSection(0, false);
+    }
+
+    const openKeywordSliderButton = document.getElementById('openKeywordSliderButton');
+    if (openKeywordSliderButton) {
+        openKeywordSliderButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.navigateToSection(0);
+        });
+    }
+    console.log('Section navigation (v2.2) initialized.');
+}
+ else {
         console.error("App container not found for section navigation!");
         return;
     }
@@ -908,25 +1073,6 @@ function initializeSectionNavigation() {
     });
 
     // Navigate to section function
-    function navigateToSection(sectionIndex) {
-        console.log('🚀 navigateToSection called:', sectionIndex, 'current:', currentSection);
-        if (sectionIndex === currentSection) return;
-
-        // Update active states
-        console.log('🔄 Removing active from:', currentSection);
-        navDots[currentSection].classList.remove('active');
-        sections[currentSection].classList.remove('active');
-
-        console.log('✅ Adding active to:', sectionIndex);
-        navDots[sectionIndex].classList.add('active');
-        sections[sectionIndex].classList.add('active');
-
-        currentSection = sectionIndex;
-
-        // Update URL hash
-        window.location.hash = `section-${sectionIndex}`;
-        console.log('🎯 Navigation complete to section:', sectionIndex);
-    }
 
     // Keyboard navigation
     document.addEventListener('keydown', (e) => {
@@ -975,6 +1121,119 @@ function handleFeelLucky() {
     if (typeof setButtonLoading === 'function' && feelLuckyButton) {
         setButtonLoading(feelLuckyButton, true);
     }
+
+    try {
+        const quantityRadios = document.querySelectorAll('input[name="luckyQuantity"]');
+        let selectedQuantityRange = '10-20';
+        quantityRadios.forEach(radio => {
+            if (radio.checked) {
+                selectedQuantityRange = radio.value;
+            }
+        });
+
+        const [minStr, maxStr] = selectedQuantityRange.split('-');
+        const minQty = parseInt(minStr, 10) || 10;
+        const maxQty = parseInt(maxStr, 10) || 20;
+        const targetCount = Math.floor(Math.random() * (maxQty - minQty + 1)) + minQty;
+        console.log(`Target keyword count: ${targetCount}`);
+
+        let allKeywordsFlat = [];
+        if (window.keywordCategories && Object.keys(window.keywordCategories).length > 0) {
+            Object.values(window.keywordCategories).forEach(categoryKeywords => {
+                allKeywordsFlat.push(...categoryKeywords);
+            });
+        } else {
+            console.error('No keywordCategories available for Feeling Lucky!');
+            if (typeof showMessage === 'function') {
+                showMessage('mainMessageBox', 'Keyword data not available.', 'error');
+            }
+            if (typeof setButtonLoading === 'function' && feelLuckyButton) {
+                setButtonLoading(feelLuckyButton, false);
+            }
+            return;
+        }
+
+        if (allKeywordsFlat.length === 0) {
+            console.error('No keywords available in keywordCategories!');
+            if (typeof showMessage === 'function') {
+                showMessage('mainMessageBox', 'No keywords to pick from.', 'error');
+            }
+            if (typeof setButtonLoading === 'function' && feelLuckyButton) {
+                setButtonLoading(feelLuckyButton, false);
+            }
+            return;
+        }
+
+        if (window.selectedSwiperKeywords) {
+            window.selectedSwiperKeywords.clear();
+        } else {
+            window.selectedSwiperKeywords = new Set();
+        }
+
+        const allSwiperKeywordItems = document.querySelectorAll('#section-0-v2 .swiper .keyword-item');
+        allSwiperKeywordItems.forEach(item => {
+            const checkbox = item.querySelector('input[type="checkbox"]');
+            if (checkbox) {
+                checkbox.checked = false;
+            }
+            item.classList.remove('selected');
+        });
+        console.log('Cleared previous Swiper selections from section-0-v2.');
+
+        const uniqueKeywords = Array.from(new Set(allKeywordsFlat));
+        const shuffledKeywords = uniqueKeywords.sort(() => 0.5 - Math.random());
+        const newRandomlySelectedKeywords = shuffledKeywords.slice(0, Math.min(targetCount, shuffledKeywords.length));
+
+        newRandomlySelectedKeywords.forEach(keywordValue => {
+            window.selectedSwiperKeywords.add(keywordValue);
+            const swiperKeywordItem = document.querySelector(`#section-0-v2 .swiper .keyword-item[data-keyword="${CSS.escape(keywordValue)}"]`);
+            if (swiperKeywordItem) {
+                const checkbox = swiperKeywordItem.querySelector('input[type="checkbox"]');
+                if (checkbox) {
+                    checkbox.checked = true;
+                }
+                swiperKeywordItem.classList.add('selected');
+            }
+        });
+        console.log('Populated Swiper in section-0-v2 with new random keywords:', newRandomlySelectedKeywords);
+
+        const submitButton = document.getElementById('submitKeywordsButton');
+        if (submitButton && submitButton.querySelector('span')) {
+            submitButton.querySelector('span').textContent = `Use Selected Keywords (${window.selectedSwiperKeywords.size})`;
+        }
+
+        const formattedKeywords = newRandomlySelectedKeywords.join(', ');
+        sessionStorage.setItem('keywordsForSection1v2', formattedKeywords);
+        console.log('Stored keywords for Section1v2:', formattedKeywords);
+
+        const displayArea = document.getElementById('selectedKeywordsDisplayArea');
+        if (displayArea) {
+            displayArea.value = formattedKeywords;
+        }
+
+        if (typeof navigateToSection === 'function') {
+            console.log('Navigating to new Section 1 (index 1) after Feeling Lucky...');
+            navigateToSection(1);
+        } else {
+            console.warn('navigateToSection function not found.');
+        }
+
+        if (typeof showMessage === 'function') {
+            showMessage('mainMessageBox', `Feeling Lucky! ${newRandomlySelectedKeywords.length} keywords selected.`, 'success', 3000);
+        }
+
+    } catch (error) {
+        console.error("Error in handleFeelLucky (v2):", error);
+        if (typeof showMessage === 'function') {
+            showMessage('mainMessageBox', 'Error during Feeling Lucky.', 'error');
+        }
+    } finally {
+        if (typeof setButtonLoading === 'function' && feelLuckyButton) {
+            setButtonLoading(feelLuckyButton, false);
+        }
+    }
+}
+
 
     try {
         const quantityRadios = document.querySelectorAll('input[name="luckyQuantity"]');
@@ -1162,25 +1421,6 @@ function initializeFeelLucky() {
 /**
  * Initializes the keyword slider system.
  */
-function initializeKeywordSlider() {
-    const sliderContainer = document.getElementById('keywordSlider');
-    const prevButton = document.getElementById('sliderPrev');
-    const nextButton = document.getElementById('sliderNext');
-    const submitButton = document.getElementById('submitKeywordsButton');
-
-    if (!sliderContainer) return;
-
-    let currentSlide = 0;
-    let selectedKeywords = new Set();
-    let slides = [];
-
-    // Create slides from keyword categories
-    function createSlides() {
-        console.log('🎯 createSlides called');
-        if (!window.keywordCategories) {
-            console.log('❌ No keywordCategories available');
-            return;
-        }
 
         console.log('✅ keywordCategories found:', Object.keys(window.keywordCategories).length, 'categories');
         console.log('🎯 sliderContainer:', sliderContainer);

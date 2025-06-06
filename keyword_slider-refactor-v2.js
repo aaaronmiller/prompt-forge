@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.keywordCategories = effectiveKeywordCategories; // Make it global if generated here
     } else {
         console.error('Critical: Neither keywordCategories nor dropdownData is available. Swiper slider cannot be built.');
-        const sliderWrapper = document.querySelector('#section-1 .swiper-wrapper');
+        const sliderWrapper = document.querySelector('#section-0-v2 .swiper-wrapper');
         if (sliderWrapper) {
             sliderWrapper.innerHTML = '<p style="text-align:center; color: red; padding: 20px;">Error: Keyword data not found. Cannot build slider.</p>';
         }
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     console.log('Effective Keyword Categories for Swiper:', Object.keys(effectiveKeywordCategories).length, 'categories found.');
 
-    const swiperWrapper = document.querySelector('#section-1 .swiper-wrapper');
+    const swiperWrapper = document.querySelector('#section-0-v2 .swiper-wrapper');
     if (!swiperWrapper) {
         console.error('Swiper wrapper (.swiper-wrapper in #section-1) not found!');
         return;
@@ -54,13 +54,13 @@ document.addEventListener('DOMContentLoaded', () => {
         swiperWrapper.appendChild(slide);
     }
 
-    const swiper = new Swiper('#section-1 .swiper', {
+    const swiper = new Swiper('#section-0-v2 .swiper', {
         slidesPerView: 1,
         spaceBetween: 20,
         loop: (Object.keys(effectiveKeywordCategories).length > 1), // Loop only if multiple slides
         navigation: {
-            nextEl: '#section-1 .swiper-button-next',
-            prevEl: '#section-1 .swiper-button-prev',
+            nextEl: '#section-0-v2 .swiper-button-next',
+            prevEl: '#section-0-v2 .swiper-button-prev',
         },
         speed: 600,
         effect: 'slide',
@@ -80,8 +80,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function setupHoverNavigation(swiperInstance) {
-        const nextButton = document.querySelector('#section-1 .swiper-button-next');
-        const prevButton = document.querySelector('#section-1 .swiper-button-prev');
+        const nextButton = document.querySelector('#section-0-v2 .swiper-button-next');
+        const prevButton = document.querySelector('#section-0-v2 .swiper-button-prev');
 
         if (nextButton && prevButton) {
             nextButton.addEventListener('mouseenter', () => {

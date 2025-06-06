@@ -1961,3 +1961,11 @@ button:disabled {
 /* or new elements (like selectedKeywordsDisplayArea) may require further specific styling */
 /* to ensure visual consistency and optimal layout in all new sections. */
 /* Please review and adjust styles as needed. */
+
+/* Styling Phase 1: Drop Shadows (Applied via this append) */
+.quick-action-card,
+.output-card,
+.config-card,
+#section-0-v2 .swiper {
+  box-shadow: var(--shadow-medium, 0 4px 12px rgba(0, 0, 0, 0.15)) !important; /* Added important for override if needed */
+}
