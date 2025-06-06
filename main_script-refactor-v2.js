@@ -297,11 +297,11 @@ function initializeThemeSystem() {
     });
 
     // Style switching
-    });
+
 
     // Add theme transition effects
     document.body.style.transition = 'background-color 0.3s ease, color 0.3s ease';
-}
+
 
 /**
  * Randomizes theme and style.
