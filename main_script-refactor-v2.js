@@ -269,40 +269,6 @@ function initializeThemeSystem() {
     console.log("Theme system initialized: 'curved' style default, color theme features active.");
 }
 
-    // Theme randomizer button
-    const randomizeBtn = document.getElementById('randomizeThemeButton');
-    if (randomizeBtn) {
-        randomizeBtn.addEventListener('click', randomizeTheme);
-    }
-
-    // Lock button
-    const lockBtn = document.getElementById('lockThemeButton');
-    if (lockBtn) {
-        lockBtn.addEventListener('click', toggleThemeLock);
-        // Set initial lock state
-        if (window.themeRandomizer.isLocked) {
-            lockBtn.classList.add('locked');
-            lockBtn.querySelector('i').className = 'fas fa-lock';
-            lockBtn.title = 'Unlock Theme (Currently Locked)';
-        }
-    }
-
-    // Theme switching
-    document.querySelectorAll('.theme-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const theme = btn.dataset.theme;
-            setTheme(theme);
-            updateThemeUI(theme, null);
-        });
-    });
-
-    // Style switching
-
-
-    // Add theme transition effects
-    document.body.style.transition = 'background-color 0.3s ease, color 0.3s ease';
-
-
 /**
  * Randomizes theme and style.
  */
@@ -880,6 +846,18 @@ function initializeSectionNavigation() {
             if (scroll) {
                  sections[currentSectionIndex].scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
+
+            // NEW CODE: Initialize Swiper for section-0-v2 when it becomes active
+            if (sections[currentSectionIndex].id === 'section-0-v2') {
+                if (typeof window.initKeywordSwiper === 'function') {
+                    console.log('Section section-0-v2 is active, attempting to initialize keyword Swiper.');
+                    window.initKeywordSwiper();
+                } else {
+                    console.warn('initKeywordSwiper function not found, cannot initialize Swiper for section-0-v2.');
+                }
+            }
+            // END OF NEW CODE
+
             if (sections[currentSectionIndex].id === 'section-1-v2') {
                 const keywordsDisplay = document.getElementById('selectedKeywordsDisplayArea');
                 if (keywordsDisplay) {

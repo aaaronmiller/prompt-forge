@@ -1,17 +1,17 @@
 function initializeUI() {
     // populateDropdowns(); // Removed as obsolete
-    populateWorkflowSelect();
-    setupCopyButtons();
-    setupContinuousGenToggle();
-    // setupCustomEndpoints(); // Removed as its functionality is now integrated or deprecated
+    // populateWorkflowSelect(); // This will be part of populateImageGenConfig if related to ComfyUI workflows
+    setupCopyButtons(); // Assuming this is still relevant for general UI
+    // setupContinuousGenToggle(); // This might move into image gen config or be removed if not used
 
-    // Initialize system prompt
-    updateSystemPrompt();
+    // Initialize system prompt (relies on systemPrompt textarea)
+    // updateSystemPrompt(); // Call this after LLM config is populated
 
     // Get the container for LLM configuration
     const llmConfigContainer = document.getElementById('llm-config-content');
     if (llmConfigContainer) {
         populateLLMConfig(llmConfigContainer);
+        updateSystemPrompt(); // Now call it, as textarea should exist
     } else {
         console.error('LLM config container (llm-config-content) not found!');
     }
@@ -24,10 +24,119 @@ function initializeUI() {
         console.warn('Prompt Guidelines container (prompt-guidelines-content) not found! Skipping population.');
     }
 
-    createAndPlaceGenerateApiPromptButton();
+    // Get the container for Image Generation Configuration
+    const imageGenConfigContainer = document.getElementById('image-gen-config-content');
+    if (imageGenConfigContainer) {
+        populateImageGenConfig(imageGenConfigContainer);
+    } else {
+        console.error('Image Gen config container (image-gen-config-content) not found!');
+    }
 
-    console.log('UI setup complete with enhanced v1 features.');
+    createAndPlaceGenerateApiPromptButton(); // This button might logically belong inside populateLLMConfig or populateImageGenConfig
+
+    console.log('UI setup complete with enhanced v2 features.');
 }
+
+// Helper function to create labeled controls
+function createLabeledControl(labelText, controlId, controlType, options = {}) {
+    const label = document.createElement('label');
+    label.setAttribute('for', controlId);
+    label.textContent = labelText;
+
+    let control;
+    if (controlType === 'select') {
+        control = document.createElement('select');
+        (options.selectOptions || []).forEach(opt => {
+            const optionEl = document.createElement('option');
+            optionEl.value = opt.value;
+            optionEl.textContent = opt.text;
+            if (opt.selected) optionEl.selected = true;
+            control.appendChild(optionEl);
+        });
+    } else if (controlType === 'textarea') {
+        control = document.createElement('textarea');
+        control.rows = options.rows || 3;
+        if (options.placeholder) control.placeholder = options.placeholder;
+    } else { // input
+        control = document.createElement('input');
+        control.type = controlType;
+        if (options.defaultValue !== undefined) control.value = options.defaultValue;
+        if (options.placeholder) control.placeholder = options.placeholder;
+        if (controlType === 'number') {
+            if (options.min !== undefined) control.min = options.min;
+            if (options.max !== undefined) control.max = options.max;
+            if (options.step !== undefined) control.step = options.step;
+        }
+    }
+    control.id = controlId;
+    control.name = controlId; // Important for form submissions if any
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'form-group'; // For styling and layout
+    wrapper.appendChild(label);
+    wrapper.appendChild(control);
+    return wrapper;
+}
+
+function populateImageGenConfig(container) {
+    if (!container) {
+        console.error("Image Gen Config container not provided to populateImageGenConfig.");
+        return;
+    }
+    container.innerHTML = ''; // Clear existing content
+    console.log("Populating Image Generation Config UI...");
+
+    // ComfyUI Workflow Selection
+    let workflowOptions = [{ value: '', text: 'Select a Workflow' }];
+    if (typeof window.comfyWorkflows === 'object' && window.comfyWorkflows !== null) {
+        Object.keys(window.comfyWorkflows).forEach(key => {
+            // Attempt to derive a user-friendly name, e.g., "GGUF_COMFY_WORKFLOW" -> "GGUF Comfy Workflow"
+            const friendlyName = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            workflowOptions.push({ value: key, text: friendlyName });
+        });
+    } else {
+        console.warn("window.comfyWorkflows not found. Workflow dropdown will be empty.");
+    }
+    container.appendChild(createLabeledControl('ComfyUI Workflow:', 'comfyWorkflowSelect', 'select', { selectOptions: workflowOptions }));
+
+    // GGUF Model Select (Placeholder - assuming model list might come from elsewhere or be static)
+    const ggufModelOptions = [
+        { value: '', text: 'Select GGUF Model' },
+        // Example: { value: 'sd_xl_base_1.0.gguf', text: 'SDXL Base 1.0 GGUF' }
+    ];
+    container.appendChild(createLabeledControl('GGUF Model:', 'ggufModelSelect', 'select', { selectOptions: ggufModelOptions }));
+
+    // Checkpoint Model Select (Placeholder)
+    const checkpointModelOptions = [
+        { value: '', text: 'Select Checkpoint Model' },
+        // Example: { value: 'sdxlUnstableDiffusers_v11.safetensors', text: 'SDXL Unstable Diffusers v11' }
+    ];
+    container.appendChild(createLabeledControl('Checkpoint Model:', 'checkpointModelSelect', 'select', { selectOptions: checkpointModelOptions }));
+
+    // Image Dimensions & Steps - Default values might be set by comfyWorkflowSpecifics on change event later
+    container.appendChild(createLabeledControl('Image Width:', 'comfyImageWidth', 'number', { defaultValue: '832', min: 64, step: 8 }));
+    container.appendChild(createLabeledControl('Image Height:', 'comfyImageHeight', 'number', { defaultValue: '1216', min: 64, step: 8 }));
+    container.appendChild(createLabeledControl('Steps:', 'comfySteps', 'number', { defaultValue: '20', min: 1, max: 100 }));
+
+    // Negative Prompt
+    container.appendChild(createLabeledControl('Negative Prompt:', 'comfyNegativePrompt', 'textarea', { placeholder: 'Enter negative prompt (e.g., low quality, blurry, text, watermark)...', rows: 3 }));
+
+    // Action Buttons
+    const sendButton = document.createElement('button');
+    sendButton.id = 'sendPromptButton';
+    sendButton.className = 'primary-button';
+    sendButton.innerHTML = 'Send to ComfyUI <i class="fas fa-paper-plane"></i>';
+    container.appendChild(sendButton);
+
+    const stopButton = document.createElement('button');
+    stopButton.id = 'stopBatchButton';
+    stopButton.className = 'secondary-button hidden'; // Hidden by default
+    stopButton.innerHTML = 'Stop Batch <i class="fas fa-stop-circle"></i>';
+    container.appendChild(stopButton);
+
+    console.log("Image Generation Config UI populated.");
+}
+
 
 function createAndPlaceGenerateApiPromptButton() {
     const section2 = document.getElementById('section-2-v2');

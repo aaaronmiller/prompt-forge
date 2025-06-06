@@ -95,19 +95,50 @@ function handleGenerateApiPrompt() {
             showMessage('mainMessageBox', 'Generating AI prompt, please wait...', 'info');
         }
 
-        // Call the existing API function
-        if (typeof generateApiPrompt === 'function') {
-            generateApiPrompt().finally(() => {
-                setButtonLoading(generateButton, false);
-            });
+        const keywordsTextarea = document.getElementById('selectedKeywordsDisplayArea'); // In section-1-v2
+        const keywords = keywordsTextarea ? keywordsTextarea.value.trim() : '';
+
+        if (!keywords) {
+            if (typeof showMessage === 'function') {
+                showMessage('mainMessageBox', 'No keywords found. Please select keywords first using the slider and "Use Selected Keywords" button.', 'warning');
+            }
+            if (generateButton) setButtonLoading(generateButton, false);
+            return;
+        }
+
+        // Directly call callLLMForPrompt as generateApiPrompt global wrapper is not confirmed/refactored yet.
+        if (typeof callLLMForPrompt === 'function') {
+             callLLMForPrompt(keywords, 'mainMessageBox').then(apiPrompt => {
+                 if (apiPrompt !== null) { // callLLMForPrompt returns null on error
+                    const apiGeneratedPromptTextarea = document.getElementById('apiGeneratedPrompt');
+                    if (apiGeneratedPromptTextarea) {
+                        apiGeneratedPromptTextarea.value = apiPrompt;
+                        // Optionally, trigger an input event if other listeners depend on it
+                        apiGeneratedPromptTextarea.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                    if (typeof showMessage === 'function') {
+                         showMessage('mainMessageBox', 'AI prompt generated successfully!', 'success');
+                    }
+                 }
+                 // Error message is handled within callLLMForPrompt, no need to show another one here unless apiPrompt is null
+             }).catch(error => {
+                 // This catch is for unexpected errors in the promise chain itself, not API errors handled by callLLMForPrompt
+                 console.error("Error after callLLMForPrompt:", error);
+                 if(typeof showMessage === 'function') showMessage('mainMessageBox', 'An unexpected error occurred after attempting to generate AI prompt.', 'error');
+             }).finally(() => {
+                 if (generateButton) setButtonLoading(generateButton, false);
+             });
         } else {
-            console.error("generateApiPrompt function not found");
-            showMessage('mainMessageBox', "API prompt generation function not available.", 'error'); // Changed to mainMessageBox
+            console.error("callLLMForPrompt function not found. Cannot generate AI prompt.");
+            if (typeof showMessage === 'function') {
+                showMessage('mainMessageBox', "Core AI prompt generation function (callLLMForPrompt) is missing.", 'error');
+            }
             if (generateButton) setButtonLoading(generateButton, false);
         }
     } catch (error) {
-        console.error("Error generating API prompt:", error);
-        showMessage('mainMessageBox', "Error generating API prompt.", 'error'); // Changed to mainMessageBox
+        // This catch is for synchronous errors before the promise chain
+        console.error("Error in handleGenerateApiPrompt:", error);
+        showMessage('mainMessageBox', "Error setting up AI prompt generation: " + error.message, 'error');
         if (generateButton) setButtonLoading(generateButton, false);
     }
 }
