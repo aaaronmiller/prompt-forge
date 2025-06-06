@@ -84,7 +84,10 @@ const checkpointModelFiles = [
     "v1-5-pruned-emaonly-fp16.safetensors"
 ];
 
-
+// Stored API Keys
+const storedApiKeys = {
+    gemini: 'YOUR_GEMINI_API_KEY_HERE'
+};
 
 // Convert dropdownData to keywordCategories for the slider
 const keywordCategories = {};
