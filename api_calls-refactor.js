@@ -162,10 +162,22 @@ async function callImageGenerationAPI(promptToSend, endpointConfig, runIdentifie
                 const clientId = generateUUID();
                 const currentSelectedWorkflowKey = comfyWorkflowSelect.value;
 
+                console.log('[ComfyUI Debug] Selected Workflow Key:', currentSelectedWorkflowKey);
+
                 if (!currentSelectedWorkflowKey) throw new Error("Please select a ComfyUI workflow.");
                 if (!comfyWorkflows[currentSelectedWorkflowKey]) throw new Error(`Workflow '${currentSelectedWorkflowKey}' not found.`);
 
-                let workflowToUse = JSON.parse(JSON.stringify(JSON.parse(comfyWorkflows[currentSelectedWorkflowKey])));
+                console.log('[ComfyUI Debug] Workflow String (raw from comfyWorkflows):', comfyWorkflows[currentSelectedWorkflowKey]);
+
+                let workflowToUse;
+                try {
+                    workflowToUse = JSON.parse(comfyWorkflows[currentSelectedWorkflowKey]); // Parse once
+                    console.log('[ComfyUI Debug] Workflow JSON (parsed initial):', JSON.parse(JSON.stringify(workflowToUse))); // Deep copy for logging
+                } catch (e) {
+                    console.error('[ComfyUI Debug] Failed to parse workflow string:', e);
+                    throw new Error('Failed to parse ComfyUI workflow JSON.');
+                }
+
                 const specificConfig = comfyWorkflowSpecifics[currentSelectedWorkflowKey];
                 if (!specificConfig) throw new Error (`Specific config for workflow '${currentSelectedWorkflowKey}' not found.`);
 
@@ -193,11 +205,12 @@ async function callImageGenerationAPI(promptToSend, endpointConfig, runIdentifie
                 }
 
                 let promptNodeFound = false;
+                console.log('[ComfyUI Debug] Positive Prompt to Inject:', promptToSend);
                 if (specificConfig.promptNodeId && specificConfig.promptInputName && workflowToUse[specificConfig.promptNodeId]?.inputs) {
                      workflowToUse[specificConfig.promptNodeId].inputs[specificConfig.promptInputName] = promptToSend;
                      promptNodeFound = true;
                 } else {
-                    const fallbackNodeId = "6"; const fallbackInputName = "text";
+                    const fallbackNodeId = "6"; const fallbackInputName = "text"; // Common fallback
                     if(workflowToUse[fallbackNodeId]?.inputs) {
                         workflowToUse[fallbackNodeId].inputs[fallbackInputName] = promptToSend;
                         promptNodeFound = true;
@@ -214,38 +227,69 @@ async function callImageGenerationAPI(promptToSend, endpointConfig, runIdentifie
 
                 const seedToUse = generateRandomSeed();
                 let seedNodeFound = false;
-                 if (specificConfig.seedNodeId && specificConfig.seedInputName && workflowToUse[specificConfig.seedNodeId]?.inputs) {
-                     workflowToUse[specificConfig.seedNodeId].inputs[specificConfig.seedInputName] = seedToUse;
-                     seedNodeFound = true;
+                let seedNodeModifiedId = 'N/A';
+
+                // Log original seed value if possible (simplified: assuming specificConfig points to the primary seed node)
+                if (specificConfig.seedNodeId && workflowToUse[specificConfig.seedNodeId]?.inputs[specificConfig.seedInputName] !== undefined) {
+                    console.log('[ComfyUI Debug] Original seed in node', specificConfig.seedNodeId, ':', workflowToUse[specificConfig.seedNodeId].inputs[specificConfig.seedInputName]);
+                }
+
+                if (specificConfig.seedNodeId && specificConfig.seedInputName && workflowToUse[specificConfig.seedNodeId]?.inputs) {
+                    workflowToUse[specificConfig.seedNodeId].inputs[specificConfig.seedInputName] = seedToUse;
+                    seedNodeFound = true;
+                    seedNodeModifiedId = specificConfig.seedNodeId;
                 } else {
-                    const fallbackNodeIds = ["31", "3", "2"]; // Common KSampler or other seed nodes (added "2" for MFlux)
+                    const fallbackNodeIds = ["31", "3", "2"];
                     for (const fbNodeId of fallbackNodeIds) {
                         if(workflowToUse[fbNodeId]?.inputs?.seed !== undefined) {
-                             workflowToUse[fbNodeId].inputs.seed = seedToUse;
-                             seedNodeFound = true; break;
+                            console.log('[ComfyUI Debug] Original seed in fallback node', fbNodeId, ':', workflowToUse[fbNodeId].inputs.seed);
+                            workflowToUse[fbNodeId].inputs.seed = seedToUse;
+                            seedNodeFound = true; seedNodeModifiedId = fbNodeId; break;
                         }
                     }
-                     if (!seedNodeFound) {
+                    if (!seedNodeFound) {
                         for (const nodeId in workflowToUse) {
                             if (workflowToUse[nodeId]?.class_type?.includes("Sampler") && workflowToUse[nodeId]?.inputs?.seed !== undefined) {
+                                console.log('[ComfyUI Debug] Original seed in discovered sampler node', nodeId, ':', workflowToUse[nodeId].inputs.seed);
                                 workflowToUse[nodeId].inputs.seed = seedToUse;
-                                seedNodeFound = true; break;
+                                seedNodeFound = true; seedNodeModifiedId = nodeId; break;
                             }
                         }
                     }
                 }
-                if (!seedNodeFound) console.warn(`[ComfyUI Run ${runIdentifier}] Could not find suitable node to set seed.`);
+                if (seedNodeFound) {
+                    console.log('[ComfyUI Debug] Seed set to:', seedToUse, 'for node:', seedNodeModifiedId);
+                } else {
+                    console.warn(`[ComfyUI Run ${runIdentifier}] Could not find suitable node to set seed. Seed ${seedToUse} not injected.`);
+                }
 
                 requestBody = { "prompt": workflowToUse, "client_id": clientId };
-                const queueResponse = await fetch(apiUrl, { method: 'POST', headers, body: JSON.stringify(requestBody) });
+                console.log('[ComfyUI Debug] Final Request Body for /prompt:', JSON.parse(JSON.stringify(requestBody))); // Deep copy for logging
+                console.log('[ComfyUI Debug] Sending /prompt request to URL:', apiUrl);
+                console.log('[ComfyUI Debug] >>> Sending request to /prompt...');
+
+                let queueResponse;
+                try {
+                    console.log('[ComfyUI Debug] Attempting to fetch /prompt:', apiUrl);
+                    queueResponse = await fetch(apiUrl, { method: 'POST', headers: requestHeaders, body: JSON.stringify(requestBody) });
+                    console.log('[ComfyUI Debug] /prompt response status:', queueResponse.status, queueResponse.statusText);
+                } catch (fetchError) {
+                    console.error('[ComfyUI Debug] !!! /prompt fetch failed:', fetchError);
+                    if (typeof showMessage === 'function') showMessage(document.getElementById('resultsMessageBox') || 'mainMessageBox', 'ComfyUI /prompt fetch error: ' + fetchError.message, 'error');
+                    throw fetchError;
+                }
+
                 if (!queueResponse.ok) {
                     let errTxt = await queueResponse.text();
+                    console.error('[ComfyUI Debug] /prompt error response text:', errTxt);
                     throw new Error(`ComfyUI Queue Error (${queueResponse.status}): ${errTxt.substring(0,200)}`);
                 }
                 const queueData = await queueResponse.json();
+                console.log('[ComfyUI Debug] /prompt response JSON data:', queueData);
                 if (!queueData.prompt_id) throw new Error("ComfyUI did not return a prompt_id.");
 
                 result.promptId = queueData.prompt_id;
+                console.log('[ComfyUI Debug] Extracted prompt_id:', result.promptId);
                 result.status = 'polling';
                 result.message = `ComfyUI Queued (ID: ${result.promptId.substring(0,8)}...). Polling...`;
                 if (typeof updateImageResultItem === 'function') updateImageResultItem(endpointConfig.id, endpointConfig.name, result, runIdentifier);
@@ -305,7 +349,9 @@ function pollComfyHistory(promptId, serverAddress, endpointId, endpointName, run
     const resultsMessageBox = document.getElementById('resultsMessageBox');
     let attempts = 0;
     const historyUrl = `${serverAddress}/history/${promptId}`;
-    console.log(`[Comfy Poll ${runIdentifier}-${promptId}] Starting: ${historyUrl}`);
+    // console.log(`[Comfy Poll ${runIdentifier}-${promptId}] Starting: ${historyUrl}`); // Original log
+    console.log(`[Comfy Poll ${runIdentifier}-${promptId}] Starting polling for history: ${historyUrl}`);
+
 
     // comfyPollingStates, stopBatchFlag, isContinuousModeActive are global (from main_script)
     // blobToBase64, showMessage from utility_functions
@@ -338,16 +384,19 @@ function pollComfyHistory(promptId, serverAddress, endpointId, endpointName, run
             return;
         }
         attempts++;
+        console.log(`[Comfy Poll ${runIdentifier}-${promptId}] Attempt ${attempts}/${maxAttempts}...`);
         if (attempts % 4 === 1 && typeof updateImageResultItem === 'function') {
             updateImageResultItem(endpointId, endpointName, null, runIdentifier, 'polling', `Polling... (${attempts}/${maxAttempts})`);
         }
         try {
             const response = await fetch(historyUrl);
             if (!response.ok && response.status !== 404) {
+                console.warn(`[Comfy Poll ${runIdentifier}-${promptId}] History fetch issue: ${response.status} ${response.statusText}. Body:`, await response.text());
                 return;
             }
             if (response.ok) {
                 const historyData = await response.json();
+                console.log(`[Comfy Poll ${runIdentifier}-${promptId}] History data received:`, JSON.parse(JSON.stringify(historyData))); // Deep copy for logging
                 if (historyData && historyData[promptId]?.outputs) {
                     clearInterval(intervalId);
                     delete window.comfyPollingStates[promptId];
@@ -359,16 +408,22 @@ function pollComfyHistory(promptId, serverAddress, endpointId, endpointName, run
                             const imageInfo = nodeOutput.images[0];
                             if (imageInfo.filename && imageInfo.type && imageInfo.subfolder !== undefined) {
                                 const imageUrl = `${serverAddress}/view?filename=${encodeURIComponent(imageInfo.filename)}&subfolder=${encodeURIComponent(imageInfo.subfolder)}&type=${encodeURIComponent(imageInfo.type)}`;
+                                console.log(`[Comfy Poll ${runIdentifier}-${promptId}] Attempting to fetch image from /view URL: ${imageUrl}`);
+                                let imageResponse;
                                 try {
-                                    const imageResponse = await fetch(imageUrl);
-                                    if (!imageResponse.ok) throw new Error(`Image fetch failed (${imageResponse.status})`);
+                                    imageResponse = await fetch(imageUrl);
+                                    if (!imageResponse.ok) {
+                                        console.error(`[Comfy Poll ${runIdentifier}-${promptId}] /view image fetch failed: ${imageResponse.status} ${imageResponse.statusText}. Body:`, await imageResponse.text());
+                                        throw new Error(`Image fetch failed (${imageResponse.status})`);
+                                    }
                                     const imageBlob = await imageResponse.blob();
                                     const base64ImageData = (typeof blobToBase64 === 'function') ? await blobToBase64(imageBlob) : null;
                                     if (typeof updateImageResultItem === 'function') updateImageResultItem(endpointId, endpointName, { imageData: base64ImageData, message: `Image Received.` }, runIdentifier);
                                     foundImage = true; break;
-                                } catch (imgError) {
-                                    if (typeof updateImageResultItem === 'function') updateImageResultItem(endpointId, endpointName, { error: `Image load failed: ${String(imgError).substring(0,100)}` }, runIdentifier, 'error');
-                                    foundImage = true; break;
+                                } catch (viewError) {
+                                    console.error(`[Comfy Poll ${runIdentifier}-${promptId}] !!! /view fetch error:`, viewError);
+                                    if (typeof updateImageResultItem === 'function') updateImageResultItem(endpointId, endpointName, { error: `Image load failed: ${String(viewError).substring(0,100)}` }, runIdentifier, 'error');
+                                    foundImage = true; break; // Still break as we attempted for this image path
                                 }
                             }
                         }

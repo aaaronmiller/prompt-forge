@@ -399,11 +399,6 @@ function setStyle(style) { // Parameter 'style' is now ignored, always 'curved'
     // console.log(`Style enforced: ${forcedStyle}`);
 }
 
-    // console.log();
-}\n    \/* console.log(`Style set\/forced to: ${forcedStyle}`); *\/ \n}
-    // console.log(`Style set/forced to: ${forcedStyle}`);
-}
-
 /**
  * Initializes accessibility features.
  */
@@ -725,13 +720,23 @@ function restoreWorkInProgress() {
  * Enhanced error handling with user-friendly messages.
  */
 function handleError(error, context = 'Application') {
+    if (!error) {
+        console.warn(`${context} Error: handleError was called with a null or undefined error object.`);
+        // Optionally, display a generic message to the user or simply return
+        showMessage('mainMessageBox', 'An unexpected error occurred. (No error details available)', 'error');
+        return;
+    }
+
     console.error(`${context} Error:`, error);
 
     let userMessage = 'An unexpected error occurred. ';
 
-    if (error.name === 'NetworkError' || error.message.includes('fetch')) {
+    // It's safer to check if error.message exists before trying to access it.
+    const errorMessage = error.message || '';
+
+    if (error.name === 'NetworkError' || errorMessage.includes('fetch')) {
         userMessage += 'Please check your internet connection and try again.';
-    } else if (error.message.includes('API')) {
+    } else if (errorMessage.includes('API')) {
         userMessage += 'There was an issue with the API. Please check your configuration.';
     } else {
         userMessage += 'Please try refreshing the page.';
@@ -1411,10 +1416,24 @@ function initializeFeelLucky() {
 
     const feelLuckyButton = document.getElementById('feelLuckyButton');
     if (feelLuckyButton) {
-        feelLuckyButton.addEventListener('click', handleFeelLucky);
-        console.log('✅ Feeling Lucky button initialized');
+        feelLuckyButton.addEventListener('click', handleFeelLucky); // handleFeelLucky from main_script
+        console.log('✅ Feeling Lucky button initialized in main_script');
     } else {
         console.error('❌ Feeling Lucky button not found!');
+    }
+
+    const feelLuckyCard = document.getElementById('feelLuckyCard');
+    if (feelLuckyCard) {
+        feelLuckyCard.addEventListener('click', (e) => {
+            // Prevent triggering if clicking on interactive elements within the card
+            if (e.target.closest('button') || e.target.closest('input[type="radio"]')) {
+                return;
+            }
+            handleFeelLucky(); // handleFeelLucky from main_script
+        });
+        console.log('✅ Feeling Lucky card initialized in main_script');
+    } else {
+        console.error('❌ Feeling Lucky card not found!');
     }
 }
 

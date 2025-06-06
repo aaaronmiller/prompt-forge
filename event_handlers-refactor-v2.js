@@ -1,131 +1,6 @@
 // --- Event Handler Functions V1 ---
 
 /**
- * Handles the "Feeling Lucky" button click - now generates keyword list directly.
- */
-function handleFeelingLucky() {
-    console.log("Handling 'Feeling Lucky' click...");
-    const mainMessageBox = document.getElementById('mainMessageBox');
-    const generatedKeywordsTextarea = document.getElementById('generatedKeywords');
-    const keywordsSummaryContainer = document.getElementById('keywords-summary-container');
-    const feelLuckyButton = document.getElementById('feelLuckyButton');
-
-    try {
-        // Set button loading state
-        setButtonLoading(feelLuckyButton, true);
-
-        // Get all available keywords from the slider categories with balanced selection
-        const allCategories = [];
-        if (window.keywordSlider && window.keywordSlider.categories) {
-            window.keywordSlider.categories.forEach(category => {
-                allCategories.push({
-                    name: category.name,
-                    keywords: [...category.keywords] // Create a copy
-                });
-            });
-        }
-
-        if (!allCategories.length) {
-            showMessage('mainMessageBox', 'No keywords available to pick from.', 'error');
-            setButtonLoading(feelLuckyButton, false);
-            return;
-        }
-
-        // Get quantity selection
-        const quantityOption = document.querySelector('input[name="luckyQuantity"]:checked');
-        let minQty = 10, maxQty = 20;
-        if (quantityOption) {
-            const [parsedMin, parsedMax] = quantityOption.value.split('-').map(Number);
-            minQty = parsedMin || minQty;
-            maxQty = parsedMax || maxQty;
-        }
-
-        const targetQty = Math.floor(Math.random() * (maxQty - minQty + 1)) + minQty;
-
-        // Ensure balanced selection across categories using Fisher-Yates shuffle
-        const selectedKeywords = [];
-        const keywordsPerCategory = Math.ceil(targetQty / allCategories.length);
-
-        // Shuffle each category's keywords independently
-        allCategories.forEach(category => {
-            // Fisher-Yates shuffle for true randomness
-            const shuffled = [...category.keywords];
-            for (let i = shuffled.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-            }
-
-            // Take random number of keywords from this category (1 to keywordsPerCategory)
-            const takeCount = Math.min(
-                Math.floor(Math.random() * keywordsPerCategory) + 1,
-                shuffled.length,
-                targetQty - selectedKeywords.length
-            );
-
-            selectedKeywords.push(...shuffled.slice(0, takeCount));
-        });
-
-        // If we need more keywords, randomly select from remaining
-        if (selectedKeywords.length < targetQty) {
-            const allRemaining = [];
-            allCategories.forEach(category => {
-                category.keywords.forEach(keyword => {
-                    if (!selectedKeywords.includes(keyword)) {
-                        allRemaining.push(keyword);
-                    }
-                });
-            });
-
-            // Fisher-Yates shuffle remaining keywords
-            for (let i = allRemaining.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [allRemaining[i], allRemaining[j]] = [allRemaining[j], allRemaining[i]];
-            }
-
-            const needed = targetQty - selectedKeywords.length;
-            selectedKeywords.push(...allRemaining.slice(0, needed));
-        }
-
-        // Final shuffle of selected keywords to randomize order for AI processing
-        for (let i = selectedKeywords.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [selectedKeywords[i], selectedKeywords[j]] = [selectedKeywords[j], selectedKeywords[i]];
-        }
-
-        // Animate the generation process
-        setTimeout(() => {
-            // Create the keyword list
-            const keywordsList = selectedKeywords.join(', ');
-
-            // Update the textarea
-            if (generatedKeywordsTextarea) {
-                generatedKeywordsTextarea.value = keywordsList;
-                generatedKeywordsTextarea.dispatchEvent(new Event('input', { bubbles: true }));
-            }
-
-            // Show the generate prompt button
-            showGeneratePromptButton();
-
-            // Show success message
-            showMessage('mainMessageBox', `Feeling lucky! Generated ${actualQty} random keywords.`, 'success');
-
-            // Scroll to results
-            if (keywordsSummaryContainer) {
-                keywordsSummaryContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-
-            // Reset button state
-            setButtonLoading(feelLuckyButton, false);
-        }, 800);
-
-    } catch (error) {
-        console.error("Error 'Feeling Lucky':", error);
-        showMessage('mainMessageBox', "Error generating random keywords.", 'error');
-        setButtonLoading(feelLuckyButton, false);
-    }
-}
-
-/**
  * Handles the "Generate Prompt" button click (moved from LLM config).
  */
 function handleGeneratePrompt() {
@@ -215,7 +90,10 @@ function handleGenerateApiPrompt() {
 
     try {
         // Set button loading state
-        setButtonLoading(generateButton, true);
+        if (generateButton) setButtonLoading(generateButton, true);
+        if (typeof showMessage === 'function') {
+            showMessage('mainMessageBox', 'Generating AI prompt, please wait...', 'info');
+        }
 
         // Call the existing API function
         if (typeof generateApiPrompt === 'function') {
@@ -224,13 +102,13 @@ function handleGenerateApiPrompt() {
             });
         } else {
             console.error("generateApiPrompt function not found");
-            showMessage('configMessageBox', "API prompt generation function not available.", 'error');
-            setButtonLoading(generateButton, false);
+            showMessage('mainMessageBox', "API prompt generation function not available.", 'error'); // Changed to mainMessageBox
+            if (generateButton) setButtonLoading(generateButton, false);
         }
     } catch (error) {
         console.error("Error generating API prompt:", error);
-        showMessage('configMessageBox', "Error generating API prompt.", 'error');
-        setButtonLoading(generateButton, false);
+        showMessage('mainMessageBox', "Error generating API prompt.", 'error'); // Changed to mainMessageBox
+        if (generateButton) setButtonLoading(generateButton, false);
     }
 }
 
@@ -244,26 +122,29 @@ function handleSendPrompt() {
 
     try {
         // Update button states
-        setButtonLoading(sendButton, true);
-        stopButton.classList.remove('hidden');
+        if (sendButton) setButtonLoading(sendButton, true);
+        if (stopButton) stopButton.classList.remove('hidden');
+        if (typeof showMessage === 'function') {
+            showMessage('mainMessageBox', 'Sending prompt for image generation, please wait...', 'info');
+        }
 
         // Call the existing send function
         if (typeof sendPromptToImageGen === 'function') {
             sendPromptToImageGen().finally(() => {
-                setButtonLoading(sendButton, false);
-                stopButton.classList.add('hidden');
+                if (sendButton) setButtonLoading(sendButton, false);
+                if (stopButton) stopButton.classList.add('hidden');
             });
         } else {
             console.error("sendPromptToImageGen function not found");
-            showMessage('configMessageBox', "Send prompt function not available.", 'error');
-            setButtonLoading(sendButton, false);
-            stopButton.classList.add('hidden');
+            showMessage('mainMessageBox', "Send prompt function not available.", 'error'); // Changed to mainMessageBox
+            if (sendButton) setButtonLoading(sendButton, false);
+            if (stopButton) stopButton.classList.add('hidden');
         }
     } catch (error) {
         console.error("Error sending prompt:", error);
-        showMessage('configMessageBox', "Error sending prompt.", 'error');
-        setButtonLoading(sendButton, false);
-        stopButton.classList.add('hidden');
+        showMessage('mainMessageBox', "Error sending prompt.", 'error'); // Changed to mainMessageBox
+        if (sendButton) setButtonLoading(sendButton, false);
+        if (stopButton) stopButton.classList.add('hidden');
     }
 }
 
@@ -376,10 +257,6 @@ function setupEventListeners() {
     const sendPromptButton = document.getElementById('sendPromptButton');
     const stopBatchButton = document.getElementById('stopBatchButton');
 
-    if (feelLuckyButton) {
-        feelLuckyButton.addEventListener('click', handleFeelingLucky);
-    }
-
     if (generatePromptButton) {
         generatePromptButton.addEventListener('click', handleGeneratePrompt);
     }
@@ -424,15 +301,7 @@ function setupEventListeners() {
     }
 
     // Quick action card click handlers
-    const feelLuckyCard = document.getElementById('feelLuckyCard');
     const generateCard = document.getElementById('generateCard');
-
-    if (feelLuckyCard) {
-        feelLuckyCard.addEventListener('click', (e) => {
-            if (e.target.closest('button') || e.target.closest('input')) return;
-            handleFeelLucky();
-        });
-    }
 
     if (generateCard) {
         generateCard.addEventListener('click', (e) => {
@@ -456,10 +325,10 @@ function setupEventListeners() {
         }
 
         // Ctrl/Cmd + L for feeling lucky
-        if ((e.ctrlKey || e.metaKey) && e.key === 'l') {
-            e.preventDefault();
-            handleFeelLucky();
-        }
+        // if ((e.ctrlKey || e.metaKey) && e.key === 'l') { // Temporarily removed as handleFeelLucky is removed from this file
+        //     e.preventDefault();
+        //     // handleFeelLucky(); // This would cause a ReferenceError now
+        // }
     });
 
     console.log('Enhanced event listeners set up successfully.');

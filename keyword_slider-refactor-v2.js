@@ -54,10 +54,13 @@ document.addEventListener('DOMContentLoaded', () => {
         swiperWrapper.appendChild(slide);
     }
 
+    const numCategories = Object.keys(effectiveKeywordCategories).length;
+    console.log(`Initializing Swiper for section-0-v2 with ${numCategories} categories. Loop will be enabled if > 2.`);
+
     const swiper = new Swiper('#section-0-v2 .swiper', {
         slidesPerView: 1,
         spaceBetween: 20,
-        loop: (Object.keys(effectiveKeywordCategories).length > 1), // Loop only if multiple slides
+        loop: (numCategories > 2), // Loop only if more than 2 slides
         navigation: {
             nextEl: '#section-0-v2 .swiper-button-next',
             prevEl: '#section-0-v2 .swiper-button-prev',
