@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>
+   Prompt Forge - Modern Interface
+  </title>
+  <link href="styles-refactor-v2.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&family=SF+Pro+Text:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" referrerpolicy="no-referrer" rel="stylesheet">
+ </head>
+ <body>
+  <!-- Theme & Style Toolbar -->
+  <div class="theme-toolbar">
+   <div class="toolbar-section">
+    <div class="toolbar-label">
+     Theme
+    </div>
+    <div class="theme-randomizer">
+     <button class="randomize-btn" id="randomizeThemeButton" title="Randomize Theme & Style">
+      <i class="fas fa-shuffle">
+      </i>
+      <span>
+       Random Look
+      </span>
+     </button>
+     <button class="lock-btn" id="lockThemeButton" title="Lock Current Theme">
+      <i class="fas fa-lock-open">
+      </i>
+     </button>
+    </div>
+   </div>
+   <div class="toolbar-section">
+    <div class="toolbar-label">
+     Manual
+    </div>
+    <div class="manual-controls">
+     <div class="theme-selector">
+      <button class="theme-btn active" data-theme="default" title="Ocean Blue">
+       <div class="theme-preview theme-default">
+       </div>
+      </button>
+      <button class="theme-btn" data-theme="purple" title="Cosmic Purple">
+       <div class="theme-preview theme-purple">
+       </div>
+      </button>
+      <button class="theme-btn" data-theme="green" title="Forest Green">
+       <div class="theme-preview theme-green">
+       </div>
+      </button>
+      <button class="theme-btn" data-theme="orange" title="Sunset Orange">
+       <div class="theme-preview theme-orange">
+       </div>
+      </button>
+      <button class="theme-btn" data-theme="red" title="Crimson Red">
+       <div class="theme-preview theme-red">
+       </div>
+      </button>
+     </div>
+     <div class="style-selector">
+      <button class="style-btn active" data-style="curved" title="Curved Elements">
+       <div class="style-preview style-curved">
+       </div>
+      </button>
+      <button class="style-btn" data-style="square" title="Square Elements">
+       <div class="style-preview style-square">
+       </div>
+      </button>
+      <button class="style-btn" data-style="minimal" title="Minimal Elements">
+       <div class="style-preview style-minimal">
+       </div>
+      </button>
+     </div>
+    </div>
+   </div>
+  </div>
+  <!-- Vertical Section Navigator -->
+  <div class="section-navigator">
+   <div class="nav-dots">
+    <button class="nav-dot active" data-section-v2="0" title="Keywords">
+    </button>
+    <button class="nav-dot" data-section-v2="1" title="Setup">
+    </button>
+    <button class="nav-dot" data-section-v2="2" title="Image/AI">
+    </button>
+    <button class="nav-dot" data-section-v2="3" title="Output">
+    </button>
+    <button class="nav-dot" data-section-v2="4" title="Guides">
+    </button>
+   </div>
+  </div>
+  <div class="app-container" id="container">
+   <section class="app-section active" id="section-0">
+    <header class="hero-section">
+     <div class="hero-content">
+      <h1 class="hero-title">
+       <span class="title-main">
+        Prompt Forge
+       </span>
+       <span class="title-sub">
+        Artistic T-Shirt Generator
+       </span>
+      </h1>
+      <p class="hero-description">
+       Create stunning prompts with intelligent keyword generation and AI refinement
+      </p>
+     </div>
+    </header>
+    <!-- Quick Actions -->
+    <section class="quick-actions-section">
+     <div class="quick-actions-grid">
+      <div class="quick-action-card" id="feelLuckyCard">
+       <div class="card-icon">
+        <i class="fas fa-dice">
+        </i>
+       </div>
+       <h3>
+        Feeling Lucky
+       </h3>
+       <p>
+        Generate random keywords instantly
+       </p>
+       <div class="quantity-selector">
+        <div class="quantity-option">
+         <input checked id="lucky-qty-small-v1" name="luckyQuantity" type="radio" value="10-20">
+         <label for="lucky-qty-small-v1">
+          10-20
+         </label>
+        </div>
+        <div class="quantity-option">
+         <input id="lucky-qty-medium-v1" name="luckyQuantity" type="radio" value="30-50">
+         <label for="lucky-qty-medium-v1">
+          30-50
+         </label>
+        </div>
+        <div class="quantity-option">
+         <input id="lucky-qty-large-v1" name="luckyQuantity" type="radio" value="60-100">
+         <label for="lucky-qty-large-v1">
+          60-100
+         </label>
+        </div>
+       </div>
+       <button class="primary-button" id="feelLuckyButton">
+        <span>
+         Generate Keywords
+        </span>
+        <i class="fas fa-arrow-right">
+        </i>
+       </button>
+      </div>
+      <div class="quick-action-card" id="selectKeywordsCard">
+       <div class="card-icon">
+        <i class="fas fa-hand-pointer">
+        </i>
+       </div>
+       <h3>
+        Select Keywords
+       </h3>
+       <p>
+        Choose keywords with smart slider interface
+       </p>
+       <button class="primary-button" id="openKeywordSliderButton">
+        <span>
+         Open Selector
+        </span>
+        <i class="fas fa-arrow-right">
+        </i>
+       </button>
+      </div>
+     </div>
+    </section>
+   </section>
+   <section class="app-section" id="section-0-v2">
+    <div class="section-header">
+     <h2>
+      Keyword Selection
+     </h2>
+     <p>
+      Select keywords to build your prompt
+     </p>
+     <button class="primary-button large" id="submitKeywordsButton">
+      <i class="fas fa-check">
+      </i>
+      <span>
+       Use Selected Keywords
+      </span>
+     </button>
+    </div>
+    <div class="swiper">
+     <div class="swiper-button-next">
+     </div>
+     <div class="swiper-button-prev">
+     </div>
+     <div class="swiper-wrapper">
+      <!-- Slides will be populated by keyword_slider-refactor-v2.js -->
+     </div>
+    </div>
+    <div class="slider-controls">
+     <button class="slider-nav prev" id="sliderPrev">
+      <i class="fas fa-chevron-left">
+      </i>
+     </button>
+     <button class="slider-nav next" id="sliderNext">
+      <i class="fas fa-chevron-right">
+      </i>
+     </button>
+    </div>
+   </section>
+   <section class="app-section" id="section-1-v2">
+    <div class="section-header">
+     <h2>
+      Prompt Setup
+     </h2>
+    </div>
+    <div class="output-card" id="selected-keywords-card-v2">
+     <div class="output-header">
+      <h3>
+       Your Selected Keywords
+      </h3>
+      <button class="secondary-button small-button" id="scrollToKeywordsButton">
+       <i class="fas fa-edit">
+       </i>
+       Edit Keywords
+      </button>
+     </div>
+     <div class="output-content">
+      <textarea class="output-textarea" id="selectedKeywordsDisplayArea" placeholder="Your chosen keywords will appear here..." readonly></textarea>
+     </div>
+    </div>
+    <div class="config-card collapsible active">
+     <button aria-controls="llm-config-content" aria-expanded="true" class="config-header" type="button">
+      LLM Configuration
+     </button>
+     <div class="config-content" id="llm-config-content">
+     </div>
+    </div>
+   </section>
+   <section class="app-section" id="section-2-v2">
+    <div class="section-header">
+     <h2>
+      Image Settings & AI Prompt
+     </h2>
+    </div>
+    <div class="config-card collapsible active">
+     <button aria-controls="image-gen-config-content" aria-expanded="true" class="config-header" type="button">
+      Image Generation Configuration
+     </button>
+     <div class="config-content" id="image-gen-config-content">
+     </div>
+    </div>
+    <div class="output-card" id="api-prompt-output-container" style="display: none;">
+     <div class="output-header">
+      <h3>
+       AI Enhanced Prompt
+      </h3>
+      <button class="copy-button" data-target="apiGeneratedPrompt" title="Copy AI Generated Prompt" type="button">
+       <i class="fas fa-copy">
+       </i>
+      </button>
+     </div>
+     <div class="output-content">
+      <textarea class="output-textarea" id="apiGeneratedPrompt" placeholder="AI enhanced prompt will appear here..." readonly></textarea>
+     </div>
+    </div>
+   </section>
+   <section class="app-section" id="section-3-v2">
+    <div class="section-header">
+     <h2>
+      Generation Output
+     </h2>
+    </div>
+    <div class="output-card" id="generation-output-card-v2">
+     <div class="output-header">
+      <h3>
+       AI Image & Prompt Output
+      </h3>
+      <button class="primary-button small-button" id="copyAllOutputButton">
+       <i class="fas fa-copy">
+       </i>
+       Copy All
+      </button>
+     </div>
+     <div class="output-content-grid">
+      <div id="generatedImageViewArea">
+       Placeholder for generated image.
+      </div>
+      <textarea class="output-textarea" id="finalPromptDisplayArea" placeholder="Final prompt used for generation..." readonly></textarea>
+     </div>
+    </div>
+   </section>
+   <section class="app-section" id="section-4-v2">
+    <div class="section-header">
+     <h2>
+      Prompt Guidelines
+     </h2>
+    </div>
+    <div class="config-card collapsible">
+     <button aria-controls="guidelines-content" aria-expanded="false" class="config-header" type="button">
+      Prompt Guidelines
+     </button>
+     <div class="config-content" id="guidelines-content">
+     </div>
+    </div>
+   </section>
+  </div>
+  <!-- Section 2: Prompt Generation -->
+  <!-- Section 3: Configuration -->
+  <!-- Background Video -->
+  <div class="background-video-container">
+   <video autoplay class="background-video" loop muted>
+    <source src="https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/2f36ecd5-e8bc-4459-860a-435ac643b127/transcode=true,width=450/68466816.webm" type="video/webm">
+   </video>
+  </div>
+  <!-- Scripts -->
+  <script src="data.js">
+  </script>
+  <script>
+   // Debug data loading
+        console.log('Data.js loaded, checking variables...');
+        console.log('dropdownData:', typeof window.dropdownData, window.dropdownData ? 'exists' : 'missing');
+        console.log('keywordCategories:', typeof window.keywordCategories, window.keywordCategories ? 'exists' : 'missing');
+        if (window.dropdownData) {
+            console.log('dropdownData keys:', Object.keys(window.dropdownData));
+        }
+        if (window.keywordCategories) {
+            console.log('keywordCategories keys:', Object.keys(window.keywordCategories));
+        }
+  </script>
+  <script src="utility_functions-refactor.js">
+  </script>
+  <script src="api_calls-refactor.js">
+  </script>
+  <script defer src="ui_updates-refactor-v2.js">
+  </script>
+  <script defer src="ui_setup-refactor-v2.js">
+  </script>
+  <script defer src="keyword_slider-refactor-v2.js">
+  </script>
+  <script src="state_management-refactor.js">
+  </script>
+  <script defer src="event_handlers-refactor-v2.js">
+  </script>
+  <script defer src="main_script-refactor-v2.js">
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js">
+  </script>
+ </body>
+</html>
