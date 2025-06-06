@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const addCustomEndpointBtn = document.getElementById('add-custom-endpoint-btn');
     const customEndpointsList = document.getElementById('custom-endpoints-list');
     const comfyWorkflowSelect = document.getElementById('comfyWorkflowSelect');
-    const consolidatedConfigSection = document.getElementById('consolidated-config-section'); // Updated variable
+    const configActionArea = document.querySelector('.config-action-area');
     const resultsContainer = document.getElementById('results-container');
     const keywordDetailsArea = document.getElementById('keyword-details-area');
     const keywordDetailsContent = document.getElementById('keyword-details-content');
@@ -116,7 +116,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const comfyImageHeight = document.getElementById('comfyImageHeight');
     const comfySteps = document.getElementById('comfySteps');
     const comfyNegativePrompt = document.getElementById('comfyNegativePrompt');
-    const scrollToKeywordSliderButton = document.getElementById('scrollToKeywordSliderButton'); // Added for new button
 
 
     // --- Global State ---
@@ -129,81 +128,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     // --- Initialization ---
-    // populateDropdowns(); // Commented out, Swiper population will handle this
-
-    // --- Swiper Population ---
-    function populateSwiperSlides() {
-        if (typeof keywordCategories === 'undefined' || !keywordCategories) {
-            console.error("ERR: keywordCategories is missing or empty. Cannot populate Swiper slides.");
-            showMessage(mainMessageBox, 'error', 'Failed to load keyword categories for Swiper.');
-            return;
-        }
-
-        const swiperWrapper = document.querySelector('.swiper-wrapper');
-        if (!swiperWrapper) {
-            console.error("ERR: Swiper wrapper element (.swiper-wrapper) not found.");
-            return;
-        }
-        swiperWrapper.innerHTML = ''; // Clear any existing slides
-
-        for (const categoryName in keywordCategories) {
-            if (keywordCategories.hasOwnProperty(categoryName)) {
-                const keywords = keywordCategories[categoryName];
-
-                const slideDiv = document.createElement('div');
-                slideDiv.className = 'swiper-slide';
-
-                const titleH3 = document.createElement('h3');
-                titleH3.className = 'category-title';
-                titleH3.textContent = categoryName.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()); // Format category name
-                slideDiv.appendChild(titleH3);
-
-                const checkboxGroupDiv = document.createElement('div');
-                checkboxGroupDiv.className = 'checkbox-group';
-
-                keywords.forEach((keyword, index) => {
-                    const checkboxId = `${categoryName.replace(/\s+/g, '_')}_${index}`; // Create a unique ID
-
-                    const itemDiv = document.createElement('div');
-                    itemDiv.className = 'dropdown-item'; // Reusing existing styling
-
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    checkbox.id = checkboxId;
-                    checkbox.value = keyword;
-                    // Add data-category attribute for potential future use
-                    checkbox.dataset.category = categoryName;
-
-
-                    const label = document.createElement('label');
-                    label.htmlFor = checkboxId;
-                    label.textContent = keyword;
-
-                    itemDiv.appendChild(checkbox);
-                    itemDiv.appendChild(label);
-                    checkboxGroupDiv.appendChild(itemDiv);
-                });
-
-                slideDiv.appendChild(checkboxGroupDiv);
-                swiperWrapper.appendChild(slideDiv);
-            }
-        }
-        console.log("Swiper slides populated.");
-    }
-
-    // Call populateSwiperSlides after DOM is loaded and data.js should be available
-    if (typeof keywordCategories !== 'undefined') {
-        populateSwiperSlides();
+if (typeof dropdownData === 'undefined') {
+        console.error("ERR: dropdownData missing.");
+        showMessage(mainMessageBox, 'error', 'Failed to load keyword data.');
     } else {
-        // This might be too early if data.js loads slower,
-        // but keywordCategories is global so should be fine
-        console.warn("keywordCategories not immediately available for Swiper population. If slides are empty, check data.js loading order.");
-        // Attempt to populate again if data.js was slow, or rely on error message from populateSwiperSlides
-        // For robust loading, an event or callback from data.js would be better.
-        // For now, we assume data.js loads and defines keywordCategories before this runs.
-        // If errors occur, the user will see messages from populateSwiperSlides itself.
+        populateDropdowns();
     }
-
 
     if (typeof comfyWorkflows === 'undefined') { // This check is for comfyWorkflows from data.js
         console.error("ERR: comfyWorkflows missing.");
@@ -347,7 +277,7 @@ function handleWorkflowSelectionChange() {
         comfyImageWidth.value = specifics.defaultWidth || 512;
         comfyImageHeight.value = specifics.defaultHeight || 512;
         comfySteps.value = specifics.defaultSteps || 20;
-        
+
         if (specifics.negativePromptNodeId && specifics.negativePromptInputName) {
             comfyNegativePrompt.value = specifics.defaultNegativePrompt || "";
             if (negPromptInputContainer) applyDebugStyles(negPromptInputContainer, 'flex');
@@ -371,33 +301,33 @@ function handleWorkflowSelectionChange() {
 // handleWorkflowSelectionChange(); // Call once to set initial UI state
 
     // --- Function to Populate Keyword Dropdowns ---
-    // function populateDropdowns() { // OLD FUNCTION - COMMENTED OUT
-    //     if (typeof dropdownData === 'undefined') { console.error("Cannot populate dropdowns, dropdownData is not defined."); return; }
-    //     for (const categoryId in dropdownData) {
-    //         const containerDiv = document.getElementById(categoryId);
-    //         if (containerDiv) {
-    //             const contentHolder = document.createElement('div');
-    //             contentHolder.className = 'dropdown-content-holder';
-    //             dropdownData[categoryId].forEach(item => {
-    //                 const itemDiv = document.createElement('div');
-    //                 itemDiv.className = 'dropdown-item';
-    //                 const checkbox = document.createElement('input');
-    //                 checkbox.type = 'checkbox';
-    //                 checkbox.id = item.id;
-    //                 checkbox.value = item.value;
-    //                 const label = document.createElement('label');
-    //                 label.htmlFor = item.id;
-    //                 label.textContent = item.label;
-    //                 itemDiv.appendChild(checkbox);
-    //                 itemDiv.appendChild(label);
-    //                 contentHolder.appendChild(itemDiv);
-    //             });
-    //             containerDiv.appendChild(contentHolder);
-    //         } else {
-    //             console.warn(`Dropdown container div id "${categoryId}" not found.`);
-    //         }
-    //     }
-    // }
+    function populateDropdowns() {
+        if (typeof dropdownData === 'undefined') { console.error("Cannot populate dropdowns, dropdownData is not defined."); return; }
+        for (const categoryId in dropdownData) {
+            const containerDiv = document.getElementById(categoryId);
+            if (containerDiv) {
+                const contentHolder = document.createElement('div');
+                contentHolder.className = 'dropdown-content-holder';
+                dropdownData[categoryId].forEach(item => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'dropdown-item';
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.id = item.id;
+                    checkbox.value = item.value;
+                    const label = document.createElement('label');
+                    label.htmlFor = item.id;
+                    label.textContent = item.label;
+                    itemDiv.appendChild(checkbox);
+                    itemDiv.appendChild(label);
+                    contentHolder.appendChild(itemDiv);
+                });
+                containerDiv.appendChild(contentHolder);
+            } else {
+                console.warn(`Dropdown container div id "${categoryId}" not found.`);
+            }
+        }
+    }
 
     // --- Function to Populate ComfyUI Workflow Select ---
   function populateWorkflowSelect() {
@@ -414,7 +344,7 @@ function handleWorkflowSelectionChange() {
 
         // Check if this key is your desired default
         // Assuming your key in comfyWorkflows is exactly "GGUF_COMFY_WORKFLOW"
-        if (key === "GGUF_COMFY_WORKFLOW") { 
+        if (key === "GGUF_COMFY_WORKFLOW") {
             defaultWorkflowKey = key;
         }
     }
@@ -486,13 +416,6 @@ function handleWorkflowSelectionChange() {
         generateKeywordsButton.addEventListener('click', handleGenerateKeywords);
         generateApiPromptButton.addEventListener('click', handleGenerateApiPromptClick); // Added click feedback internally
         sendPromptButton.addEventListener('click', handleSendPromptClick); // Added click feedback internally
-        if (scrollToKeywordSliderButton) {
-            scrollToKeywordSliderButton.addEventListener('click', () => {
-                if (keywordDetailsArea) { // keywordDetailsArea should already be defined
-                    keywordDetailsArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            });
-        }
         startNewPromptButton.addEventListener('click', resetForm);
         downloadResultsButton.addEventListener('click', downloadResultsText); // Added console log internally
         addCustomEndpointBtn.addEventListener('click', addCustomImageEndpointInput); // Added console log internally
@@ -578,9 +501,9 @@ function handleWorkflowSelectionChange() {
     function handleFeelLucky() {
         console.log("Handling 'Feel Lucky' click...");
         try {
-            const allCheckboxes = document.querySelectorAll('.swiper-wrapper input[type="checkbox"]');
+            const allCheckboxes = document.querySelectorAll('#keyword-details-content input[type="checkbox"]');
             if (!allCheckboxes.length) {
-                showMessage(mainMessageBox, 'error', 'No keywords available in Swiper slides.');
+                showMessage(mainMessageBox, 'error', 'No keywords available.');
                 return;
             }
 
@@ -605,18 +528,7 @@ function handleWorkflowSelectionChange() {
             generateKeywordString(); // Update the summary textarea
             apiGeneratedPromptTextarea.value = ""; // Clear API prompt
             showMessage(mainMessageBox, 'success', `Feeling lucky! Selected ${actualQty} random keywords.`);
-
-            // First, scroll to the summary container to show the user the selected keywords
-            if (keywordsSummaryContainer) { // keywordsSummaryContainer should be defined
-                 keywordsSummaryContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-
-            // Then, after a short delay (to allow user to see the summary), scroll to config area
-            setTimeout(() => {
-                if (consolidatedConfigSection) { // consolidatedConfigSection should be defined
-                    consolidatedConfigSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            }, 750); // 750ms delay, adjust if needed
+            keywordsSummaryContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
         } catch (error) {
             console.error("Error 'Feeling Lucky':", error);
             showMessage(mainMessageBox, 'error', "Error randomizing keywords.");
@@ -631,9 +543,6 @@ function handleWorkflowSelectionChange() {
             if (keywords) {
                 showMessage(mainMessageBox, 'success', "Keyword summary generated/updated.");
                 keywordsSummaryContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                if (consolidatedConfigSection) {
-                    consolidatedConfigSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
             } else {
                 showMessage(mainMessageBox, 'error', "No keywords selected in the details section below.");
                 // Optionally open the details section if closed
@@ -667,7 +576,7 @@ function handleWorkflowSelectionChange() {
                 showMessage(mainMessageBox, 'success', 'API prompt generated successfully!'); // Show success in main box
             } else {
                 // Error message already shown by handleGenerateApiPrompt
-                consolidatedConfigSection.querySelector('.api-config')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                configActionArea.querySelector('.api-config')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         } catch (error) {
              // Catch any unexpected error during the process
@@ -710,7 +619,7 @@ function handleWorkflowSelectionChange() {
     if (localComfyUICheckbox && localComfyUICheckbox.checked) {
         localComfyUICheckbox.checked = false;
         console.log("Local ComfyUI checkbox automatically deselected because a new custom endpoint was added.");
-        
+
         // OPTIONAL: If deselecting ComfyUI needs to trigger other dependent UI changes
         // (like hiding/showing the workflow dropdown if it was tied to ComfyUI's checked state via a JS event listener),
         // you might need to manually dispatch a 'change' event.
@@ -916,14 +825,14 @@ function handleWorkflowSelectionChange() {
         }
     }
 
-    // function getCheckedValues(divId) { // OLD FUNCTION - no longer used with Swiper
-    //     const container = document.getElementById(divId);
-    //     if (!container) return [];
-    //     const contentHolder = container.querySelector('.dropdown-content-holder');
-    //     if (!contentHolder) return [];
-    //     const checkboxes = contentHolder.querySelectorAll('input[type="checkbox"]:checked');
-    //     return Array.from(checkboxes).map(cb => cb.value);
-    // }
+    function getCheckedValues(divId) {
+        const container = document.getElementById(divId);
+        if (!container) return [];
+        const contentHolder = container.querySelector('.dropdown-content-holder');
+        if (!contentHolder) return [];
+        const checkboxes = contentHolder.querySelectorAll('input[type="checkbox"]:checked');
+        return Array.from(checkboxes).map(cb => cb.value);
+    }
 
     function generateUUID() {
         // Basic UUID v4 generation
@@ -951,24 +860,31 @@ function handleWorkflowSelectionChange() {
     // --- Keyword Generation ---
     function generateKeywordString() {
         hideMessage(mainMessageBox); // Hide previous messages
+        let contentParts = [], contextModifierParts = [], cinematicOptionsParts = [];
 
-        const checkedCheckboxes = document.querySelectorAll('.swiper-wrapper input[type="checkbox"]:checked');
-        if (checkedCheckboxes.length === 0) {
-            const placeholderText = "No keywords selected. Please choose some options in the Swiper slides below or try 'I'm Feeling Lucky'!";
+        if (typeof dropdownData === 'undefined') {
+            console.error("dropdownData not loaded for generateKeywordString");
+            return null;
+        }
+
+        for (const categoryId in dropdownData) {
+            const checkedValues = getCheckedValues(categoryId);
+            if (checkedValues.length > 0) {
+                // Simplified logic: Just join all values with commas for now
+                // We can add more sophisticated phrasing later if needed
+                contextModifierParts.push(...checkedValues);
+            }
+        }
+
+        if (contextModifierParts.length === 0) {
+            const placeholderText = "No keywords selected. Please choose some options in the details section below or try 'I'm Feeling Lucky'!";
             generatedKeywordsTextarea.value = ""; // Clear value
             generatedKeywordsTextarea.placeholder = placeholderText;
-            // Optionally, scroll to Swiper or show a more prominent message
-            const swiperElement = document.querySelector('.swiper');
-            if (swiperElement) {
-                swiperElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
             return null; // Indicate no keywords were generated
         }
 
-        const selectedKeywords = Array.from(checkedCheckboxes).map(cb => cb.value);
-
         // Join all collected keywords/phrases with commas
-        const finalString = selectedKeywords.join(", ");
+        const finalString = contextModifierParts.join(", ");
         generatedKeywordsTextarea.value = finalString;
         generatedKeywordsTextarea.placeholder = "Keywords selected..."; // Update placeholder
 
@@ -1189,7 +1105,7 @@ function handleWorkflowSelectionChange() {
             const msgBox = isBatchRun ? configMessageBox : resultsMessageBox;
             showMessage(msgBox, 'error', 'No image generation services selected.');
             if (!isBatchRun) { // Scroll to config only on single runs
-                consolidatedConfigSection.querySelector('.image-gen-config')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                configActionArea.querySelector('.image-gen-config')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
             throw new Error("No image generation endpoints selected."); // Stop execution
         }
@@ -2306,62 +2222,5 @@ function handleWorkflowSelectionChange() {
               showMessage(resultsMessageBox, 'error', "Failed to generate or download log file.");
          }
      }
-
-    // --- Initialize Swiper ---
-    // Ensure this is called after slides are populated and DOM is ready
-    if (document.querySelector('.swiper-wrapper') && document.querySelector('.swiper-wrapper').children.length > 0) {
-        const swiper = new Swiper('.swiper', {
-            slidesPerView: 1,
-            spaceBetween: 0, // No space between slides as they are full width
-            loop: true, // Consider if loop is truly needed, can complicate direct slide access if ever required
-            navigation: {
-                nextEl: '.swiper-button-next',
-                prevEl: '.swiper-button-prev',
-            },
-            speed: 700, // Slightly adjusted speed
-            effect: 'slide', // 'slide', 'fade', 'cube', 'coverflow', 'flip'
-            allowTouchMove: true, // Keep touch move enabled for accessibility/tablets
-            // preventClicks: false, // Default is true. Set to false if clicks inside slides (e.g. on checkboxes) are not working.
-                                  // However, true is generally better for UX to prevent accidental clicks during swipe.
-                                  // Checkboxes should work fine with default true as they are form elements.
-            // preventClicksPropagation: false, // Default is true.
-        });
-
-        // Function to setup hover navigation
-        function setupHoverNavigation() {
-            const nextButton = document.querySelector('.swiper-button-next');
-            const prevButton = document.querySelector('.swiper-button-prev');
-
-            if (nextButton && prevButton) {
-                nextButton.addEventListener('mouseenter', () => {
-                    if (!nextButton.classList.contains('swiper-button-disabled')) {
-                        swiper.slideNext();
-                    }
-                });
-                prevButton.addEventListener('mouseenter', () => {
-                    if (!prevButton.classList.contains('swiper-button-disabled')) {
-                        swiper.slidePrev();
-                    }
-                });
-                // Clicks on arrows will still work due to Swiper's default handling
-            }
-        }
-
-        // Initialize hover navigation
-        if (swiper.initialized) {
-            setupHoverNavigation();
-        } else {
-            swiper.on('init', setupHoverNavigation);
-        }
-        console.log("Swiper initialized.");
-
-    } else {
-        console.warn("Swiper not initialized because slides were not found or not populated.");
-        if (!document.querySelector('.swiper-wrapper')) {
-            console.error("Critical: Swiper HTML structure (.swiper-wrapper) not found in index.html.");
-        } else if (document.querySelector('.swiper-wrapper').children.length === 0) {
-            console.warn("Swiper wrapper found, but no slides were populated by populateSwiperSlides(). Check keywordCategories data and function logic.");
-        }
-    }
 
 }); // End DOMContentLoaded
