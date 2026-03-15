@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Artistic T-Shirt Prompt Generator V2 - Final Layout</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -36,32 +35,15 @@
                     <i class="fas fa-copy"></i>
                 </button>
             </div>
-            <!-- API Prompt Output Container will be moved -->
-        </div>
-
-        <!-- Section 2: Keyword Selection Slider -->
-        <div id="keyword-details-area" class="section-box collapsible">
-            <button type="button" class="collapse-toggle-button" aria-expanded="true" aria-controls="keyword-details-content">
-                <h2 class="section-title inline-title">Keyword Selection (Details)</h2>
-                <i class="fas fa-chevron-down collapse-icon"></i>
-            </button>
-            <div id="keyword-details-content" class="collapsible-content">
-                <div class="swiper">
-                    <div class="swiper-button-next"></div>
-                    <div class="swiper-button-prev"></div>
-                    <div class="swiper-wrapper">
-                        <!-- Slides will be dynamically populated by JavaScript -->
-                    </div>
-                </div>
+            <div class="prompt-output textarea-with-copy" id="api-prompt-output-container">
+                <label for="apiGeneratedPrompt" class="dropdown-label">API Generated Prompt (Optional Refinement):</label>
+                <textarea id="apiGeneratedPrompt" class="prompt-textarea" readonly placeholder="Click 'Generate API Prompt' below..."></textarea>
+                <button type="button" class="copy-button" data-target="apiGeneratedPrompt" title="Copy API Generated Prompt">
+                    <i class="fas fa-copy"></i>
+                </button>
             </div>
-        </div>
-
-        <!-- Section 3: NEW Consolidated Configuration Section -->
-        <div id="consolidated-config-section" class="section-box">
-            <h2 class="section-title">Step 3: Configure & Refine</h2>
-            <button type="button" id="scrollToKeywordSliderButton" class="action-button" title="Scroll back to keyword selection" style="margin-bottom: 1.5rem; background: var(--accent-secondary);">
-                <i class="fas fa-arrow-up"></i> Return to Keyword Selection
-            </button>
+        </div> <div class="config-action-area section-box">
+            <h2 class="section-title">Configuration & Generation Actions</h2>
 
             <div class="config-subsection collapsible">
                 <button type="button" class="collapse-toggle-button" aria-expanded="true" aria-controls="llm-config-content">
@@ -110,10 +92,7 @@
                     </div>
                     <div id="configMessageBox" class="message-box" style="display: none;"></div>
                     <button type="button" id="generateApiPromptButton" class="action-button subsection-action-button" title="Use LLM to generate a refined prompt"><i class="fas fa-wand-magic-sparkles"></i> Generate API Prompt</button>
-                </div>
-            </div>
-
-            <div class="config-subsection collapsible">
+                </div> </div> <div class="config-subsection collapsible">
                 <button type="button" class="collapse-toggle-button" aria-expanded="true" aria-controls="image-gen-config-content">
                     <h3>Image Generation Configuration</h3>
                     <i class="fas fa-chevron-down collapse-icon"></i>
@@ -199,10 +178,7 @@
                     </div>
                     <button type="button" id="sendPromptButton" class="action-button subsection-action-button"><i class="fas fa-paper-plane"></i> Send Prompt / Start Batch</button>
                     <button type="button" id="stopBatchButton" class="action-button subsection-action-button danger-button hidden"><i class="fas fa-stop-circle"></i> Stop Batch</button>
-                </div>
-            </div>
-
-            <div class="config-subsection collapsible">
+                </div> </div> <div class="config-subsection collapsible">
                 <button type="button" class="collapse-toggle-button" aria-expanded="false" aria-controls="guidelines-content">
                     <h3>Prompt Guidelines (Reference)</h3>
                     <i class="fas fa-chevron-down collapse-icon"></i>
@@ -227,24 +203,7 @@
                             </tbody>
                         </table>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Section 4: NEW API Prompt Output Section -->
-        <div id="final-prompt-output-section" class="section-box">
-            <h2 class="section-title">Step 4: Final Prompt for Image Generation</h2>
-            <div class="prompt-output textarea-with-copy" id="api-prompt-output-container">
-                <label for="apiGeneratedPrompt" class="dropdown-label">API Generated Prompt (Optional Refinement):</label>
-                <textarea id="apiGeneratedPrompt" class="prompt-textarea" readonly placeholder="Click 'Generate API Prompt' below..."></textarea>
-                <button type="button" class="copy-button" data-target="apiGeneratedPrompt" title="Copy API Generated Prompt">
-                    <i class="fas fa-copy"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- Section 5: Image Generation Results -->
-        <div id="results-container" class="section-box">
+                </div> </div> </div> <div id="results-container" class="section-box">
             <h2 class="section-title">Image Generation Results</h2>
             <div id="resultsMessageBox" class="message-box" style="display: none;"></div>
             <label class="dropdown-label" style="margin-top: 1.5rem;">Image Generation Status & Results:</label>
@@ -257,15 +216,42 @@
             </div>
         </div>
 
-        <!-- Bottom Video and Scripts -->
-        <div class="bottom-video-container">
+        <div id="keyword-details-area" class="section-box collapsible">
+            <button type="button" class="collapse-toggle-button" aria-expanded="true" aria-controls="keyword-details-content">
+                <h2 class="section-title inline-title">Keyword Selection (Details)</h2>
+                <i class="fas fa-chevron-down collapse-icon"></i>
+            </button>
+            <div id="keyword-details-content" class="collapsible-content"> <div class="dropdown-container"><label class="dropdown-label">Subject Matter:</label><div id="subjectMatter"></div></div>
+                <div class="dropdown-container"><label class="dropdown-label">Location & Setting:</label><div id="locationSetting"></div></div>
+                <div class="dropdown-container"><label class="dropdown-label">Situation & Scenario:</label><div id="situationScenario"></div></div>
+                <div class="dropdown-container"><label class="dropdown-label">Animal & Creature Types:</label><div id="animalTypes"></div></div>
+                <div class="dropdown-container"><label class="dropdown-label">Vehicles & Machines:</label><div id="vehicleTypes"></div></div>
+                <div class="dropdown-container"><label class="dropdown-label">Robots & Androids:</label><div id="robotTypes"></div></div>
+                <div class="dropdown-container"><label class="dropdown-label">Otherworldly Elements:</label><div id="planetTypes"></div></div>
+                <div class="dropdown-container"><label class="dropdown-label">Additional Objects & Icons:</label><div id="additionalObjects"></div></div>
+                <div class="dropdown-container"><label class="dropdown-label">Edge Style:</label><div id="edgeStyle"></div></div>
+                <div class="dropdown-container"><label class="dropdown-label">Artistic Style:</label><div id="artisticStyle"></div></div>
+                <div class="dropdown-container"><label class="dropdown-label">Cinematic Lighting:</label><div id="cinematicLighting"></div></div>
+                <div class="dropdown-container"><label class="dropdown-label">Perspective & Angle:</label><div id="perspectiveAngle"></div></div>
+                <div class="dropdown-container"><label class="dropdown-label">Pattern & Texture:</label><div id="patternTexture"></div></div>
+                <div class="dropdown-container"><label class="dropdown-label">Opacity & Finish:</label><div id="opacityFinish"></div></div>
+                <div class="dropdown-container"><label class="dropdown-label">Materials Used:</label><div id="materialsUsed"></div></div>
+                <div class="dropdown-container"><label class="dropdown-label">Genre & Vibe:</label><div id="genreVibe"></div></div>
+                <div class="dropdown-container"><label class="dropdown-label">Time & Culture:</label><div id="timeCulture"></div></div>
+                <div class="dropdown-container"><label class="dropdown-label">Cinematic Modifiers:</label><div id="cinematicModifiers"></div></div>
+                <div class="dropdown-container"><label class="dropdown-label">Color & Tone:</label><div id="colorTone"></div></div>
+                <div class="dropdown-container"><label class="dropdown-label">Special Effects:</label><div id="specialEffects"></div></div>
+                <div class="dropdown-container"><label class="dropdown-label">Cultural Motifs:</label><div id="culturalMotifs"></div></div>
+                <div class="dropdown-container"><label class="dropdown-label">Frame & Border:</label><div id="frameBorder"></div></div>
+                <div class="dropdown-container"><label class="dropdown-label">Style Modulation:</label><div id="styleModulation"></div></div>
+                <div class="dropdown-container"><label class="dropdown-label">Cinematic Options:</label><div id="cinematicOptions"></div></div>
+            </div> </div> </div> <div class="bottom-video-container">
         <video autoplay muted loop playsinline>
             <source src="https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/2f36ecd5-e8bc-4459-860a-435ac643b127/transcode=true,width=450/68466816.webm" type="video/webm">
             Your browser does not support the video tag.
         </video>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="data.js"></script>
     <script src="script.js"></script>
 </body>

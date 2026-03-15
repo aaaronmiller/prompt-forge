@@ -194,8 +194,8 @@
 
 
     /* --- Configuration Area --- */
-    /* .config-action-area {} */ /* This class is no longer a primary structural element */
-    /* .config-action-area > .section-title { margin-top: 0; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--input-border); } */ /* Replaced by general .section-box > .section-title */
+    .config-action-area {}
+    .config-action-area > .section-title { margin-top: 0; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--input-border); }
     .config-subsection { border-bottom: 1px solid var(--input-border); margin-bottom: 1.5rem; padding-bottom: 1.5rem; }
     .config-subsection:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
     .subsection-action-button { margin-top: 1.5rem; display: block; margin-left: auto; margin-right: auto; width: fit-content; }
@@ -336,101 +336,4 @@
     grid-template-columns: repeat(3, 1fr); /* Fixed 3 columns */
     gap: 1.5rem; /* Or your desired gap */
     /* This element also has class="collapsible-content", so those styles will apply too */
-}
-
-/* General styling for top-level section titles */
-.section-box > .section-title {
-    margin-top: 0; /* Remove top margin if section-box has padding */
-    margin-bottom: 1.5rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid var(--input-border);
-    font-size: 1.3rem; /* Slightly larger for main section titles */
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--accent-primary); /* Make them stand out a bit */
-}
-
-/* Spacing for the API prompt output in its new section */
-#final-prompt-output-section #api-prompt-output-container {
-    margin-top: 1rem;
-}
-
-/* Ensure collapsible content within the new config section still looks good */
-#consolidated-config-section .config-subsection {
-    /* Existing styles for .config-subsection should still apply. */
-    /* Add any overrides if necessary, e.g., if border-bottom needs adjustment */
-}
-
-#consolidated-config-section .collapse-toggle-button {
-    /* Existing styles should apply. */
-    /* Change font-size or color if needed for the new context */
-}
-
-/* Basic container styling for Swiper */
-.swiper {
-  width: 100%;
-  height: 450px; /* Adjusted height for potentially more content */
-  position: relative;
-  margin-top: 1rem; /* Add some margin */
-}
-
-/* Individual slide styling */
-.swiper-slide {
-  display: flex;
-  flex-direction: column; /* Allow vertical stacking of title and checkboxes */
-  justify-content: flex-start; /* Align content to the top */
-  align-items: center; /* Center content horizontally */
-  background: var(--input-bg); /* Use existing variable */
-  border-radius: 8px;
-  padding: 20px;
-  overflow-y: auto; /* Allow scrolling within a slide if content is too long */
-}
-
-/* Styling for the category title within a slide */
-.swiper-slide h3.category-title {
-  font-size: 1.2rem;
-  color: var(--accent-primary);
-  margin-bottom: 15px;
-  text-align: center;
-  border-bottom: 1px solid var(--input-border);
-  padding-bottom: 10px;
-  width: 100%;
-}
-
-/* Container for checkboxes within a slide */
-.swiper-slide .checkbox-group {
-  width: 100%;
-  max-height: 300px; /* Max height for checkbox area */
-  overflow-y: auto; /* Scroll for checkbox list */
-  padding-right: 10px; /* Space for scrollbar */
-}
-
-/* Styling for individual checkbox items within a slide (reusing existing .dropdown-item structure) */
-.swiper-slide .dropdown-item {
-    /* Styles from existing .dropdown-item should mostly apply */
-    /* Adjust if needed, e.g., width, margin */
-    width: 100%;
-    box-sizing: border-box;
-}
-.swiper-slide .dropdown-item label {
-    margin-left: 0.5rem; /* Align label closer to custom checkbox */
-}
-
-
-/* Navigation arrow styling (optional customization) */
-.swiper-button-next,
-.swiper-button-prev {
-  color: var(--accent-primary); /* Use existing variable */
-  font-weight: bold;
-  --swiper-navigation-size: 30px; /* Adjust size */
-}
-
-.swiper-button-next:hover,
-.swiper-button-prev:hover {
-  color: #0056b3; /* Darker shade of accent */
-}
-
-.swiper-button-disabled {
-  opacity: 0.3;
-  pointer-events: none;
 }
