@@ -294,6 +294,59 @@ function setupCustomEndpoints() {
     addButton.addEventListener('click', () => {
         addCustomEndpoint();
     });
+
+    const openrouterFetchBtn = document.getElementById('openrouter-fetch-models-btn');
+    const openrouterModelSelect = document.getElementById('openrouter-model-select');
+    const openrouterKeyInput = document.getElementById('openrouter-key');
+
+    if (openrouterFetchBtn && openrouterModelSelect) {
+        openrouterFetchBtn.addEventListener('click', async () => {
+            const apiKey = openrouterKeyInput ? openrouterKeyInput.value.trim() : '';
+            openrouterModelSelect.innerHTML = '<option value="">Fetching models...</option>';
+            openrouterFetchBtn.disabled = true;
+
+            try {
+                const headers = {};
+                if (apiKey) {
+                    headers['Authorization'] = `Bearer ${apiKey}`;
+                }
+                const response = await fetch('https://openrouter.ai/api/v1/models', { headers });
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch models: ${response.statusText}`);
+                }
+                const data = await response.json();
+
+                // Filter models that support image generation
+                const imageModels = data.data.filter(model => {
+                    const arch = model.architecture;
+                    if (!arch) return false;
+                    const outputModalities = arch.output_modalities || [];
+                    const modality = arch.modality || '';
+                    return outputModalities.includes('image') || modality.includes('image');
+                });
+
+                // Sort models alphabetically by name
+                imageModels.sort((a, b) => a.name.localeCompare(b.name));
+
+                openrouterModelSelect.innerHTML = '';
+                if (imageModels.length === 0) {
+                     openrouterModelSelect.innerHTML = '<option value="">No image models found</option>';
+                } else {
+                    imageModels.forEach(model => {
+                        const option = document.createElement('option');
+                        option.value = model.id;
+                        option.textContent = model.name;
+                        openrouterModelSelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error("Error fetching OpenRouter models:", error);
+                openrouterModelSelect.innerHTML = '<option value="">Error fetching models</option>';
+            } finally {
+                openrouterFetchBtn.disabled = false;
+            }
+        });
+    }
 }
 
 /**

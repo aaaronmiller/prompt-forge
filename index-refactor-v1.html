@@ -328,7 +328,77 @@
                                 </div>
                             </div>
                         </div>
-                        
+
+                        <div class="endpoint-option">
+                            <div class="endpoint-header">
+                                <input type="checkbox" id="img-fal-ai" value="fal_ai">
+                                <label for="img-fal-ai">fal.ai <small>(<a href="https://fal.ai/dashboard/keys" target="_blank" style="color:var(--primary);text-decoration:underline;">Get Key</a> - Includes free trial credits)</small></label>
+                            </div>
+                            <div class="endpoint-config">
+                                <div class="form-group">
+                                    <label for="fal-ai-model">Model</label>
+                                    <input type="text" id="fal-ai-model" class="form-input" value="fal-ai/flux/dev">
+                                </div>
+                                <div class="form-group">
+                                    <label for="fal-ai-key">API Key</label>
+                                    <input type="password" id="fal-ai-key" class="form-input" placeholder="Enter fal.ai key">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="endpoint-option">
+                            <div class="endpoint-header">
+                                <input type="checkbox" id="img-openrouter" value="openrouter">
+                                <label for="img-openrouter">OpenRouter <small>(<a href="https://openrouter.ai/keys" target="_blank" style="color:var(--primary);text-decoration:underline;">Get Key</a> - Free models & trial available)</small></label>
+                            </div>
+                            <div class="endpoint-config">
+                                <div class="form-group">
+                                    <label for="openrouter-key">API Key</label>
+                                    <input type="password" id="openrouter-key" class="form-input" placeholder="Enter OpenRouter API key">
+                                    <button type="button" id="openrouter-fetch-models-btn" class="secondary-button" style="margin-top: 0.5rem; width: fit-content; padding: 0.4rem 0.8rem; font-size: 0.85em;">
+                                        <i class="fas fa-sync"></i>
+                                        <span>Fetch Models</span>
+                                    </button>
+                                </div>
+                                <div class="form-group">
+                                    <label for="openrouter-model-select">Model</label>
+                                    <select id="openrouter-model-select" class="form-select">
+                                        <option value="">-- Fetch models first --</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="endpoint-option">
+                            <div class="endpoint-header">
+                                <input type="checkbox" id="img-google-nano-banana" value="google_nano_banana">
+                                <label for="img-google-nano-banana">Google Nano Banana <small>(<a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--primary);text-decoration:underline;">Get Key</a> - Generous free tier)</small></label>
+                            </div>
+                            <div class="endpoint-config">
+                                <div class="form-group">
+                                    <label for="google-nano-banana-key">API Key</label>
+                                    <input type="password" id="google-nano-banana-key" class="form-input" placeholder="Enter Gemini API key">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="endpoint-option">
+                            <div class="endpoint-header">
+                                <input type="checkbox" id="img-huggingface" value="huggingface">
+                                <label for="img-huggingface">Hugging Face <small>(<a href="https://huggingface.co/settings/tokens" target="_blank" style="color:var(--primary);text-decoration:underline;">Get Token</a> - Free tier available)</small></label>
+                            </div>
+                            <div class="endpoint-config">
+                                <div class="form-group">
+                                    <label for="huggingface-model">Model</label>
+                                    <input type="text" id="huggingface-model" class="form-input" value="black-forest-labs/FLUX.1-dev">
+                                </div>
+                                <div class="form-group">
+                                    <label for="huggingface-key">API Token</label>
+                                    <input type="password" id="huggingface-key" class="form-input" placeholder="Enter Hugging Face Token (hf_...)">
+                                </div>
+                            </div>
+                        </div>
+
                         <div id="custom-endpoints-list"></div>
                         
                         <button type="button" id="add-custom-endpoint-btn" class="secondary-button">

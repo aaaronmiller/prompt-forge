@@ -342,6 +342,58 @@ function getSelectedImageEndpoints() {
             requiresKey: false
         });
     }
+
+    const falAiCheckbox = imageEndpointsContainer.querySelector('#img-fal-ai:checked');
+    if (falAiCheckbox) {
+        const falAiKey = document.getElementById('fal-ai-key')?.value?.trim();
+        const falAiModel = document.getElementById('fal-ai-model')?.value?.trim() || 'fal-ai/flux/dev';
+        endpoints.push({
+            id: falAiCheckbox.id, value: falAiCheckbox.value,
+            name: 'fal.ai',
+            model: falAiModel,
+            apiKey: falAiKey,
+            requiresKey: true
+        });
+    }
+
+    const openrouterCheckbox = imageEndpointsContainer.querySelector('#img-openrouter:checked');
+    if (openrouterCheckbox) {
+        const openrouterKey = document.getElementById('openrouter-key')?.value?.trim();
+        const openrouterModel = document.getElementById('openrouter-model-select')?.value?.trim();
+        endpoints.push({
+            id: openrouterCheckbox.id, value: openrouterCheckbox.value,
+            name: 'OpenRouter',
+            model: openrouterModel,
+            apiKey: openrouterKey,
+            requiresKey: true
+        });
+    }
+
+    const googleNanoBananaCheckbox = imageEndpointsContainer.querySelector('#img-google-nano-banana:checked');
+    if (googleNanoBananaCheckbox) {
+        const googleKey = document.getElementById('google-nano-banana-key')?.value?.trim();
+        endpoints.push({
+            id: googleNanoBananaCheckbox.id, value: googleNanoBananaCheckbox.value,
+            name: 'Google Nano Banana',
+            model: 'gemini-3.1-flash-image-preview',
+            apiKey: googleKey,
+            requiresKey: true
+        });
+    }
+
+    const huggingfaceCheckbox = imageEndpointsContainer.querySelector('#img-huggingface:checked');
+    if (huggingfaceCheckbox) {
+        const hfKey = document.getElementById('huggingface-key')?.value?.trim();
+        const hfModel = document.getElementById('huggingface-model')?.value?.trim() || 'black-forest-labs/FLUX.1-dev';
+        endpoints.push({
+            id: huggingfaceCheckbox.id, value: huggingfaceCheckbox.value,
+            name: 'Hugging Face',
+            model: hfModel,
+            apiKey: hfKey,
+            requiresKey: true
+        });
+    }
+
     const customCheckboxes = customEndpointsList.querySelectorAll('input[type="checkbox"]:checked');
     customCheckboxes.forEach(checkbox => {
         const inputId = checkbox.dataset.inputId;

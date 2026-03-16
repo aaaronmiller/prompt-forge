@@ -252,6 +252,147 @@ async function callImageGenerationAPI(promptToSend, endpointConfig, runIdentifie
                 if (typeof pollComfyHistory === 'function') pollComfyHistory(result.promptId, serverAddress, endpointConfig.id, endpointConfig.name, runIdentifier);
                 return result;
             }
+            case 'fal_ai': {
+                if (!endpointConfig.apiKey) throw new Error("API Key for fal.ai is missing.");
+                if (!endpointConfig.model) throw new Error("Model for fal.ai is missing.");
+                apiUrl = `https://fal.run/${endpointConfig.model}`;
+                requestHeaders['Authorization'] = `Key ${endpointConfig.apiKey}`;
+
+                const falSeed = (typeof generateRandomSeed === 'function') ? generateRandomSeed() : Date.now();
+                requestBody = { prompt: promptToSend, seed: falSeed };
+
+                const response = await fetch(apiUrl, { method, headers: requestHeaders, body: JSON.stringify(requestBody) });
+                if (!response.ok) {
+                    let e = response.statusText;
+                    try { const j = await response.json(); e = j.detail || j.error || JSON.stringify(j); } catch (_) {}
+                    throw new Error(`fal.ai Error (${response.status}): ${e}`);
+                }
+                const responseData = await response.json();
+                if (responseData.images?.[0]?.url) {
+                    result.imageUrl = responseData.images[0].url;
+                    result.message = "fal.ai OK.";
+                } else if (responseData.images?.[0]) {
+                     const img = responseData.images[0];
+                     if (img.url) result.imageUrl = img.url;
+                     else result.imageData = `data:image/jpeg;base64,${img}`;
+                } else {
+                     throw new Error("fal.ai response missing standard image format.");
+                }
+                result.status = 'success';
+                if (typeof updateImageResultItem === 'function') updateImageResultItem(endpointConfig.id, endpointConfig.name, result, runIdentifier);
+                return result;
+            }
+
+            case 'openrouter': {
+                if (!endpointConfig.apiKey) throw new Error("API Key for OpenRouter is missing.");
+                if (!endpointConfig.model) throw new Error("Please select an OpenRouter model first.");
+                apiUrl = 'https://openrouter.ai/api/v1/chat/completions';
+                requestHeaders['Authorization'] = `Bearer ${endpointConfig.apiKey}`;
+
+                requestBody = {
+                    model: endpointConfig.model,
+                    messages: [
+                        { role: 'user', content: promptToSend }
+                    ],
+                    modalities: ['image']
+                };
+
+                const response = await fetch(apiUrl, { method, headers: requestHeaders, body: JSON.stringify(requestBody) });
+                if (!response.ok) {
+                    let e = response.statusText;
+                    try { const j = await response.json(); e = j.error?.message || JSON.stringify(j); } catch (_) {}
+                    throw new Error(`OpenRouter Error (${response.status}): ${e}`);
+                }
+                const responseData = await response.json();
+                if (responseData.choices?.[0]?.message?.images?.[0]) {
+                     const imgObj = responseData.choices[0].message.images[0];
+                     if (imgObj.image_url?.url) {
+                         if (imgObj.image_url.url.startsWith('data:image')) {
+                             result.imageData = imgObj.image_url.url;
+                         } else {
+                             result.imageUrl = imgObj.image_url.url;
+                         }
+                         result.message = "OpenRouter OK.";
+                     } else {
+                         throw new Error("OpenRouter image missing URL/data.");
+                     }
+                } else {
+                    throw new Error("OpenRouter JSON missing images array in response message.");
+                }
+                result.status = 'success';
+                if (typeof updateImageResultItem === 'function') updateImageResultItem(endpointConfig.id, endpointConfig.name, result, runIdentifier);
+                return result;
+            }
+
+            case 'google_nano_banana': {
+                if (!endpointConfig.apiKey) throw new Error("API Key for Google Nano Banana is missing.");
+                apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${endpointConfig.model}:generateContent?key=${endpointConfig.apiKey}`;
+
+                requestBody = {
+                    contents: [
+                        { parts: [{ text: promptToSend }] }
+                    ],
+                    generationConfig: {
+                        responseModalities: ["IMAGE"]
+                    }
+                };
+
+                const response = await fetch(apiUrl, { method, headers: requestHeaders, body: JSON.stringify(requestBody) });
+                if (!response.ok) {
+                    let e = response.statusText;
+                    try { const j = await response.json(); e = j.error?.message || JSON.stringify(j); } catch (_) {}
+                    throw new Error(`Google Nano Banana Error (${response.status}): ${e}`);
+                }
+                const responseData = await response.json();
+                const parts = responseData.candidates?.[0]?.content?.parts;
+                if (!parts) throw new Error("Google API response missing parts.");
+
+                let foundImage = false;
+                for (const part of parts) {
+                    if (part.inlineData?.data) {
+                        const mime = part.inlineData.mimeType || 'image/jpeg';
+                        result.imageData = `data:${mime};base64,${part.inlineData.data}`;
+                        result.message = "Google Nano Banana OK.";
+                        foundImage = true;
+                        break;
+                    }
+                }
+
+                if (!foundImage) throw new Error("Google Nano Banana JSON missing inlineData.data.");
+                result.status = 'success';
+                if (typeof updateImageResultItem === 'function') updateImageResultItem(endpointConfig.id, endpointConfig.name, result, runIdentifier);
+                return result;
+            }
+
+            case 'huggingface': {
+                if (!endpointConfig.apiKey) throw new Error("API Token for Hugging Face is missing.");
+                if (!endpointConfig.model) throw new Error("Model for Hugging Face is missing.");
+                apiUrl = `https://api-inference.huggingface.co/models/${endpointConfig.model}`;
+                requestHeaders['Authorization'] = `Bearer ${endpointConfig.apiKey}`;
+
+                requestBody = { inputs: promptToSend };
+
+                const response = await fetch(apiUrl, { method, headers: requestHeaders, body: JSON.stringify(requestBody) });
+                if (!response.ok) {
+                    let e = response.statusText;
+                    try { const j = await response.json(); e = j.error || JSON.stringify(j); } catch (_) {}
+                    throw new Error(`Hugging Face Error (${response.status}): ${e}`);
+                }
+
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.startsWith("image/")) {
+                    const blob = await response.blob();
+                    result.imageData = (typeof blobToBase64 === 'function') ? await blobToBase64(blob) : null;
+                    result.message = "Hugging Face OK.";
+                } else {
+                    throw new Error(`Hugging Face returned non-image response (${contentType}).`);
+                }
+
+                result.status = 'success';
+                if (typeof updateImageResultItem === 'function') updateImageResultItem(endpointConfig.id, endpointConfig.name, result, runIdentifier);
+                return result;
+            }
+
             case 'custom_image': {
                 if (!apiUrl) throw new Error("Custom Image Endpoint URL is missing.");
                 const customSeedToUse = (typeof generateRandomSeed === 'function') ? generateRandomSeed() : Date.now();
